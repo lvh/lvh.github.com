@@ -1,0 +1,191 @@
+---
+layout: post
+title: Why I'm ditching MaxCDN
+published: true
+---
+<p>I'm moving away from MaxCDN. My dealings with them in the past two weeks alone have been a complete mess. I realise this is all just anecdotal, but I can not recommend their services to anyone anymore.</p>
+<p />
+<div>The first issue I had was with payment. One of the reasons I originally picked MaxCDN was that it was easy for us to pay them, because they accept PayPal. As much as I dislike PayPal, it's not very easy or cheap for a small HK startup to get a credit card, and all of our income was pretty much landing directly into our PayPal account. Paying with PayPal made sense.</div>
+<p />
+<div>Except payments would randomly fail, with a completely useless PayPal error message. Sometimes my PayPal payment &nbsp;would go through fine, after trying again a day or so later. Based on my previous experience with PayPal, I figured this was simply an intermittent PayPal failure.</div>
+<p />
+<div>When contacting support for the third or so time about this (the previous two times there was no resolution, but trying again for the umpteenth time made the payment go through), they did the usual dance involving a few red herrings (e.g. address information discrepancies), and suggested I once again pay with my personal credit card (an emergency last-ditch situation which I only ever agreed to doing once because I wanted to pay them for services rendered).</div>
+<p />
+<div>When I raised objection to that,&nbsp;support staff suggested *three times* that I should get a PayPal credit card: every time&nbsp;I had to point out that the service they were suggesting I get is not available to any of&nbsp;the customers affected by their new policy. Let alone the fact that it's quite strange&nbsp;that they think they'll get some kind of security/fraud benefit by turning PayPal&nbsp;transactions coming from PayPal *balance* into a CC transaction&hellip; Not knowing how to help a customer is one thing, being told twice by the same customer and still suggesting the same non-starter means you simply don't care.</div>
+<p />
+<div>Finally, the cat comes out of the bag (only took about 10 or so e-mails in that last support thread): they unilaterally decided to block payments incoming from companies in Hong Kong,&nbsp;China, Vietnam, Thailand and Indonesia. The fact that payments did sometimes succeed was simply a consequence of them flicking that switch on and off.</div>
+<p />
+<div>Here's how they screwed up:</div>
+<div>
+<ul class="MailOutline">
+<li>Despite knowing the company was located in Hong Kong, they did not inform me of this change.</li>
+<li>They did not properly inform their support staff of this change or how to deal with it. Their staff spread misinformation as a result.</li>
+<li>When the support staff finally got the memo, they were still completely unhelpful.</li>
+<li>This information was only painstakingly accrued after dealing with support for a long time, it is still not published anywhere on their website, and as a HK customer I have still not received a notification, so lord knows how many other customers are being kept busy this way&nbsp;</li>
+</ul>
+</div>
+<p />
+<div>I explained how difficult it is for legitimate HK businesses to do what they're asking them to do. They said they'd try to get me whitelisted. Obviously, that went nowhere. Whether that was just a ruse or if they did actually escalate the issue to their billing manager remains a mystery.<br />
+<p />
+<div>The second issue I've had with them is for full-site domains. I have a statically-servable web app consisting of some HTML/JS/CSS that consumes a remote API. Sounds like a perfect candidate for CDN-serving, right?</div>
+<p />
+<div>When you try to create a <a href="http://www.somedomain.com">www.somedomain.com</a> push zone, you get the following error message from the MaxCDN dashboard:</div>
+<p />
+<div><span class="Apple-tab-span" style=""> </span>&bull; For security reasons we do not allow full site custom domains. If you need this feature please email<a href="mailto:support@maxcdn.com">support@maxcdn.com</a>&nbsp;and we will add it for you.</div>
+<p />
+<div>Okay! I don't know what the security implications are of serving requests to <a href="http://www.mydomain.com">www.mydomain.com</a> that don't exist for <a href="http://anythingelse.mydomain.com">anythingelse.mydomain.com</a>, but fine: let's contact support.</div>
+<p />
+<div>I sent them the following e-mail:</div>
+<p />
+</div>
+<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+<div>
+<div>Dear Sir or Madam,<p /><br />I want to statically serve a web app through your CDN. It's just some packaged HTML/CSS/JS that consumes a remote API. Hence, it makes sense for me to serve it from&nbsp;<a href="http://www.mysite.com/">http://www.mysite.com</a>.<p />When I tried to do this, I got the following error message:<p /><span class="Apple-tab-span" style=""> </span>&bull; For security reasons we do not allow full site custom domains. If you need this feature please email<a href="mailto:support@maxcdn.com">support@maxcdn.com</a>&nbsp;and we will add it for you.<p />What do I need to do to enable this and what are the security implications?<p />cheers<br />lvh</div>
+</div>
+<p />
+</blockquote>
+<p>Here's an excerpt from the reply:</p>
+<p />
+<div>
+<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+<div>
+<blockquote>could you, please send us a temp admin login to your website in order to check your plugin settings.</blockquote>
+</div>
+</blockquote>
+<div>
+<p />
+<div>Uh&hellip; What? I answered that I didn't know which admin login he was asking for. Never mind the fact that just expecting me to cough up some admin credentials is a pretty bad idea. I explain that there are no plugins or admin logins. It's just some static HTML/JS/CSS.</div>
+<p />
+</div>
+</div>
+<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+<div>
+<div>
+<div>
+<blockquote>Well, I taught you are using it with plugin. Glad this is solved now for you.</blockquote>
+</div>
+</div>
+</div>
+</blockquote>
+<div>
+<p />
+<div>I'm not sure which plugins he's talking about. However, I have no idea why he thinks that the issue is now resolved, so I quote the original e-mail again.</div>
+<p />
+<p />
+</div>
+<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+<div>
+<div>
+<blockquote>I have changed your password for main user to SwIs007 make shure you change it.</blockquote>
+</div>
+</div>
+<div>
+<div>
+<blockquote class="posterous_medium_quote">Now, on which zone settings you have this error and how does your origin url looks like? If you want to cache from subfolder-domain you need subdomain to point to this temp url in order to start caching from that location.</blockquote>
+</div>
+</div>
+<p />
+<div>
+<div>
+<blockquote class="posterous_short_quote">Give me the user which has this zone and registered email as this one:&nbsp;&lt;&lt;REDACTED&gt;&gt;&nbsp;doesn't work.</blockquote>
+</div>
+</div>
+</blockquote>
+<div>
+<p />
+<div>Uhhh. Why are you messing with my login credentials?&nbsp;I still have no idea what the next sentence even means. I point out to him, politely, that this is an issue with *creating* a new *push* zone, so yes: you can't see the zone because I can't create it in the first place.</div>
+<p />
+<div>
+<blockquote>If you would like to use API key:<p />First - Login to your CDN account and create master API (API ID, API Key),<br />Second - Whitelist IP address you want to manage zone from (or use "*" instead of IP address in order to whitelist all IP addresses)<br />With this above you can approach to your zone<p />The reason why you get the error is because you are trying to use url format:&nbsp;<a href="http://www.domain.com/">www.domain.com</a>, instead of:<a href="http://zonename.companyalias.netdna-cdn.com/">zonename.companyalias.netdna-cdn.com</a>.</blockquote>
+</div>
+<div>I'm hoping that what this means is that I have to use the API in order to create this kind of zone. Okay, let's create an API key. Hm, that doesn't really appear to work...</div>
+<p />
+<div>Next, he sends me an e-mail explaining the differences between a push and a pull zone and suggesting that maybe I should use a pull zone. I reply explaining the differences as I understand them to apply to my issue, and why I think a push zone is appropriate.</div>
+<p />
+<div>In the mean while, I get this e-mail from them (it's automated):</div>
+<p />
+</div>
+<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+<div>
+<div>Hi &lt;&lt;redacted&gt;&gt;,</div>
+</div>
+<p />
+<div>
+<div>We see that you have just attempted to make a call to our API from this IP address: *. The call did not go through because this IP has not yet been whitelisted for your account. Please verify that this IP belongs to your website and then whitelist this IP inside your control panel. For instructions on how to whitelist your IP to use our API, please follow the instruction on this support article:&nbsp;<a href="http://support.netdna.com/knowledgebase/how-to-whitelist-your-ip-for-the-api/">http://support.netdna.com/knowledgebase/how-to-whitelist-your-ip-for-the-api/</a></div>
+</div>
+</blockquote>
+<div>
+<p />
+<div>When I report this issue to them, I get a helpful reply from a different support agent explaining that this error message is essentially complete nonsense:</div>
+<p />
+</div>
+<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+<div>
+<div>
+<blockquote>Sorry for the confusion. &nbsp;The email below that you received actually is a notification that a wildcard IP (*) is entered in your API IP Whitelisting section in your CDN Dashboard. &nbsp;The messaging below is quite incorrect, because this just means that a wildcard IP (*) is set so that any IP can be whitelisted to utilized and make the API calls. &nbsp;</blockquote>
+</div>
+</div>
+</blockquote>
+<div>
+<p />
+<div>Oh well. Still A+ in terms of support: good English skills, polite reply, accurate content.</div>
+<p />
+<div>So, now I get another lecture about the differences between push and pull zones (this will happen again in a later e-mail). I guess I'll politely acknowledge it and move on to things I actually need support for: turns out that I still can't actually make that zone, not with the UI, not with the API.</div>
+<p />
+<div>He replies, and basically tells me to do something completely different (i.e. not create a <a href="http://www.mysite.com">www.mysite.com</a> zone). I explain that that's not what I want:</div>
+<p />
+</div>
+<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+<div>
+<div>But that's not what I want. There is no website other than that push zone. I want MaxCDN to serve files for me at&nbsp;<a href="http://www.mydomain.com/">www.mydomain.com</a>, from a push zone.</div>
+</div>
+<p />
+<div>
+<div>The error message I originally got suggests that I can achieve this by contacting support and explicitly asking for it.</div>
+</div>
+</blockquote>
+<div>
+<p />
+<div>He tells me to use CNAMEs:</div>
+</div>
+<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+<div>
+<div><br />you could use it like this:<br />&nbsp;&nbsp;- CNAME&nbsp;<a href="http://origin-cdn.sub.com/">origin-cdn.sub.com</a>&nbsp;to push zone temp url<br />then<br />&nbsp;&nbsp;- CNAME &nbsp;<a href="http://www.domain.com/">www.domain.com</a>&nbsp;to&nbsp;<a href="http://origin-cdn.sub.com/">origin-cdn.sub.com</a></div>
+</div>
+</blockquote>
+<div>
+<p />
+<div>At this point I'm wondering: what exactly is the point of the original error message, that literally says "If you need this feature please email<a href="mailto:support@maxcdn.com">support@maxcdn.com</a>&nbsp;and we will add it for you.", if you're not actually do that when I contact you?</div>
+<p />
+</div>
+<blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+<div>
+<div>As we have already told you,&nbsp;<a href="http://www.domain.com/">www.domain.com</a>&nbsp;url is not correct url for push zone setting up.<br />We have understood you need API for some reason and we are sorry for miss understanding.<p />Push zone is not a part of hosting service - you can use files by embeding them on pages or downloading them, or whatever. You can access to it same way as they are on ftp server.<br />So, only way you "can" do that is by cname-ing domains to get what you want.</div>
+</div>
+</blockquote>
+<div>
+<p />
+<div>Okay then.</div>
+<p />
+<div>Here's how they screwed up:</div>
+<div>
+<ul class="MailOutline">
+<li>Don't change my account details without me asking for it or there being a good reason for doing so.</li>
+<li>Don't make me do random dances like switching to a different user account and adding an API key unless that has anything to do with resolving my issue.</li>
+<li>Don't give me an error message that says that something can be done, but has to be by contacting support, when your support basically can't or won't actually resolve the issue.</li>
+<li>After I have explained to you that I know what the difference is between a pull zone and a push zone, you don't need to explain it again, and you certainly don't need to give me a snarky reference to the documentation. (snarky reference may have been unintentional due to next point)</li>
+<li>Support agent spoke terrible English.</li>
+<li>Gazillion e-mails back and forth, no resolution.</li>
+</ul>
+</div>
+<p />
+<div>Time to say goodbye. I paid up front for a bunch of transfer. I don't care. I'm taking the hit and heading out.</div>
+<p />
+<div>I'm open for suggestions for anything new. I'm probably going to switch to CloudFront.</div>
+</div>
+<p><p /></p>
+<div><span style="">
+</span><div>cheers</div>
+<div>lvh</div>
+<p />
+<br class="Apple-interchange-newline" /></div>
