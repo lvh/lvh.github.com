@@ -82,7 +82,50 @@ Since I was using [Twisted](http://twistedmatrix.com) and
 [AMP](http://amp-protocol.net/), this was actually quite easy. I wrote
 a decorator for AMP responder functions that does exactly that:
 
-{% gist 4675839 %}
+{% codeblock lang:python %}
+def _immediateResponder(f):
+    """
+    A decorator for responder functions that should return immediately and
+    execute asynchronously, as a defense against timing attacks.
+
+    The responder decorator should be applied after (above) this decorator::
+
+        @SomeCommand.responder
+        @_immediateResponder
+        def responder(...):
+            ....
+
+    This should be timing attack resistant since it is unconditional: the
+    the AMP response is returned immediately, and the real responder is
+    scheduled to run at the next chance the reactor has to do so.
+
+    This only works with AMP commands with empty responses. That's probably a
+    good idea anyway: almost all information you could add to the response
+    is liable to introduce a timing attack vulnerability.
+
+    Since this precludes your ability to communicate success or failure to
+    the caller, the decorated function should return quite quickly (or, if it
+    can't, that should be clearly documented). Otherwise, you may end up in a
+    a race condition, where the caller assumes the operation has completed,
+    but it is in progress or hasn't started yet.
+
+    The original responder function is available on the decorated function as
+    the ``responderFunction`` attribute.
+    """
+    @functools.wraps(f)
+    def wrapped(self, *args, **kwargs):
+        reactor.callLater(0, f, self, *args, **kwargs)
+        return {}
+
+    wrapped.responderFunction = f
+    return wrappeddef strcmp(s1, s2):
+    if len(s1) != len(s2):
+        return False
+    for c1, c2 in zip(s1, s2):
+        if c1 != c2:
+            return False
+    return True
+{% endcodeblock %}
 
 When I get an incoming RPC call, the function doing the actual work is
 scheduled to run at the next reactor iteration. Then, an empty
