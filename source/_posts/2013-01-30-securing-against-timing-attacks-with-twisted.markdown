@@ -123,7 +123,36 @@ def _immediateResponder(f):
 
 When I get an incoming RPC call, the function doing the actual work is
 scheduled to run at the next reactor iteration. Then, an empty
-response is returned. The response is given immediately after. All of
-this happens in amortized constant time, and, at any rate, completely
-independent of any secrets. As a result, it can't really leak anything
-about them.
+response is returned. All of this happens in amortized constant time,
+and independent of any secrets. As a result, it can't really leak
+much about them.
+
+# An abstraction too high
+
+The above was an effective response to a proof-of-concept timing
+attack exploit. Unfortunately, that doesn't mean you've fixed every
+timing attack.
+
+In particular, this example is a few layers of abstraction removed
+from the grit of real-world I/O. Just because I returned `{}` (an
+empty response) immediately, doesn't mean the underlying IO happens
+immediately.
+
+In particular, the write output latency could be coerced to depend on
+the computation time, because the function passed to it could be
+executed before the `write`. If that happens, and the time it takes is
+dependant on some secret, delaying the write, the latency on the
+attacker's side could be used to measure the work done.
+
+I have not yet been able to turn the above into a working exploit.
+
+There are a number of ways this could be mitigated. Since there's no
+working exploit, it's unclear if this mitigation would render a timing
+attack infeasible.
+
+One way I've considered to mitigate this is to limit the time that the
+reactor is blocked. In my concrete example, this was fortunately
+already the case, since one of the first things it did was defer to a
+thread that released the GIL (to compute the key from the password
+using ``scrypt``). Alternatively, if you're doing this for Python
+code, you could write your function cooperatively.
