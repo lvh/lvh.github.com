@@ -118,13 +118,7 @@ def _immediateResponder(f):
         return {}
 
     wrapped.responderFunction = f
-    return wrappeddef strcmp(s1, s2):
-    if len(s1) != len(s2):
-        return False
-    for c1, c2 in zip(s1, s2):
-        if c1 != c2:
-            return False
-    return True
+    return wrapped
 {% endcodeblock %}
 
 When I get an incoming RPC call, the function doing the actual work is
