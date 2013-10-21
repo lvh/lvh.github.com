@@ -1,0 +1,67 @@
+---
+layout: post
+title: "Thoughts on RDRAND in Linux"
+date: 2013-10-19 21:47
+comments: true
+categories: crypto
+---
+
+This has been brewing since I read [Linus' response to the petition to
+remove `RDRAND` from /dev/random][linus].
+
+For those of you who don't know, `RDRAND` is a CPU instruction
+introduced by Intel on recent CPUs. It (supposedly) uses a hardware
+entropy source, and runs it through AES in CBC-MAC mode, to produce
+random numbers.
+
+Out of fear that `RDRAND` may somehow be backdoored, someone
+petitioned to remove `RDRAND` support to "improve the overall security
+of the kernel". If `RDRAND` contains a back door, and an unknown
+attacker can control the output, that could break pretty much all
+userland crypto.
+
+Linus fulminated, as he is wont to do. He suggested we go read
+`drivers/char/random.c`. I quote (expletives and insults omitted):
+
+ > we use rdrand as _one_ of many inputs into the random pool, and we
+ > use it as a way to _improve_ that random pool. So even if rdrand
+ > were to be back-doored by the NSA, our use of rdrand actually
+ > improves the quality of the random numbers you get from
+ > /dev/random.
+
+I went ahead and read `random.c`. You can read it for yourself [in
+Linus' tree][randomc].
+
+Disclaimer: I am not an expert in this piece of code. I have no doubt
+Linus is far more familiar with it than I am. I'd love to be proven
+wrong. I'm just taking his advice and reading some code.
+
+The function I'm interested in is `extract_buf`:
+
+```
+	/*
+	 * If we have a architectural hardware random number
+	 * generator, mix that in, too.
+	 */
+	for (i = 0; i < LONGS(EXTRACT_SIZE); i++) {
+		unsigned long v;
+		if (!arch_get_random_long(&v))
+			break;
+		hash.l[i] ^= v;
+	}
+```
+
+This is in the extraction phase. This is after the hash is being mixed
+back in to the pool (and that's for backtracking attacks: not intended
+as an input to the pool). It seems to me like the output of
+`arch_get_random_long` is being XORed in with the extracted output,
+not with the pool.
+
+If I were to put on my tin-foil hat, I would suggest that the
+difficulty has now been moved from being able to subvert the pool as
+one of its entropy sources (which we think is impossible), versus
+being able to see what you're about to be XORed with. The latter seems
+a lot closer to the realm of stuff a microcode instruction can do.
+
+[linus]: https://www.change.org/en-GB/petitions/linus-torvalds-remove-rdrand-from-dev-random-4/responses/9066
+[randomc]: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/char/random.c
