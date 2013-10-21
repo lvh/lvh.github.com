@@ -100,5 +100,28 @@ if __name__ == "__main__":
 
 Why can't RDRAND work like this?
 
+Some comments based on feedback I've gotten so far:
+
+1. This attack does not need to know where the PRNG state lives in
+memory. First of all, this isn't an attack on the PRNG state, it's on
+the PRNG output. Secondly, the instruction only needs to peek ahead at
+what is about to happen (specifically, what's about to be XORed with)
+the RDRAND output. That doesn't require knowing where the PRNG state
+(or its output) is being stored in memory; we're already talking
+register level at that point.
+2. While it's certainly true that if you can't trust the CPU, you
+can't trust anything, that doesn't really make this problem go away.
+`RDRAND` being broken wouldn't make software crash, which is a lot
+harder for almost all other instructions. `RDRAND` being broken
+wouldn't result in measurable side-effects, unlike what would happen
+if `PCLMULDQ` contained a back door. Furthermore, it's a lot easier to
+backdoor one single microcode instruction and a lot more plausible and
+feasible for a CSPRNG to be backdoored than it is to think of a CPU as
+some kind of intelligent being that's actively malicious or being
+remotely controlled.
+
+For what it's worth, it seems [Zooko agrees with me][zooko].
+
 [linus]: https://www.change.org/en-GB/petitions/linus-torvalds-remove-rdrand-from-dev-random-4/responses/9066
 [randomc]: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/char/random.c
+[zooko]: https://twitter.com/zooko/status/392334674690723840
