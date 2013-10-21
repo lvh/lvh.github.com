@@ -38,8 +38,9 @@ wrong. I'm just taking his advice and reading some code.
 
 The function I'm interested in is `extract_buf`:
 
-```
-	/*
+```c
+
+    /*
 	 * If we have a architectural hardware random number
 	 * generator, mix that in, too.
 	 */
@@ -65,7 +66,7 @@ a lot closer to the realm of stuff a microcode instruction can do.
 
 To put it into Python:
 
-```
+```python
 from inspect import currentframe
 from random import getrandbits
 
