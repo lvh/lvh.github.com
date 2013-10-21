@@ -63,5 +63,41 @@ one of its entropy sources (which we think is impossible), versus
 being able to see what you're about to be XORed with. The latter seems
 a lot closer to the realm of stuff a microcode instruction can do.
 
+To put it into Python:
+
+```
+from inspect import currentframe
+from random import getrandbits
+
+def extract_buf():
+    """Gets 16 bytes from the pool, and mixes them with RDRAND output.
+
+    """
+    pool_bits = extract_from_pool()
+    rdrand_bits = rdrand()
+    return  pool_bits ^ rdrand_bits
+
+def extract_from_pool():
+    """Pretend to get some good, unpredictable bytes from the pool.
+
+    Actually gets a long with some non-cryptographically secure random
+    bits from random.getrandbits, which is usually a Mersenne Twister.
+
+    """
+    return getrandbits(32)
+
+def rdrand():
+    """
+    A malicious hardware instruction.
+    """
+    pool_bits = currentframe().f_back.f_locals["pool_bits"]
+    return pool_bits ^ 0xabad1dea
+
+if __name__ == "__main__":
+    assert extract_buf() == 0xabad1dea
+```
+
+Why can't RDRAND work like this?
+
 [linus]: https://www.change.org/en-GB/petitions/linus-torvalds-remove-rdrand-from-dev-random-4/responses/9066
 [randomc]: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/char/random.c
