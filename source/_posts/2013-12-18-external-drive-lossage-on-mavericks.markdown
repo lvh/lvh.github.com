@@ -29,3 +29,10 @@ a new GUID table on it with one partition.
 
 Apparently the solution is to boot into Linux to fix the drive. I'll
 let you know how that pans out.
+
+UPDATE: Booted into Linux, was able to read everything. `fsck` does
+report something wrong with the filesystem, but not bad enough that I
+can't mount or umount it. Was able to salvage what looks to be all the
+data I wanted; didn't bother to try and get e.g. Time Machine or
+Spotlight index data off, which is where I suspect the issues to stem
+from.
