@@ -3,11 +3,11 @@ layout: post
 title: "Securing against timing attacks with Twisted"
 date: 2013-01-30 18:55
 comments: true
-categories: 
+categories:
 tags: ["twisted", "security", "amp"]
 ---
 
-# What are timing attacks?
+## What are timing attacks?
 
 Timing attacks are side-channel attacks that rely on inferring secret
 information from operations by measuring how long they take to execute.
@@ -16,7 +16,7 @@ A complete explanation is outside of the scope of this article, but
 the [Wikipedia article](https://en.wikipedia.org/wiki/Timing_attack)
 might be a good starting point for the interested reader.
 
-# Why should I care about them?
+## Why should I care about them?
 
 Because they can creep in before you know it, and break your otherwise
 fine system.
@@ -48,9 +48,9 @@ length, an attacker can use that timing information to figure out what
 the original string is that is being compared to, even when he
 shouldn't.
 
-# Why should I care? Why did you care?
+## Why did you care?
 
-Well, the reason I cared were my password resets.
+Password resets.
 
 The typically recommended way of doing them is to generate a random
 number, one that's sufficiently long that an attacker can't guess it.
@@ -68,7 +68,7 @@ Also, if membership is private, an attacker may exploit timing
 differences in the password reset *request* function to farm e-mail
 addresses.
 
-# How do I protect against timing attacks?
+## How do I protect against timing attacks?
 
 Just to be clear: timing attacks are a complicated problem, and this
 article describes just one strategy I've applied to help secure
@@ -127,7 +127,7 @@ response is returned. All of this happens in amortized constant time,
 and independent of any secrets. As a result, it can't really leak
 much about them.
 
-# An abstraction too high
+## An abstraction too high
 
 The above was an effective response to a proof-of-concept timing
 attack exploit. Unfortunately, that doesn't mean you've fixed every
