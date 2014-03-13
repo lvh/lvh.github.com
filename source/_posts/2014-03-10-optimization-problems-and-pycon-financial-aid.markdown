@@ -216,10 +216,37 @@ a carefully crafted three-person example we could clearly see the
 difference between the linear and quadratic models I was talking about
 above: under the square model, the concentrated grants, trying harder
 to give high-scoring applications the amount they requested. The
-linear model spread money out more evenly.
+linear model spread money out more evenly. That is, with the following
+applications:
 
-You can find the code I wrote
-[on Github](https://github.com/lvh/hood/blob/master/src/hood/constraint.clj).
+```clojure
+(def alice {:name "Alice", :score 5, :requested 120})
+(def bob {:name "Bob", :score 4, :requested 100})
+(def carol {:name "Carol", :score 3, :requested 80})
+```
+
+In a linear model, it cmes up with:
+
+```clojure
+{alice 120
+ bob 80
+ carol 0}
+```
+
+However, in the quadratic model, the optimizer rather gives Carol (who
+has a lower score) a complete grant than give Bob a partial one:
+
+```clojure
+{alice 120
+ bob 0
+ carol 80}
+```
+
+You can find the code [on
+Github](https://github.com/lvh/hood/blob/master/src/hood/constraint.clj).
+The tests that confirm the difference in behavior for the linear and
+quadratic models are in [the
+tests](https://github.com/lvh/hood/blob/master/test/hood/constraint_test.clj).
 
 There's one issue though; it didn't scale. Not bad enough that you'd
 notice on the three-person example (I thought my REPL was just being
