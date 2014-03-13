@@ -76,12 +76,14 @@ I'm quite happy with the result. Any dollar I'm not devoting to a room
 that isn't being fully used will instead be going into an increased
 grant.
 
-Unfortunately, finding this solution isn't the end of the story. The
-solution rarely survives the clash with reality. All sorts of things
-affect it: people will drastically change their room dates. People's
-visas get denied. All sorts of unforseeable circumstances mean that
-the solution doesn't make it into the real world. Unfortunately, I
-don't think that's a problem I can fix in a few lines of Clojure.
+Unfortunately, finding this solution isn't the end of the story. It
+rarely survives the clash with reality. All sorts of things affect it:
+people will drastically change their room dates. People's visas get
+denied. All sorts of unforseeable circumstances mean that the exact
+room pairing that the algorithm produced has already had to be heavily
+modified, and it will continue to be until PyCon is over.
+Unfortunately, I don't think that's a problem I can fix in a few lines
+of Clojure.
 
 ## Grant allocation
 
