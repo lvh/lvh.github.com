@@ -77,13 +77,12 @@ that isn't being fully used will instead be going into an increased
 grant.
 
 Unfortunately, finding this solution isn't the end of the story. It
-rarely survives the clash with reality. All sorts of things affect it:
-people will drastically change their room dates. People's visas get
-denied. All sorts of unforseeable circumstances mean that the exact
-room pairing that the algorithm produced has already had to be heavily
-modified, and it will continue to be until PyCon is over.
-Unfortunately, I don't think that's a problem I can fix in a few lines
-of Clojure.
+rarely survives the clash with reality. Many complex factors affect
+it: people will drastically change their room dates, people's visas
+get denied, et cetera. All sorts of unforseeable circumstances have
+lead to changes to the answer the algorithm originally produced. I
+don't expect that to changeu ntil PyCon is over; unfortunately, I also
+don't think that's a problem I can fix in a few lines of Clojure.
 
 ## Grant allocation
 
