@@ -225,7 +225,7 @@ applications:
 (def carol {:name "Carol", :score 3, :requested 80})
 ```
 
-In a linear model, it cmes up with:
+In a linear model, it comes up with:
 
 ```clojure
 {alice 120
