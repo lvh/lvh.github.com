@@ -292,8 +292,8 @@ There are two ways we can fix this:
    a much faster solver, specific to that class of problems. Also, by
    allowing arbitrary real numbers instead of just integers, we can
    use much faster solvers.
-1. Compromising on finding the /optimal/ solution, instead searching
-   for a /decent/ solution. You can do that with algorithms like tabu
+1. Compromising on finding the *optimal* solution, instead searching
+   for a *decent* solution. You can do that with algorithms like tabu
    search or simulated annealing.
 
 I opted for the former option. My next blog post will be about
