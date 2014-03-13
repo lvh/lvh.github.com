@@ -256,7 +256,7 @@ solvers like LoCo are very valuable, they just aren't a good fit for
 this problem. They are designed for problems where the constraints
 really constraining the solution space. We're clearly not in that
 territory. We have many valid solutions, and we're struggling to look
-for a /good/ one.
+for a *good* one.
 
 There are two ways we can fix this:
 
