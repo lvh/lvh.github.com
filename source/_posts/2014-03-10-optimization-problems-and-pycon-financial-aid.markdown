@@ -81,7 +81,7 @@ rarely survives the clash with reality. Many complex factors affect
 it: people will drastically change their room dates, people's visas
 get denied, et cetera. All sorts of unforseeable circumstances have
 lead to changes to the answer the algorithm originally produced. I
-don't expect that to changeu ntil PyCon is over; unfortunately, I also
+don't expect that to change until PyCon is over; unfortunately, I also
 don't think that's a problem I can fix in a few lines of Clojure.
 
 ## Grant allocation
