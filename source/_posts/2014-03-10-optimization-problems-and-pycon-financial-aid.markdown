@@ -206,9 +206,9 @@ grants more liberally.
 
 ### An attempt with constraint solvers
 
-(I would like to thank Mark Engelberg for helping me with LoCo. It may
-not have panned out, but it was a very educational experience
-nonetheless.)
+(I would like to thank Mark Engelberg for helping me with the stuff in
+this chapter. It may not have panned out, but it was a very
+educational experience nonetheless.)
 
 It'd be nice if we could just declaratively describe the problem,
 throw it into a computer program, and have it magically tell us the
