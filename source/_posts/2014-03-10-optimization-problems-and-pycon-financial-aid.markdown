@@ -33,10 +33,10 @@ I start out with generating every possible pairing. Assuming we have
 
 $${300 \choose 2} = \frac{300!}{2! \cdot 298!} = 44850$$
 
-A lot, more than we can check by hand, but pretty easy for a computer.
-Besides, there are actually fewer pairs than that: some people request
-to be paired together explicitly, and we only pair people of the same
-gender.
+That's a lot! It's more than we can check by hand, but still pretty
+easy for a computer. Besides, there are actually fewer pairs than
+that: some people request to be paired together explicitly, and we
+only pair people of the same gender.
 
 Then, I sort them by number of unmatched days, that is, how many days
 would have a single person in the hotel room if we paired them
