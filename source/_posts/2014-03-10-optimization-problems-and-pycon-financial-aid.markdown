@@ -184,7 +184,11 @@ asking for, they probably will.
 
 We could conjecture that the probability someone will come to the
 conference is approximately the fraction of the amount they requested
-that they actually received. For example, if someone gets 90% of their
+that they actually received:
+
+$$p_i = \frac{g_i}{r_i}$$
+
+For example, if someone gets 90% of their
 requested grant, we estimate that the odds they will attend are also
 90%; if we give them only 10%, we estimate it at just 10%.
 
@@ -192,7 +196,9 @@ Alternatively, we could conjecture that it's closer to the *square* of
 that ratio; when giving someone a value that's very close to what they
 asked for, their probability of attending is still going to be very
 high; but if we only give them half, the odds they will attend will be
-much lower than 50%.
+closer to 25%, much lower than 50%. So, the expression becomes:
+
+$$p^{\prime}_i = \left(\frac{g_i}{r_i}\right)^{2}$$
 
 We will see how the square model emphasizes focusing the available
 funds on fewer grants, whereas the linear model will spread smaller
