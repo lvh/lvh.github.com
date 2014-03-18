@@ -302,5 +302,4 @@ There are two ways we can fix this:
    for a *decent* solution. You can do that with algorithms like tabu
    search or simulated annealing.
 
-I opted for the former option. My next blog post will be about
-modeling this problem as quadratic and linear programming.
+I will be elaborating on these problems in a future blog post.
