@@ -66,7 +66,7 @@ $page-border-bottom: darken($footer-bg, 5) !default;
 aside.sidebar a {
   @include link-colors($sidebar-link-color, $hover: $sidebar-link-color-hover, $focus: $sidebar-link-color-hover, $active: $sidebar-link-color-active);
   text-decoration: none;
-} 
+}
 
 body > nav a {
   color: white;
@@ -91,4 +91,3 @@ body {
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
 }
-
