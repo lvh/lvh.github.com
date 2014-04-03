@@ -39,7 +39,7 @@ $nav-border-left: darken($nav-bg, 11) !default;
 $nav-border-right: lighten($nav-bg, 7) !default;
 
 /* Sidebar colors */
-$sidebar-bg: #313B48 !default;
+$sidebar-bg: $theme-color !default;
 $sidebar-link-color: #ffffff !default;
 $sidebar-link-color-hover: $sidebar-link-color !default;
 $sidebar-link-color-active: $sidebar-link-color !default;
