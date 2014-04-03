@@ -3,14 +3,16 @@
 # ----------------------- #
 url: http://lvh.github.com
 title: lvh
-subtitle: Cryptography and distributed systems
+subtitle: crypto & distributed systems
 author: Laurens Van Houtven
 simple_search: http://google.com/search
 description: |
-  * Cryptographer & author of [Crypto 101](https://www.crypto101.io)
+  My goal is to get better crypto in more hands.
+
+  * Author of [Crypto 101](https://www.crypto101.io), a free introductory course on crypto
   * Founding member of the [Python Cryptographic Authority](https://github.com/pyca)
-  * Core developer of [Twisted](https://twistedmatrix.com/trac/)
-  * [PyCon](https://us.pycon.org/) Financial Aid & Open Spaces chair & Hand of the Queen
+  * Core developer of [Twisted](https://twistedmatrix.com/trac/), an asynchronous event framework
+  * [PyCon](https://us.pycon.org/) Financial Aid & Open Spaces chair, Hand of the Queen
   * Python Software Foundation Fellow
 
   My beard solves discrete logs in fields of small characteristic.
