@@ -3,10 +3,17 @@
 # ----------------------- #
 url: http://lvh.github.com
 title: lvh
-subtitle: distilled vitriol
+subtitle: Cryptography and distributed systems
 author: Laurens Van Houtven
 simple_search: http://google.com/search
-description:
+description: |
+  * Cryptographer & author of [Crypto 101](https://www.crypto101.io)
+  * Founding member of the [Python Cryptographic Authority](https://github.com/pyca)
+  * Core developer of [Twisted](https://twistedmatrix.com/trac/)
+  * [PyCon](https://us.pycon.org/) Financial Aid & Open Spaces chair & Hand of the Queen
+  * Python Software Foundation Fellow
+
+  My beard solves discrete logs in fields of small characteristic.
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
