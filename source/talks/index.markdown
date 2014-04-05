@@ -28,7 +28,7 @@ This is a high-level whirlwind tour of modern cryptography, starting
 with a simple XOR operation and ending with an explanation of how TLS
 works in your browser.
 
-(Please note that this is Crypto 101 the *talk*, not Crypto 101 the
+(Please note that this is Crypto 101 the *talk*, not the
 [introductory crypto course](https://www.crypto101.io) of the same
 name. I started working on the course after giving this talk.)
 
