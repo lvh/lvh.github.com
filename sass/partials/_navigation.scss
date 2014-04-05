@@ -1,7 +1,7 @@
 body > nav {
   position: relative;
   background-color: $nav-bg;
-  
+
   padding-top: .35em;
   padding-bottom: .35em;
   form {
@@ -30,7 +30,7 @@ body > nav {
   }
   fieldset[role=search]{ float: right; width: 48%; }
   fieldset.mobile-nav{ float: left; width: 48%;
-    select{ width: 100%; 
+    select{ width: 100%;
             font-size: .8em;
             font-weight: 900;
             border: 1px solid #ffffff;
@@ -58,9 +58,9 @@ body > nav {
       font-weight: 400;
       float: left;
       text-decoration: none;
-      font-size: 1.2em;
+      font-size: 1em;
       padding: .1em 0;
-      line-height: 1.5em;
+      line-height: 2em;
     }
     li + li {
       margin-left: .8em;
@@ -78,7 +78,7 @@ body > nav {
         width: 93%;
         font-size: .95em;
         line-height: 1.2em;
-        
+
       }
     }
     ul[data-subscription$=email] + form {
@@ -134,4 +134,3 @@ body > nav {
   a[rel=subscribe-rss]{ @include mask-subscription-nav('rss.png'); }
   a[rel=subscribe-email]{ @include mask-subscription-nav('email.png'); }
 }
-
