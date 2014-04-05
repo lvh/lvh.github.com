@@ -1,0 +1,390 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Using Protractor With AngularJS and Yeoman - lvh</title>
+  <meta name="author" content="Laurens Van Houtven">
+
+  
+  <meta name="description" content="In writing the website for Crypto 101, my upcoming book, I’ve been toying around with AngularJS. The basic setup was done using Yeoman. First of all &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lvh.github.com/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="lvh" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-36779422-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvh.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/talks">Talks</a></li>
+</ul>
+
+</nav>
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">lvh</a></h1>
+  
+    <h2>crypto & distributed systems</h2>
+  
+</hgroup>
+
+
+</header> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Using Protractor With AngularJS and Yeoman</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-15T11:29:00+01:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">
+<p>In writing the website for Crypto 101, my upcoming book, I’ve been toying around with AngularJS. The basic setup was done using Yeoman.</p>
+
+<p>First of all, the Yeoman Angular generator gives you a <code>karma-e2e.conf.js</code>, but doesn’t really configure grunt to do any end-to-end testing. Turns out that the new hotness for Angular scenario testing is based on Protractor. Karma isn’t deprecated, it’s just for unit tests. Protractor is based on Selenium, which is probably an upgrade :-)</p>
+
+<p>Anyway, here’s what I had to do to get started.</p>
+
+<ol>
+<li>In the root of your app, install protractor and the Selenium standalone server.</li>
+</ol>
+<figure class='code'><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install --save-dev protractor
+</span><span class='line'>./node_modules/protractor/bin/install_selenium_standalone</span></code></pre></td></tr></table></div></figure>
+<ol>
+<li>
+<p>Optionally, add <code>selenium</code> to your <code>.gitignore</code>, since it contains a ~30MB binary that doesn’t belong in your git repo.</p>
+</li>
+
+<li>
+<p>Add a <code>protractor.conf.js</code> file. Here’s mine. Remember that there’s some stuff in there for you to uncomment, so don’t just copy paste. On my machine, the default driver was Internet Explorer for Windows, which is strange given that I’m running on OS X. Oh well. This uses Chrome instead.</p>
+</li>
+</ol>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class='nx'>exports</span><span class='p'>.</span><span class='nx'>config</span> <span class='o'>=</span> <span class='p'>{</span>
+</span><span class='line'>  <span class='nx'>seleniumAddress</span><span class='o'>:</span> <span class='s1'>&#39;http://localhost:4444/wd/hub&#39;</span><span class='p'>,</span>
+</span><span class='line'>  <span class='nx'>specs</span><span class='o'>:</span> <span class='p'>[</span>
+</span><span class='line'>    <span class='c1'>// To run plain JS files, uncomment the following line:</span>
+</span><span class='line'>    <span class='c1'>// &#39;./test/integration/*.js&#39;,</span>
+</span><span class='line'>    <span class='c1'>// To run Coffeescript files, uncomment the following line:</span>
+</span><span class='line'>    <span class='c1'>// &#39;.tmp/integration/*.js&#39;</span>
+</span><span class='line'>  <span class='p'>],</span>
+</span><span class='line'>
+</span><span class='line'>  <span class='c1'>// Set capabilities.</span>
+</span><span class='line'>  <span class='nx'>capabilities</span><span class='o'>:</span> <span class='p'>{</span>
+</span><span class='line'>    <span class='s1'>&#39;browserName&#39;</span><span class='o'>:</span> <span class='s1'>&#39;chrome&#39;</span>
+</span><span class='line'>  <span class='p'>},</span>
+</span><span class='line'>
+</span><span class='line'>  <span class='nx'>jasmineNodeOpts</span><span class='o'>:</span> <span class='p'>{</span>
+</span><span class='line'>    <span class='nx'>showColors</span><span class='o'>:</span> <span class='kc'>true</span><span class='p'>,</span>
+</span><span class='line'>    <span class='nx'>defaultTimeoutInterval</span><span class='o'>:</span> <span class='mi'>30000</span>
+</span><span class='line'>  <span class='p'>}</span>
+</span><span class='line'><span class='p'>}</span>
+</span></code></pre></td></tr></table></div></figure>
+<ol>
+<li>If you’re using Coffeescript, change your Gruntfile to build your integration tests:</li>
+</ol>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'>  <span class='nx'>grunt</span><span class='p'>.</span><span class='nx'>initConfig</span><span class='p'>({</span>
+</span><span class='line'>    <span class='c1'>// ...</span>
+</span><span class='line'>    <span class='nx'>coffee</span><span class='o'>:</span> <span class='p'>{</span>
+</span><span class='line'>      <span class='c1'>// ...</span>
+</span><span class='line'>      <span class='nx'>test</span><span class='o'>:</span> <span class='p'>{</span>
+</span><span class='line'>        <span class='nx'>files</span><span class='o'>:</span> <span class='p'>[</span>
+</span><span class='line'>        <span class='c1'>// ...</span>
+</span><span class='line'>        <span class='p'>{</span>
+</span><span class='line'>          <span class='nx'>expand</span><span class='o'>:</span> <span class='kc'>true</span><span class='p'>,</span>
+</span><span class='line'>          <span class='nx'>cwd</span><span class='o'>:</span> <span class='s1'>&#39;test/integration&#39;</span><span class='p'>,</span>
+</span><span class='line'>          <span class='nx'>src</span><span class='o'>:</span> <span class='s1'>&#39;{,*/}*.coffee&#39;</span><span class='p'>,</span>
+</span><span class='line'>          <span class='nx'>dest</span><span class='o'>:</span> <span class='s1'>&#39;.tmp/integration&#39;</span><span class='p'>,</span>
+</span><span class='line'>          <span class='nx'>ext</span><span class='o'>:</span> <span class='s1'>&#39;.js&#39;</span>
+</span><span class='line'>        <span class='p'>}]</span>
+</span><span class='line'>      <span class='p'>}</span>
+</span><span class='line'>    <span class='p'>},</span>
+</span><span class='line'>  <span class='c1'>// ...</span>
+</span><span class='line'><span class='p'>})</span>
+</span></code></pre></td></tr></table></div></figure>
+<ol>
+<li>
+<p>Write some tests in <code>test/integration</code>.</p>
+</li>
+
+<li>
+<p>You can now manually run your tests. First run Selenium:</p>
+</li>
+</ol>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class='p'>.</span><span class='o'>/</span><span class='nx'>node_modules</span><span class='o'>/</span><span class='nx'>protractor</span><span class='o'>/</span><span class='nx'>bin</span><span class='o'>/</span><span class='nx'>install_selenium_standalone</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>Then run your tests:</p>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class='p'>.</span><span class='o'>/</span><span class='nx'>node_modules</span><span class='o'>/</span><span class='nx'>protractor</span><span class='o'>/</span><span class='nx'>bin</span><span class='o'>/</span><span class='nx'>protractor</span> <span class='nx'>protractor</span><span class='p'>.</span><span class='nx'>conf</span><span class='p'>.</span><span class='nx'>js</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>Once I figure out the proper way to do this in Grunt, I’ll let you know.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Laurens Van Houtven</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-15T11:29:00+01:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lvh.github.com/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/" data-via="lvh" data-counturl="http://lvh.github.com/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/" title="Previous Post: Thoughts on RDRAND in Linux">&laquo; Thoughts on RDRAND in Linux</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/12/18/external-drive-lossage-on-mavericks/" title="Next Post: External drive lossage on Mavericks">External drive lossage on Mavericks &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline"  href="https://twitter.com/lvh"  data-widget-id="451753700516585472">Tweets by @lvh</a>
+    <script>!function(d,s,id){var
+      js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">Optimization Problems and PyCon Financial Aid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/lvh">@lvh</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'lvh',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <!-- <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Laurens Van Houtven -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+
+
+</footer> -->
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

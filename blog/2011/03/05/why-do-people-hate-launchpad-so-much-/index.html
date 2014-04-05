@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Why Do People Hate Launchpad So Much? - lvh</title>
+  <meta name="author" content="Laurens Van Houtven">
+
+  
+  <meta name="description" content="Following a discussing on Convore recently, I noticed some people (names withheld to protect the guilty &#8211; I&#39;m sure they will speak up if &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lvh.github.com/blog/2011/03/05/why-do-people-hate-launchpad-so-much-">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="lvh" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-36779422-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvh.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/talks">Talks</a></li>
+</ul>
+
+</nav>
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">lvh</a></h1>
+  
+    <h2>crypto & distributed systems</h2>
+  
+</hgroup>
+
+
+</header> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Why Do People Hate Launchpad So Much?</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-05T00:00:00+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">Following a discussing on Convore recently, I noticed some people (names withheld to protect the guilty &#8211; I&#39;m sure they will speak up if they feel like it) strongly dislike Launchpad. Apparently they dislike it so much they would rather use a different project if they find something that uses it.<p /> I don&#39;t get it.<p />First off, lI&#39;m not trying to make this a git vs hg vs bzr vs whatever discussion, except perhaps to the extent that those tools shape their respective hosting system. Not that I think those discussions have to devolve into religious wars (<a href="http://b.lvh.cc/religious-wars-considered-harmful-considered">a subject on which I have blogged recently</a>), it&#39;s just that I&#39;d like to limit the scope so we end with a bunch of things that can actually be improved.<p /> My main problem with <a href="https://github.com/">the 500lb gorilla in the room</a> is its issue tracker. I know, it&#39;s a simple feature tacked on later, and all in all the ability to link to branches and revisions and to be able to close tickets from commit messages ain&#39;t so bad.<p /> One particular unfortunate choice is that they decided to make pull requests issue tracker artifacts. I&#39;m convinced it should be an attachment to one, instead. Pull requests are about merging code. There must be a reason to do that &#8211; that reason is a ticket. That means if you use pull requests as a mechanism for code review (which they seem to be marketed as), ergo having all code be added using them, all changes to trunk have at least two issue tracker artifacts: the ticket describing the change, and the pull request carrying the code that does it. I think that&#39;s a bit silly. Pull requests hence often become somewhat of a ticket in their own right, which works well for one-time contributions which are typically limited in scope, but it seems this results in an inconsistent workflow which is a bit more annoying for things that actually do require a ticket.<p /> Launchpad&#39;s issue tracker, on the other hand, is one I particularly like.<p />It&#39;s unique in the sense that it lets you track the state of bugs in different parts of downstream. Additionally, bugs aren&#39;t unique to a project &#8211; allowing people from different groups to collaborate on the same issue. It lets me assign bugs to a person: a feature I sorely miss in Github. The equivalent of Github Issue&#39;s voting feature is just a &quot;this affects me&quot; link: similar to Google Code&#39;s starring idea. The goal is always the same: measure the importance of a bug without getting the noise of a million &quot;me, too&quot; messages. (Github and Launchpad&#39;s way of doing it seems more effective, though.)<p /> Launchpad&#39;s alternative to pull requests, called merge proposals, are quite similar to Github&#39;s pull requests 2.0. The main difference is the bug tracker interaction: like I&#39;ve described above, they <i>attach</i> to issues, instead of being them themselves.<p /> A complain I often hear yet don&#39;t quite grok is the apparent difficulty of getting to code. Personally, I don&#39;t quite see the problem. The main branch (lp:projectname) and its contents are one click away from the front page. All of the branches of a project (from everyone! not just the project leads), are visible with a single click from the project front page, under the &quot;Code&quot; menu. I must admit I rarely use that web UI: instead, I just bzr co lp:projectname if I want to take a look.<p /> The contributor story is also fairly pleasant, in my opinion. I don&#39;t even need to fork anything (at least not explicitly): just get the branch, make some changes, push them to lp:~lvh/projectname/mybranch and done. That magic syntax isn&#39;t Launchpad-specific: that&#39;s called <a href="https://code.launchpad.net/bzr-bookmarks">a bookmark</a>, and you can just as well have your own if you don&#39;t use Launchpad.<p /> So what exactly is the problem? I&#39;m planning on moving a project from Fossil to something else at Pycon &#8211; but if everyone hates it so much, I&#39;m willing to reconsider. For example: I&#39;d use Github if I can find a useful issue tracker to go with it. I&#39;d use bitbucket if there&#39;s some reasonable way to have in-repo pull requests (like Github pull requests 2.0 or Launchpad merge proposals).
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Laurens Van Houtven</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-05T00:00:00+01:00" pubdate data-updated="true"></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lvh.github.com/blog/2011/03/05/why-do-people-hate-launchpad-so-much-/" data-via="lvh" data-counturl="http://lvh.github.com/blog/2011/03/05/why-do-people-hate-launchpad-so-much-/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/03/05/religious-wars-considered-harmful-considered-harmful/" title="Previous Post: Religious wars considered harmful considered harmful">&laquo; Religious wars considered harmful considered harmful</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/03/06/a-compiled-list-of-launchpad-s-perceived-flaws/" title="Next Post: A compiled list of Launchpad's perceived flaws">A compiled list of Launchpad's perceived flaws &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline"  href="https://twitter.com/lvh"  data-widget-id="451753700516585472">Tweets by @lvh</a>
+    <script>!function(d,s,id){var
+      js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">Optimization Problems and PyCon Financial Aid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/lvh">@lvh</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'lvh',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <!-- <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Laurens Van Houtven -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+
+
+</footer> -->
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Securing Against Timing Attacks With Twisted - lvh</title>
+  <meta name="author" content="Laurens Van Houtven">
+
+  
+  <meta name="description" content="What are timing attacks? Timing attacks are side-channel attacks that rely on inferring secret information from operations by measuring how long &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lvh.github.com/blog/2013/01/30/securing-against-timing-attacks-with-twisted">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="lvh" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-36779422-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvh.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/talks">Talks</a></li>
+</ul>
+
+</nav>
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">lvh</a></h1>
+  
+    <h2>crypto & distributed systems</h2>
+  
+</hgroup>
+
+
+</header> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Securing Against Timing Attacks With Twisted</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-30T18:55:00+01:00" pubdate data-updated="true">Jan 30<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">
+<h2 id="what_are_timing_attacks">What are timing attacks?</h2>
+
+<p>Timing attacks are side-channel attacks that rely on inferring secret information from operations by measuring how long they take to execute.</p>
+
+<p>A complete explanation is outside of the scope of this article, but the <a href="https://en.wikipedia.org/wiki/Timing_attack">Wikipedia article</a> might be a good starting point for the interested reader.</p>
+
+<h2 id="why_should_i_care_about_them">Why should I care about them?</h2>
+
+<p>Because they can creep in before you know it, and break your otherwise fine system.</p>
+
+<p>A common way they’re introduced are string comparisons. String comparisons in many langauge implementations, including all implementations of Python I know of, short-circuit. They work roughly like this:</p>
+<figure class='code'><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class='k'>def</span> <span class='nf'>strcmp</span><span class='p'>(</span><span class='n'>s1</span><span class='p'>,</span> <span class='n'>s2</span><span class='p'>):</span>
+</span><span class='line'>    <span class='k'>if</span> <span class='nb'>len</span><span class='p'>(</span><span class='n'>s1</span><span class='p'>)</span> <span class='o'>!=</span> <span class='nb'>len</span><span class='p'>(</span><span class='n'>s2</span><span class='p'>):</span>
+</span><span class='line'>        <span class='k'>return</span> <span class='bp'>False</span>
+</span><span class='line'>    <span class='k'>for</span> <span class='n'>c1</span><span class='p'>,</span> <span class='n'>c2</span> <span class='ow'>in</span> <span class='nb'>zip</span><span class='p'>(</span><span class='n'>s1</span><span class='p'>,</span> <span class='n'>s2</span><span class='p'>):</span>
+</span><span class='line'>        <span class='k'>if</span> <span class='n'>c1</span> <span class='o'>!=</span> <span class='n'>c2</span><span class='p'>:</span>
+</span><span class='line'>            <span class='k'>return</span> <span class='bp'>False</span>
+</span><span class='line'>    <span class='k'>return</span> <span class='bp'>True</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>This means that as soon as they can prove the two strings are not equal, they return <code>False</code> and ignore the rest of the string. This is a very simple and effective performance optimization. And that’s precisely why, from a security point of view, it’s a liability.</p>
+
+<p>Since it takes longer to compare “The quick brown fox jumps over the lazy dog” to “The quick brown fox jumps over the lazy god” than it does to compare it to “Lorem ipsum”, or even a Lipsum of the same length, an attacker can use that timing information to figure out what the original string is that is being compared to, even when he shouldn’t.</p>
+
+<h2 id="why_did_you_care">Why did you care?</h2>
+
+<p>Password resets.</p>
+
+<p>The typically recommended way of doing them is to generate a random number, one that’s sufficiently long that an attacker can’t guess it. Then, you relay that number to the user using some alternative channel (usually a URL in an e-mail).</p>
+
+<p>Bar the random number, those URLs are predictable. That means an attacker can trivially try any number he wants. If an attacker is allowed to do that enough, he could measure timing differences between different numbers (introduced by string comparison functions that short-circuit or even by the database’s index) to efficiently deduce the value of a “good” number.</p>
+
+<p>Also, if membership is private, an attacker may exploit timing differences in the password reset <em>request</em> function to farm e-mail addresses.</p>
+
+<h2 id="how_do_i_protect_against_timing_attacks">How do I protect against timing attacks?</h2>
+
+<p>Just to be clear: timing attacks are a complicated problem, and this article describes just one strategy I’ve applied to help secure against them.</p>
+
+<p>The easiest way to prevent a timing attack is to make sure that the timing your hypothetical attacker can measure is unrelated to the work you have to do.</p>
+
+<p>Since I was using <a href="http://twistedmatrix.com">Twisted</a> and <a href="http://amp-protocol.net/">AMP</a>, this was actually quite easy. I wrote a decorator for AMP responder functions that does exactly that:</p>
+<figure class='code'><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class='k'>def</span> <span class='nf'>_immediateResponder</span><span class='p'>(</span><span class='n'>f</span><span class='p'>):</span>
+</span><span class='line'>    <span class='sd'>&quot;&quot;&quot;</span>
+</span><span class='line'><span class='sd'>    A decorator for responder functions that should return immediately and</span>
+</span><span class='line'><span class='sd'>    execute asynchronously, as a defense against timing attacks.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    The responder decorator should be applied after (above) this decorator::</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>        @SomeCommand.responder</span>
+</span><span class='line'><span class='sd'>        @_immediateResponder</span>
+</span><span class='line'><span class='sd'>        def responder(...):</span>
+</span><span class='line'><span class='sd'>            ....</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    This should be timing attack resistant since it is unconditional: the</span>
+</span><span class='line'><span class='sd'>    the AMP response is returned immediately, and the real responder is</span>
+</span><span class='line'><span class='sd'>    scheduled to run at the next chance the reactor has to do so.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    This only works with AMP commands with empty responses. That&#39;s probably a</span>
+</span><span class='line'><span class='sd'>    good idea anyway: almost all information you could add to the response</span>
+</span><span class='line'><span class='sd'>    is liable to introduce a timing attack vulnerability.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    Since this precludes your ability to communicate success or failure to</span>
+</span><span class='line'><span class='sd'>    the caller, the decorated function should return quite quickly (or, if it</span>
+</span><span class='line'><span class='sd'>    can&#39;t, that should be clearly documented). Otherwise, you may end up in a</span>
+</span><span class='line'><span class='sd'>    a race condition, where the caller assumes the operation has completed,</span>
+</span><span class='line'><span class='sd'>    but it is in progress or hasn&#39;t started yet.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    The original responder function is available on the decorated function as</span>
+</span><span class='line'><span class='sd'>    the ``responderFunction`` attribute.</span>
+</span><span class='line'><span class='sd'>    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class='nd'>@functools.wraps</span><span class='p'>(</span><span class='n'>f</span><span class='p'>)</span>
+</span><span class='line'>    <span class='k'>def</span> <span class='nf'>wrapped</span><span class='p'>(</span><span class='bp'>self</span><span class='p'>,</span> <span class='o'>*</span><span class='n'>args</span><span class='p'>,</span> <span class='o'>**</span><span class='n'>kwargs</span><span class='p'>):</span>
+</span><span class='line'>        <span class='n'>reactor</span><span class='o'>.</span><span class='n'>callLater</span><span class='p'>(</span><span class='mi'>0</span><span class='p'>,</span> <span class='n'>f</span><span class='p'>,</span> <span class='bp'>self</span><span class='p'>,</span> <span class='o'>*</span><span class='n'>args</span><span class='p'>,</span> <span class='o'>**</span><span class='n'>kwargs</span><span class='p'>)</span>
+</span><span class='line'>        <span class='k'>return</span> <span class='p'>{}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class='n'>wrapped</span><span class='o'>.</span><span class='n'>responderFunction</span> <span class='o'>=</span> <span class='n'>f</span>
+</span><span class='line'>    <span class='k'>return</span> <span class='n'>wrapped</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>When I get an incoming RPC call, the function doing the actual work is scheduled to run at the next reactor iteration. Then, an empty response is returned. All of this happens in amortized constant time, and independent of any secrets. As a result, it can’t really leak much about them.</p>
+
+<h2 id="an_abstraction_too_high">An abstraction too high</h2>
+
+<p>The above was an effective response to a proof-of-concept timing attack exploit. Unfortunately, that doesn’t mean you’ve fixed every timing attack.</p>
+
+<p>In particular, this example is a few layers of abstraction removed from the grit of real-world I/O. Just because I returned <code>{}</code> (an empty response) immediately, doesn’t mean the underlying IO happens immediately.</p>
+
+<p>In particular, the write output latency could be coerced to depend on the computation time, because the function passed to it could be executed before the <code>write</code>. If that happens, and the time it takes is dependant on some secret, delaying the write, the latency on the attacker’s side could be used to measure the work done.</p>
+
+<p>I have not yet been able to turn the above into a working exploit.</p>
+
+<p>There are a number of ways this could be mitigated. Since there’s no working exploit, it’s unclear if this mitigation would render a timing attack infeasible.</p>
+
+<p>One way I’ve considered to mitigate this is to limit the time that the reactor is blocked. In my concrete example, this was fortunately already the case, since one of the first things it did was defer to a thread that released the GIL (to compute the key from the password using <code>scrypt</code>). Alternatively, if you’re doing this for Python code, you could write your function cooperatively.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Laurens Van Houtven</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-30T18:55:00+01:00" pubdate data-updated="true">Jan 30<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lvh.github.com/blog/2013/01/30/securing-against-timing-attacks-with-twisted/" data-via="lvh" data-counturl="http://lvh.github.com/blog/2013/01/30/securing-against-timing-attacks-with-twisted/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/01/28/moving-to-octopress-on-github-pages/" title="Previous Post: Moving to Octopress on Github Pages">&laquo; Moving to Octopress on Github Pages</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/" title="Next Post: Thoughts on RDRAND in Linux">Thoughts on RDRAND in Linux &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline"  href="https://twitter.com/lvh"  data-widget-id="451753700516585472">Tweets by @lvh</a>
+    <script>!function(d,s,id){var
+      js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">Optimization Problems and PyCon Financial Aid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/lvh">@lvh</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'lvh',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <!-- <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Laurens Van Houtven -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+
+
+</footer> -->
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Building a Continuous Deployment System, Part Three, Preparing for Continuous Deployment - lvh</title>
+  <meta name="author" content="Laurens Van Houtven">
+
+  
+  <meta name="description" content="This post is just about the process of moving a dev shop to continuous deployment. If you&#8217;re just interested in the things I&#8217;d like to &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lvh.github.com/blog/2010/09/27/building-a-continuous-deployment-system-part-three-preparing-for-continuous-deployment">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="lvh" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-36779422-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvh.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/talks">Talks</a></li>
+</ul>
+
+</nav>
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">lvh</a></h1>
+  
+    <h2>crypto & distributed systems</h2>
+  
+</hgroup>
+
+
+</header> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Building a Continuous Deployment System, Part Three, Preparing for Continuous Deployment</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-27T00:00:00+02:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This post is just about the process of moving a dev shop to continuous deployment. If you&#8217;re just interested in the things I&#8217;d like to build, feel free to skip this one.</p>
+<p>Despite the ominous messages in my last post about continuous deployment changing your dev shop dramatically, I do think it&#8217;s possible to prepare properly. That means that you get up to the point where you <em>could</em> be doing continuous deployment, but you just aren&#8217;t. Or, to put it differently, imagining you had to release right now, and getting trunk up to the point where that doesn&#8217;t raise your blood pressure.</p>
+<p>The first step is getting your testing up to an adequate level. I can&#8217;t stress this enough &#8211; I&#8217;m hoping it won&#8217;t be a tough sale considering the amount of people who&#8217;ve hammered it before me &#8211; given today&#8217;s tools, there is very little excuse left for not having an extensive suite of things that check your code. I&#8217;m deliberately not saying &#8220;unit tests&#8221;, because it encompasses a lot more than just unit tests:</p>
+<ol>
+<li>unit tests (These still go up as number one because they&#8217;re what you&#8217;re dealing with most. Plus, out of the things in your code that are just plain broken, unit tests will help you find at least 90%.)</li>
+<li>static analysis (<a href="http://divmod.org/trac/wiki/DivmodPyflakes">pyflakes</a> is great, but Python is quite hard to do sensible static analysis on &#8211; statically typed languages, for example, can expect to reap much greater benefits)</li>
+<li>integration tests (although these are generally part of my normal test suite and are ran together with unit tests, they&#8217;re really quite different)</li>
+<li>user interface tests (if you&#8217;re building a webapp, <a href="http://seleniumhq.org/">Selenium</a> is wonderful)</li>
+</ol>
+<p>Testing is very important, but it&#8217;s hardly the whole story. Testing (with the minor exception of some forms of static analysis) make sure your code <em>works</em>&nbsp;&#8211; it makes no guarantees about that code being any good. For now, computers aren&#8217;t too great at judging code in such as subtle fashion, and you really want humans to do it for you. Especially in languages that let you do pretty much anything, code review is very important if you want to keep your code <em>sane</em>. Like test-driven development, a lot of people much smarter than me have driven this one home for a long time, so I won&#8217;t try to convince you too much.</p>
+<p>Another advantage of code review is collective code ownership and a resulting increase in <a href="http://c2.com/cgi/wiki$?BusNumber">bus number</a>. High bus numbers are very important, especially so when you&#8217;re doing continuous deployment. You can&#8217;t, or at least <em>shouldn&#8217;t</em>, delay a release. Once something does go wrong, fixing the situation should be everyone&#8217;s immediate priority. Only one person understanding how a particular part of the project works slows things down. That sounds like a restriction, and in some ways it is, but it&#8217;s the kind of restriction that forces you to do the right thing.</p>
+<p>I have found that a lot of people do one kind of code review, and contrast them. I&#8217;ve had good experiences with doing extensive and multiple kinds of code review. Most people believe that to be a waste of time and resources. I&#8217;m not convinced. First of all, there&#8217;s Linus&#8217; Law arguing for many reviewers. Secondly, I&#8217;ve found that different kinds of review (and different kinds of reviewers) spot different problems, because they care about different things:</p>
+<ol>
+<li>A pair programmer will spot nitpicks about code quality and save you a bunch of &#8220;duh&#8221; moments</li>
+<li>A reviewer working on the same project reviewing a feature branch will pay more attention to&nbsp;interoperability&nbsp;issues with the rest of the code</li>
+<li>Someone who&#8217;s not even a programmer (yep, &#8220;everybody writes code&#8221; works out great) will spot documentation issues</li>
+<li>&#8230; (this is not, by any means, an exhaustive list)</li>
+</ol>
+<p>Adding a form of code review takes a load off for all of the other forms of code review. The curve is sublinear: adding more code review doesn&#8217;t make code review take proportionally longer (it won&#8217;t make it shorter either, of course).</p>
+<p>A lot of people dislike being criticized about their code. <strong>Stamp this behavior out as soon as possible.</strong> Everyone&#8217;s only human, and plenty of ugly, broken or otherwise inadequate code gets written. The point is to get it out, not berating the person that wrote it.</p>
+<p>Pressing the big red button once you&#8217;re done will still be scary. You might even have a hiccup or two. But ideally, nothing will blow up. After a while (and probably in less time than you think it will), releases will become, as Timothy Fitz puts it, a non-event.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Laurens Van Houtven</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-27T00:00:00+02:00" pubdate data-updated="true"></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lvh.github.com/blog/2010/09/27/building-a-continuous-deployment-system-part-three-preparing-for-continuous-deployment/" data-via="lvh" data-counturl="http://lvh.github.com/blog/2010/09/27/building-a-continuous-deployment-system-part-three-preparing-for-continuous-deployment/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/09/26/building-a-continuous-deployment-system-part-two-what-is-it-/" title="Previous Post: Building a continuous deployment system, part two: what is it?">&laquo; Building a continuous deployment system, part two: what is it?</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/09/28/a-continuous-deployment-interlude-picking-a-development-stack/" title="Next Post: A continuous deployment interlude: picking a development stack">A continuous deployment interlude: picking a development stack &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline"  href="https://twitter.com/lvh"  data-widget-id="451753700516585472">Tweets by @lvh</a>
+    <script>!function(d,s,id){var
+      js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">Optimization Problems and PyCon Financial Aid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/lvh">@lvh</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'lvh',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <!-- <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Laurens Van Houtven -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+
+
+</footer> -->
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

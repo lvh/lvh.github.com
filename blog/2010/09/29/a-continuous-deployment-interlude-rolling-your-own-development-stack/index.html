@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>A Continuous Deployment Interlude: Rolling Your Own Development Stack - lvh</title>
+  <meta name="author" content="Laurens Van Houtven">
+
+  
+  <meta name="description" content="Hi, and welcome to the second part to my ranting about development stacks.&nbsp;In my previous post, I talked about the issues with some of the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lvh.github.com/blog/2010/09/29/a-continuous-deployment-interlude-rolling-your-own-development-stack">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="lvh" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-36779422-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvh.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/talks">Talks</a></li>
+</ul>
+
+</nav>
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">lvh</a></h1>
+  
+    <h2>crypto & distributed systems</h2>
+  
+</hgroup>
+
+
+</header> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">A Continuous Deployment Interlude: Rolling Your Own Development Stack</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-29T00:00:00+02:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Hi, and welcome to the second part to my ranting about development stacks.&nbsp;In my previous post, I talked about the issues with some of the popular hosted solutions (Github, Bitbucket and Launchpad). In this post, I&#8217;ll try to roll my own dev stack that hopefully doesn&#8217;t suck too much.</p>
+<p />
+<div>Recall from the last post that I&#8217;m looking for three things:</div>
+<div><ol>
+<li>version control</li>
+<li>issue tracking</li>
+<li>preferably some form of code review</li>
+</ol></div>
+<div>I think it&#8217;s a good idea if these things are integrated. Specifically, I think it&#8217;s a <em>great</em>&nbsp;idea for all of these things to live in the repository. That makes them very easily accessible at every step along the way: your continuous deployment system shouldn&#8217;t care about deploying software when it has known major bugs in the issue tracker, for example. Code review is integral in resolving tickets, because resolving tickets generally involves changing or adding code (and in both cases, you really should have code review).</div>
+<p />
+<div>It&#8217;s fine for this code meta-data to be available in other ways than reading it out of the repository, as long as it satisfies some useful definition of &#8220;available&#8221;. You <em>could</em> just speak HTTP to your issue tracker or code review tool&#8217;s web page . It just adds another layer that can break &#8211; people who&#8217;ve had to manage these tools can probably imagine the problems when your fancy new CI system reports failed builds, and it&#8217;s really about Trac being down, or some software upgrade destroying your ability to scrape a web page.</div>
+<p />
+<div>With that in mind, let&#8217;s look at the available stuff for rolling your own stack. First, I filtered and ordered tools by the amount I&#8217;m willing to put up with them, and came up with:</div>
+<div><ol>
+<li>Bazaar</li>
+<li>Fossil</li>
+<li>Mercurial</li>
+</ol>(That doesn&#8217;t mean I think everything else won&#8217;t work. It means I didn&#8217;t consider them. I&#8217;m only one guy &#8211; barely have enough time to research this, let alone produce an exhaustive list.)</div>
+<p />
+<div>For Bazaar, well, outside of Launchpad life isn&#8217;t very interesting and you come up with the usual suspects. For issue tracking and project management you&#8217;ve got stuff like Trac and Redmine. In terms of distributed bug tracking you&#8217;ve got <a href="http://bugseverywhere.org/be/show/HomePage" target="_blank">Bugs Everywhere</a> and <a href="http://ditz.rubyforge.org/" target="_blank">Ditz</a>&nbsp;(I can&#8217;t figure out which is nicer &#8211; I&#8217;m defaulting to BE because it&#8217;s Python so easier for me to extend &#8211; if anyone has experience with both please chime in). In terms of code review, well, there&#8217;s Review Board. None of these things are Bzr-specific (which is great, less lock-in is better, except some of them don&#8217;t have Bazaar support either, which is annoying if it&#8217;s the tool you&#8217;re going to be using all day and every day.)</div>
+<p />
+<div>Next up: <a href="http://www.fossil-scm.org/index.html/doc/tip/www/index.wiki">Fossil</a>. Fossil is pretty obscure; it&#8217;s an SCM built on top of SQLite, written by the same author. That&#8217;s a big plus, if you didn&#8217;t know it yet, SQLite is some of the most extensively tested, well-engineered yet still simple code out there. Fossil works well with my earlier argument about as much metadata as possible being managed inside your repository. It comes with an integrated wiki and issue tracker. The entire repository is stored in a SQLite database. A nice feature that it shares with Trac is the ability to create your own queries over tickets using SQL. Twisted has used that successfully to improve the code review part of their <a href="http://twistedmatrix.com/trac/report">issue system</a>&nbsp;(see {15}, which is review tickets in the order they should be reviewed). Fossil is also very easy to host: in fact, Fossil&#8217;s website <em>is</em>&nbsp;Fossil serving itself. For. I&#8217;ve had a brief chat with Zed Shaw about Fossil since he&#8217;s used it quite extensively in real projects such as <a href="http://mongrel2.org/home">Mongrel2</a>&nbsp;(note that that&#8217;s Fossil serving that webpage again), and he seemed pretty happy with how it works in general. Fossil&#8217;s easy enough to use for hosting multiple repositories itself: there&#8217;s a somewhat unfortunate but understandable choice for using CGI, so you can use pretty much anything that can serve CGI to serve Fossil web pages for you.</div>
+<p />
+<div>Last up: Mercurial. When it comes to code review, I&#8217;ve already explained in a previous post why I think Bitbucket&#8217;s pull requests are a missed opportunity. (Short version: they make a distinction between local branches and branches in different repositories, which is in my opinion unnecessary. I think the way Launchpad allows merge proposals between arbitrary branches is much better. Github has recently copied this behavior somewhat with Pull Requests 2.0.). However, the main reason I wanted that is for a point to introduce code review.&nbsp;Georg Brandl (birkenfeld) pointed out that Mercurial has the pretty impressive <a href="https://bitbucket.org/sjl/hg-review/src" target="_blank">hg-review extension</a>. It has a sleek, usable&nbsp;<a href="http://review.stevelosh.com/" target="_blank">web interface</a>&nbsp;(try it!). It also has the advantage of the point I made earlier: data is included with your repository, you don&#8217;t need to go fish for it. Even if you don&#8217;t use that now, it has the great advantage of being able to do cool things with it later (such as identifying recurring problems in the review process and pointing those out to the reviewer/author).</div>
+<p />
+<div>Stay tuned for the next installment, where I try something totally crazy.</div>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Laurens Van Houtven</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-09-29T00:00:00+02:00" pubdate data-updated="true"></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lvh.github.com/blog/2010/09/29/a-continuous-deployment-interlude-rolling-your-own-development-stack/" data-via="lvh" data-counturl="http://lvh.github.com/blog/2010/09/29/a-continuous-deployment-interlude-rolling-your-own-development-stack/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/09/28/a-continuous-deployment-interlude-picking-a-development-stack/" title="Previous Post: A continuous deployment interlude: picking a development stack">&laquo; A continuous deployment interlude: picking a development stack</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/09/29/designing-a-continuous-deployment-system-on-being-language-agnostic/" title="Next Post: Designing a continuous deployment system: on being language agnostic">Designing a continuous deployment system: on being language agnostic &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline"  href="https://twitter.com/lvh"  data-widget-id="451753700516585472">Tweets by @lvh</a>
+    <script>!function(d,s,id){var
+      js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">Optimization Problems and PyCon Financial Aid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/lvh">@lvh</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'lvh',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <!-- <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Laurens Van Houtven -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+
+
+</footer> -->
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

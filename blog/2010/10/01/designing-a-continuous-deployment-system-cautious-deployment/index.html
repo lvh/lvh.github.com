@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Designing a Continuous Deployment System: Cautious Deployment - lvh</title>
+  <meta name="author" content="Laurens Van Houtven">
+
+  
+  <meta name="description" content="This article will be about a deployment scheduling technique which I call operationally cautious deployment. (I didn&#39;t pick the name so the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lvh.github.com/blog/2010/10/01/designing-a-continuous-deployment-system-cautious-deployment">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="lvh" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-36779422-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvh.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/talks">Talks</a></li>
+</ul>
+
+</nav>
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">lvh</a></h1>
+  
+    <h2>crypto & distributed systems</h2>
+  
+</hgroup>
+
+
+</header> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Designing a Continuous Deployment System: Cautious Deployment</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-10-01T00:00:00+02:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">This article will be about a deployment scheduling technique which I call operationally cautious deployment. (I didn&#39;t pick the name so the acronym would end up being OCD! Honest! I swear!).<p /><div>Note: This isn&#39;t <i>new</i>. I didn&#39;t invent it. The fact that a big number of people around the globe with similar problems have come up with this idea independently and that most of them are happy with the results speaks for itself: this is mostly just common sense thinking applied to fixing a real problem. It&#39;s one of those things that sound obvious when you have them explained to you, but you probably wouldn&#39;t come up with unless you spend quiet a bit of time pondering the problem.</div> <p /><div>So you have a wonderful continuous deployment system! Congratulations! You deploy a new version, monitor your cluster of hosts, and create wonderful graphs:</div><p /><div>[[posterous-content:NBFS9fiUjfTCi8Xr5KIW]]<br /> </div><p /><div>Except, of course, it&#39;s not that simple. Your test suite, no matter how much you&#39;ve honed and polished it, is imperfect. It will contain subtle assumptions that just aren&#39;t true in deployment. (When I say &quot;subtle assumptions&quot;, I mean the kind that you don&#39;t know are assumptions until everything blows up.). If you&#39;re going to be deploying software all the time, deploying something that has a fatal mistake in it is a matter of when, not if. So one day, the real graph is going to look something like this:</div> <p /><div>[[posterous-content:5k8ymL4PxLDrYfbFgL8h]]<br /></div><div>It would be much nicer if we could deploy more cautiously. Try it out, and only go through with the complete deployment. A sort of live test, deploying with a feedback loop. That might look a bit like this:</div> <p /><div>[[posterous-content:apvQ27GHbg2rEh2CWgEa]]</div><div>That deploys the new version to 2**N servers, with N starting at 0 and increasing until all servers use the target version. The number of servers deployed to is exponential, because that gives us the behavior we wanted: slow and cautious at first, and rapid as soon as we think it&#39;ll work.</div> <p /><div><div>Of course, that doesn&#39;t give you an example of a failure mode. Failures look a bit like this:</div><div>[[posterous-content:tibBqAUzF8OCiIOWmnDZ]]</div> </div><div>Just like in the previous picture, a roll-out of a new version starts. Except this time, the new version doesn&#39;t actually work. The system catches this, and reverts the hosts that have already converted.</div> <p /><div>Of course, the package is still broken! You didn&#39;t fix the problem yet, you just reduced its impact. Your dev room should still look roughly like an control room from a bad Cold War movie right after the other party&#39;s launched a bunch of nukes.</div> <p /><div>It&#39;s just another bug, albeit a particularly nasty show-stopping one. Like all bugs, they&#39;re not so much bugs in the software as they are bugs in the test suite that incorrectly specified the requirements for the software. This becomes painfully obvious here: there&#39;s something broken, but your test suite didn&#39;t catch it. Hopefully, it&#39;s something that&#39;s at all testable.</div> <p /><div>The difference between this state of panic and the original state of panic is that, ideally, your users never noticed there was a problem.</div><p /><div>There&#39;s one obvious problem with all of this. Being able to continue deployment on positive feedback and revert deployments on negative feedback relies on actually having feedback. Useful health metrics for a cluster are halfway between art and science, and are definitely outside of the scope of this article.</div> <p /><div>The next article will be about another benefit of cautious deployment: continuous <i>availability</i>. That one is probably going to be halfway between an article about continuous deployment and a rant about how people need to learn more statistics.</div>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Laurens Van Houtven</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-10-01T00:00:00+02:00" pubdate data-updated="true"></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lvh.github.com/blog/2010/10/01/designing-a-continuous-deployment-system-cautious-deployment/" data-via="lvh" data-counturl="http://lvh.github.com/blog/2010/10/01/designing-a-continuous-deployment-system-cautious-deployment/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/09/30/designing-a-continuous-deployment-system-deployment-formats-and-content/" title="Previous Post: Designing a continuous deployment system: deployment formats and content">&laquo; Designing a continuous deployment system: deployment formats and content</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/10/04/cautious-deployment-for-continuous-availability/" title="Next Post: Cautious deployment for continuous availability">Cautious deployment for continuous availability &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline"  href="https://twitter.com/lvh"  data-widget-id="451753700516585472">Tweets by @lvh</a>
+    <script>!function(d,s,id){var
+      js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">Optimization Problems and PyCon Financial Aid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/lvh">@lvh</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'lvh',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <!-- <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Laurens Van Houtven -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+
+
+</footer> -->
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

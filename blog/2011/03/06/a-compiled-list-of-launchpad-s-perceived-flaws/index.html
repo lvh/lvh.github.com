@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>A Compiled List of Launchpad's Perceived Flaws - lvh</title>
+  <meta name="author" content="Laurens Van Houtven">
+
+  
+  <meta name="description" content="(Note: just because I say &#8220;perceived&#8221; flaws doesn&#8217;t mean I don&#8217;t agree they are. It&#8217;s just a way to encourage feedback &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lvh.github.com/blog/2011/03/06/a-compiled-list-of-launchpad-s-perceived-flaws">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="lvh" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-36779422-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvh.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/talks">Talks</a></li>
+</ul>
+
+</nav>
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">lvh</a></h1>
+  
+    <h2>crypto & distributed systems</h2>
+  
+</hgroup>
+
+
+</header> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">A Compiled List of Launchpad's Perceived Flaws</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-06T00:00:00+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(Note: just because I say &#8220;perceived&#8221; flaws doesn&#8217;t mean I don&#8217;t agree they are. It&#8217;s just a way to encourage feedback from people who disagree.)<p />I&#8217;ve compiled the responses I&#8217;ve received so far to <a href="http://b.lvh.cc/why-do-people-hate-launchpad-so-much" target="_blank">my previous article about Launchpad</a>. This is intended as constructive criticism and hopefully stuff that can be used to build a better Launchpad.<p /> I&#8217;d like to thank everyone who bothered to have a <a href="http://b.lvh.cc/religious-wars-considered-harmful-considered">sensible, adult discussion</a> about Launchpad with me. I very much appreciate your feedback, even the rants. The Launchpad people are also expressed interest in this previously unreceived feedback (which makes sense, I guess). There certainly were a lot of you! If it ends up making Launchpad a nicer place for everyone maybe it&#8217;s worth the time it took, though.<p /> The vast majority of complaints I&#8217;ve seen are about Launchpad&#8217;s interface.&nbsp; People perceive the Launchpad interface as hard to use and anything but obvious. They particularly feel there&#8217;s just too much noise, making useful features hard to find.<p /> I tried to distill stuff that smells like it&#8217;s easy to fix to me. It didn&#8217;t always work, of course. Some problems (primarily about Loggerhead) require non-trivial amounts of work.<p />Here are some concrete examples:</p>
+<ol>
+<li>As a user, I don&#8217;t care that a project doesn&#8217;t use Launchpad for translations, but it takes up the spot of a primary feature in the main menu and the Get Involved box. It should only be shown to the Maintainer (a single user or a group). This also counts for&nbsp; Blueprints and Answers, except it&#8217;s less obvious what they mean to people, apparently. Most projects really only need Overview, Code and Bugs (in fact, Github and Bitbucket do away with the entire Overview tab, too &#8211; but that&#8217;s not universally seen as a requirement for a usable thing).</li>
+<li>Latest reported bugs, latest questions and the FAQ box on the landing page are considered unnecessary noise: it&#8217;s duplicated on the respective specific pages, and the people who actually need that kind of notification probably should get e-mails anyway.</li>
+<li>Announcements on the other hand are a far more important feature, but they&#8217;re tucked away: on the Bazaar&#8217;s Launchpad Overview page, I have to scroll down to find it. Perhaps they should have a more prominent position on the page.</li>
+<li>Downloads are important enough that they probably warrant a separate page. The Overview page&#8217;s Packages in Distributions pages can be moved there, too, further decluttering the Overview page.</li>
+<li>A lot of people don&#8217;t understand Blueprints or consider it a misfeature. Fixing the first point would obviously alleviate that since it&#8217;d be opt-in.</li>
+<li>As a user, I can&#8217;t figure out how to browse the code. &#8220;View branch content&#8221; ought to be called &#8220;View code&#8221;, or something &#8211; it makes sense to a Bazaar/Launchpad user but not to J. Random Contributor.</li>
+<li>People really like Github&#8217;s Readme Driven Development. Perhaps the overview could be grabbed from the development focus&#8217; README file? Admittedly some README&#8217;s may be too large for this to work well with the current landing page.</li>
+<li>Subscribe to bug mail is a primary feature on the project landing page, even above the Get Involved box. This doesn&#8217;t make sense: that&#8217;s a Bugs specific feature, and the Bugs page has an identical feature already. It could just be removed without loss of functionality.</li>
+<li>Series and milestones are a code feature: I don&#8217;t particularly care about them on the overview page, and they would probably be better off on the code page. Preferably after the branches or at least foldable, since it does take up quite a bit of screen real estate. In order to parse it and turn it into useful information, you probably need to be more than a little involved in the project already. The idea is that not sufficiently many users care to warrant such a prominent place on the landing page.</li>
+<li>Loggerhead&#8217;s date format is hard to parse. Github and Bitbucket use relative, human-readable timedeltas, except for dates sufficiently far away (where they use a plain date). You could still make the real date accessable on mouseover if people wnat that feature.</li>
+<li>Loggerhead is very poorly integrated with the rest of Launchpad: it feels like a tacked on feature. Compare to Github and Bitbucket where code viewing is an integral part of the user experience.</li>
+<li>Somewhat conjoined with the previous point: there&#8217;s a separate page for a branch and the branch content and that confuses people. Perhaps they could be integrated without overloading branch pages. (One particularly important feature is merge proposals, but they&#8217;re accessible from the Code page).</li>
+<li>People are unhappy with the lack of progress on Loggerhead. I feel kind of bad about this point since it makes me sound like I&#8217;m calling people lazy bums, but journalistic integrity demands I report it. I had <a href="https://bugs.launchpad.net/loggerhead/+bug/569358%20">quite</a> <a href="https://bugs.launchpad.net/loggerhead/+bug/569355">a few</a> bugs listed as examples. I don&#8217;t know if these are unique or illustrations of a more general problem.</li>
+<li>Although merge proposals are used for code review, people are confused by the Code page saying &#8220;code review&#8221; when it means &#8220;merge proposals&#8221;. It would be nice if everything said merge proposals. Or is the point here that Launchpad might integrate with other code review tools?</li>
+<li>Some people can&#8217;t use the e-mail interface <a href="https://bugs.launchpad.net/bugs/643224">because the DKIM whitelist is hardcoded</a>.</li>
+</ol>
+<p><br />To be continued.<p />cheers<br />lvh</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Laurens Van Houtven</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-06T00:00:00+01:00" pubdate data-updated="true"></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lvh.github.com/blog/2011/03/06/a-compiled-list-of-launchpad-s-perceived-flaws/" data-via="lvh" data-counturl="http://lvh.github.com/blog/2011/03/06/a-compiled-list-of-launchpad-s-perceived-flaws/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/03/05/why-do-people-hate-launchpad-so-much-/" title="Previous Post: Why do people hate Launchpad so much?">&laquo; Why do people hate Launchpad so much?</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/03/06/bridging-the-gap-between-launchpad-and-github/" title="Next Post: Bridging the gap between Launchpad and Github">Bridging the gap between Launchpad and Github &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline"  href="https://twitter.com/lvh"  data-widget-id="451753700516585472">Tweets by @lvh</a>
+    <script>!function(d,s,id){var
+      js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">Optimization Problems and PyCon Financial Aid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/lvh">@lvh</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'lvh',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <!-- <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Laurens Van Houtven -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+
+
+</footer> -->
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

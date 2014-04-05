@@ -1,0 +1,389 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Thoughts on RDRAND in Linux - lvh</title>
+  <meta name="author" content="Laurens Van Houtven">
+
+  
+  <meta name="description" content="This has been brewing since I read Linus’ response to the petition to remove RDRAND from /dev/random. For those of you who don’t know, RDRAND is a &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lvh.github.com/blog/2013/10/19/thoughts-on-rdrand-in-linux">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="lvh" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-36779422-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvh.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/talks">Talks</a></li>
+</ul>
+
+</nav>
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">lvh</a></h1>
+  
+    <h2>crypto & distributed systems</h2>
+  
+</hgroup>
+
+
+</header> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Thoughts on RDRAND in Linux</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-19T21:47:00+02:00" pubdate data-updated="true">Oct 19<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">
+<p>This has been brewing since I read <a href="https://www.change.org/en-GB/petitions/linus-torvalds-remove-rdrand-from-dev-random-4/responses/9066">Linus’ response to the petition to remove <code>RDRAND</code> from /dev/random</a>.</p>
+
+<p>For those of you who don’t know, <code>RDRAND</code> is a CPU instruction introduced by Intel on recent CPUs. It (supposedly) uses a hardware entropy source, and runs it through AES in CBC-MAC mode, to produce random numbers.</p>
+
+<p>Out of fear that <code>RDRAND</code> may somehow be backdoored, someone petitioned to remove <code>RDRAND</code> support to “improve the overall security of the kernel”. If <code>RDRAND</code> contains a back door, and an unknown attacker can control the output, that could break pretty much all userland crypto.</p>
+
+<p>Linus fulminated, as he is wont to do. He suggested we go read <code>drivers/char/random.c</code>. I quote (expletives and insults omitted):</p>
+
+<p>&gt; we use rdrand as <em>one</em> of many inputs into the random pool, and we &gt; use it as a way to <em>improve</em> that random pool. So even if rdrand &gt; were to be back-doored by the NSA, our use of rdrand actually &gt; improves the quality of the random numbers you get from &gt; /dev/random.</p>
+
+<p>I went ahead and read <code>random.c</code>. You can read it for yourself <a href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/char/random.c">in Linus’ tree</a>.</p>
+
+<p>Disclaimer: I am not an expert in this piece of code. I have no doubt Linus is far more familiar with it than I am. I’d love to be proven wrong. I’m just taking his advice and reading some code.</p>
+
+<p>The function I’m interested in is <code>extract_buf</code>:</p>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'>    <span class='cm'>/*</span>
+</span><span class='line'><span class='cm'>	 * If we have a architectural hardware random number</span>
+</span><span class='line'><span class='cm'>	 * generator, mix that in, too.</span>
+</span><span class='line'><span class='cm'>	 */</span>
+</span><span class='line'>	<span class='k'>for</span> <span class='p'>(</span><span class='n'>i</span> <span class='o'>=</span> <span class='mi'>0</span><span class='p'>;</span> <span class='n'>i</span> <span class='o'>&lt;</span> <span class='n'>LONGS</span><span class='p'>(</span><span class='n'>EXTRACT_SIZE</span><span class='p'>);</span> <span class='n'>i</span><span class='o'>++</span><span class='p'>)</span> <span class='p'>{</span>
+</span><span class='line'>		<span class='kt'>unsigned</span> <span class='kt'>long</span> <span class='n'>v</span><span class='p'>;</span>
+</span><span class='line'>		<span class='k'>if</span> <span class='p'>(</span><span class='o'>!</span><span class='n'>arch_get_random_long</span><span class='p'>(</span><span class='o'>&amp;</span><span class='n'>v</span><span class='p'>))</span>
+</span><span class='line'>			<span class='k'>break</span><span class='p'>;</span>
+</span><span class='line'>		<span class='n'>hash</span><span class='p'>.</span><span class='n'>l</span><span class='p'>[</span><span class='n'>i</span><span class='p'>]</span> <span class='o'>^=</span> <span class='n'>v</span><span class='p'>;</span>
+</span><span class='line'>	<span class='p'>}</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>This is in the extraction phase. This is after the hash is being mixed back in to the pool (and that’s for backtracking attacks: not intended as an input to the pool). It seems to me like the output of <code>arch_get_random_long</code> is being XORed in with the extracted output, not with the pool.</p>
+
+<p>If I were to put on my tin-foil hat, I would suggest that the difficulty has now been moved from being able to subvert the pool as one of its entropy sources (which we think is impossible), versus being able to see what you’re about to be XORed with. The latter seems a lot closer to the realm of stuff a microcode instruction can do.</p>
+
+<p>To put it into Python:</p>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class='kn'>from</span> <span class='nn'>inspect</span> <span class='kn'>import</span> <span class='n'>currentframe</span>
+</span><span class='line'><span class='kn'>from</span> <span class='nn'>random</span> <span class='kn'>import</span> <span class='n'>getrandbits</span>
+</span><span class='line'>
+</span><span class='line'><span class='k'>def</span> <span class='nf'>extract_buf</span><span class='p'>():</span>
+</span><span class='line'>    <span class='sd'>&quot;&quot;&quot;Gets 16 bytes from the pool, and mixes them with RDRAND output.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class='n'>pool_bits</span> <span class='o'>=</span> <span class='n'>extract_from_pool</span><span class='p'>()</span>
+</span><span class='line'>    <span class='n'>rdrand_bits</span> <span class='o'>=</span> <span class='n'>rdrand</span><span class='p'>()</span>
+</span><span class='line'>    <span class='k'>return</span>  <span class='n'>pool_bits</span> <span class='o'>^</span> <span class='n'>rdrand_bits</span>
+</span><span class='line'>
+</span><span class='line'><span class='k'>def</span> <span class='nf'>extract_from_pool</span><span class='p'>():</span>
+</span><span class='line'>    <span class='sd'>&quot;&quot;&quot;Pretend to get some good, unpredictable bytes from the pool.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    Actually gets a long with some non-cryptographically secure random</span>
+</span><span class='line'><span class='sd'>    bits from random.getrandbits, which is usually a Mersenne Twister.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class='k'>return</span> <span class='n'>getrandbits</span><span class='p'>(</span><span class='mi'>32</span><span class='p'>)</span>
+</span><span class='line'>
+</span><span class='line'><span class='k'>def</span> <span class='nf'>rdrand</span><span class='p'>():</span>
+</span><span class='line'>    <span class='sd'>&quot;&quot;&quot;</span>
+</span><span class='line'><span class='sd'>    A malicious hardware instruction.</span>
+</span><span class='line'><span class='sd'>    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class='n'>pool_bits</span> <span class='o'>=</span> <span class='n'>currentframe</span><span class='p'>()</span><span class='o'>.</span><span class='n'>f_back</span><span class='o'>.</span><span class='n'>f_locals</span><span class='p'>[</span><span class='s'>&quot;pool_bits&quot;</span><span class='p'>]</span>
+</span><span class='line'>    <span class='k'>return</span> <span class='n'>pool_bits</span> <span class='o'>^</span> <span class='mh'>0xabad1dea</span>
+</span><span class='line'>
+</span><span class='line'><span class='k'>if</span> <span class='n'>__name__</span> <span class='o'>==</span> <span class='s'>&quot;__main__&quot;</span><span class='p'>:</span>
+</span><span class='line'>    <span class='k'>assert</span> <span class='n'>extract_buf</span><span class='p'>()</span> <span class='o'>==</span> <span class='mh'>0xabad1dea</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>Why can’t RDRAND work like this?</p>
+
+<p>Some comments based on feedback I’ve gotten so far:</p>
+
+<ol>
+<li>This attack does not need to know where the PRNG state lives in memory. First of all, this isn’t an attack on the PRNG state, it’s on the PRNG output. Secondly, the instruction only needs to peek ahead at what is about to happen (specifically, what’s about to be XORed with) the RDRAND output. That doesn’t require knowing where the PRNG state (or its output) is being stored in memory; we’re already talking register level at that point.</li>
+
+<li>While it’s certainly true that if you can’t trust the CPU, you can’t trust anything, that doesn’t really make this problem go away. <code>RDRAND</code> being broken wouldn’t make software crash, which is a lot harder for almost all other instructions. <code>RDRAND</code> being broken wouldn’t result in measurable side-effects, unlike what would happen if <code>PCLMULDQ</code> contained a back door. Furthermore, it’s a lot easier to backdoor one single microcode instruction and a lot more plausible and feasible for a CSPRNG to be backdoored than it is to think of a CPU as some kind of intelligent being that’s actively malicious or being remotely controlled.</li>
+</ol>
+
+<p>For what it’s worth, it seems <a href="https://twitter.com/zooko/status/392334674690723840">Zooko agrees with me</a>.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Laurens Van Houtven</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-19T21:47:00+02:00" pubdate data-updated="true">Oct 19<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/crypto/'>crypto</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lvh.github.com/blog/2013/10/19/thoughts-on-rdrand-in-linux/" data-via="lvh" data-counturl="http://lvh.github.com/blog/2013/10/19/thoughts-on-rdrand-in-linux/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/01/30/securing-against-timing-attacks-with-twisted/" title="Previous Post: Securing against timing attacks with Twisted">&laquo; Securing against timing attacks with Twisted</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/" title="Next Post: Using protractor with AngularJS and Yeoman">Using protractor with AngularJS and Yeoman &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline"  href="https://twitter.com/lvh"  data-widget-id="451753700516585472">Tweets by @lvh</a>
+    <script>!function(d,s,id){var
+      js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">Optimization Problems and PyCon Financial Aid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/lvh">@lvh</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'lvh',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <!-- <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Laurens Van Houtven -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+
+
+</footer> -->
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

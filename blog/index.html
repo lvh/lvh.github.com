@@ -1,0 +1,1197 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>lvh</title>
+  <meta name="author" content="Laurens Van Houtven">
+
+  
+  <meta name="description" content="The greedy hotel pairing algorithm from my previous post gives good solutions. If you make some fairly reasonable-sounding assumptions about the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lvh.github.com/blog">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="lvh" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-36779422-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:lvh.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/talks">Talks</a></li>
+</ul>
+
+</nav>
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">lvh</a></h1>
+  
+    <h2>crypto & distributed systems</h2>
+  
+</hgroup>
+
+
+</header> -->
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-18T13:05:52+01:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+<p>The greedy hotel pairing algorithm from my <a href="http://blog.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">previous post</a> gives good solutions. If you make some fairly reasonable-sounding assumptions about the problem, <em>very</em> good solutions. At any rate nicer than forcing a human to drudge through it; both in terms of person-hours spent and quality of the solutions.</p>
+
+<p>However, it turns out I was wrong about them being <em>optimal</em> solutions. There’s no guarantee they would be, and in fact a good chance that they won’t.</p>
+
+<h2 id="finding_optimal_solutions">Finding optimal solutions</h2>
+
+<p>The good news is that there is a way to find the optimal solution. This problem can be modeled as a <a href="https://en.wikipedia.org/wiki/Matching_%28graph_theory%29">graph matching problem</a>; what we’re trying to find is a weighted maximal matching.</p>
+
+<p>This is really easy if the graph is bipartite, but in our case we’re actually dealing with two <a href="https://en.wikipedia.org/wiki/Complete_graph">complete graphs</a>: we try to pair people with similar gender. Within that compatible group, anyone can theoretically pair with anyone.</p>
+
+<p><img src='https://upload.wikimedia.org/wikipedia/commons/8/86/10-simplex_graph.svg' /></p>
+
+<p>People interested in additional reading might be interested in:</p>
+
+<ul>
+<li><a href="http://theory.stanford.edu/~jvondrak/CS369P-files/lec6.pdf">Notes from a Stanford course by Jan Vondrak</a></li>
+
+<li><a href="http://www-sop.inria.fr/members/Frederic.Havet/Cours/matching.pdf">Notes from an Inria course by Frederic Havet</a></li>
+</ul>
+
+<h2 id="picking_an_algorithm">Picking an algorithm</h2>
+
+<p>There are several feasible algorithms for this.</p>
+
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Blossom_algorithm">Edmonds’ blossom algorithm</a>, the first polynomial-time algorithm with running time $O(V^4)$ or $O(V^2\cdot E)$</li>
+
+<li>Gabow’s 1973 PhD thesis, an $O(V^3)$ algorithm</li>
+
+<li><a href="http://dl.acm.org/citation.cfm?id=1382663">An $O(\sqrt{V} \cdot E)$ improvement</a> by Micali (yes, <a href="https://en.wikipedia.org/wiki/Silvio_Micali"><em>that</em> Micali</a>) and Vazirani</li>
+
+<li>Another improvement by Gabow, $O(V(E + \log{V}))$</li>
+</ul>
+
+<p>The current state of the art in computerized algorithms appears to be <a href="http://pub.ist.ac.at/~vnk/papers/blossom5.pdf">Blossom V</a> by Vladimir Kolmogorov. This algorithm finds <em>perfect</em> matchings (i.e. all nodes are included), which may be impossible for us, e.g. because of an odd number of pairs.</p>
+
+<h2 id="issues">Issues</h2>
+
+<p>One issue with this approach is that it becomes pretty much impossible to adapt this to rooms for more than two people. In order to support that case my previous greedy algorithm remains the best thing I’ve found.</p>
+
+<p>I was unable to find an implementation of this in Java or Clojure. Fortunately, there is a Python library called <a href="http://networkx.lanl.gov">NetworkX</a> that does have <a href="http://networkx.lanl.gov/reference/generated/networkx.algorithms.matching.max_weight_matching.html">an implementation</a>.</p>
+
+<p>I have not yet turned this into a fully functional program, because:</p>
+
+<ul>
+<li>it’s too late to apply it for this year</li>
+
+<li>there’s a good chance we won’t be doing this again for next year</li>
+</ul>
+
+<h2 id="credits">Credits</h2>
+
+<p>I’d like to thank Tor Myklebust (<code>tmyklebu</code> on Freenode) for pointing out I was wrong, and shoving me in the direction of the answers.</p>
+
+<p>In this blog post I used several freely available graph illustrations from Wikipedia. The complete graph illustrations were made by <a href="https://commons.wikimedia.org/wiki/User:Koko90">koko90</a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">Optimization Problems and PyCon Financial Aid</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-10T16:47:00+01:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+<p>This year, I have partly taken on some new responsibilities in organizing PyCon. Specifically, I’ve done some work on financial aid. (Next year, I will be taking on the position of financial aid chair.) There have been some challenges that I’ve thrown some code at. Some of it stuck.</p>
+
+<p>I’m very much interested in your comments, thoughts, alternative approaches, et cetera. Hit me up on <a href="https://twitter.com/lvh">Twitter</a>.</p>
+
+<h2 id="hotel_room_allocation">Hotel room allocation</h2>
+
+<p>The first issue I solved was one of hotel room allocation. We provide the financial aid applicants with hotel rooms. To keep costs down, we pair people up, two by two.</p>
+
+<p>We want to pair people so that we have to book a minimal number of days. If there’s days on the start of the room booking where only one person is booking the room, we have to pay for the rest.</p>
+
+<h3 id="a_greedy_algorithm">A greedy algorithm</h3>
+
+<p>I start out with generating every possible pairing. Assuming we have 300 financial aid applicants, that’s:</p>
+
+<p>$${300 \choose 2} = \frac{300!}{2! \cdot 298!} = 44850$$</p>
+
+<p>That’s more than we can check by hand, but still pretty easy for a computer. Besides, there are actually fewer pairs than that: some people request to be paired together explicitly, and we only pair people of the same gender.</p>
+
+<p>Then, I sort them by number of unmatched days, that is, how many days would have a single person in the hotel room if we paired them together. Finally, I just greedily start grabbing pairs, keeping track of the people that have been allocated rooms as I go along. As soon as everyone is accounted for, we stop.</p>
+
+<p>Other than perhaps minding the edge conditions where you have an odd number of people to pair, this isn’t too tricky. The implementation for this is on Github, in <a href="https://github.com/lvh/pairing/blob/master/src/pairing/core.clj"><code>lvh/pairing</code></a>.</p>
+
+<h3 id="solution_meet_reality">Solution, meet reality</h3>
+
+<p>Before I wrote this, humans did this by hand. That took pretty long, and the solutions were decent, but suboptimal. All the humans that have tackled this problem seem to take the same approach: sort by check-in date, find exact or near matches in check-out dates, rinse, repeat.</p>
+
+<p>The algorithm above did quite well, coming up with a significantly better result than the previous human allocation. It also produced very <em>interesting</em> solutions. Turns out that by taking a big hit on one of the pairs (say, a pair that’s 4 days mismatched four days), you can limit the damage on a large number of other pairs, and still come out on top. After reviewing with the person who previously had to do this manually, we quickly agreed that a human would most likely not have come up with this.</p>
+
+<p>Furthermore, a lot of the pairs have matching check-out dates but with a mismatched check-in date; whereas humans typically only look for solutions in the other direction. This is easy to explain in hindsight; the algorithm has no concept of an ordering of events in time. It just tries to minimize the number of mismatched days.</p>
+
+<p>I’m quite happy with the result. Any dollar I’m not devoting to a room that isn’t being fully used will instead be going into an increased grant.</p>
+
+<p>Unfortunately, finding this solution isn’t the end of the story. It rarely survives the clash with reality. Many complex factors affect it: people will drastically change their room dates, people’s visas get denied, et cetera. All sorts of unforseeable circumstances have lead to changes to the answer the algorithm originally produced. I don’t expect that to change until PyCon is over; unfortunately, I also don’t think that’s a problem I can fix in a few lines of Clojure.</p>
+
+<h2 id="grant_allocation">Grant allocation</h2>
+
+<p>The second issue is a much thornier one. Given the financial aid budget, figure out how to optimally distribute it. The budget is quite limited, a good deal smaller than the sum of what everyone requests.</p>
+
+<p>There’s a few reasons why this problem is complex. First of all, “optimal” is highly subjective. As I’m sure you’ll notice very soon after thinking about it, it’s very easy to verge off from math and straight into the realm of politics.</p>
+
+<h3 id="a_very_simple_greedy_algorithm">A very simple greedy algorithm</h3>
+
+<p>You might say that you want to get as many people as possible to come to PyCon, and you just greedily allocate the smallest grant requests first. This has a few disadvantages:</p>
+
+<ol>
+<li>It biases against the people that ostensibly need the money the most.</li>
+
+<li>It is ordering-sensitive: equivalent applications that happen to come later in the queue are disadvantaged.</li>
+
+<li>It oversimplifies how people react to grants, by making grant allocation binary. Someone receiving 90% of their requested grant amount will likely still be able to attend. Suppose you have 11 people, all requesting 100 USD, and you have 1000 USD to spend. The greedy algorithm would give the first ten of them 100 USD and find its purse empty for the eleventh. It would almost certainly be better to give them all 90.91 USD instead.</li>
+
+<li>Game-theoretically, it makes a lot of sense for everyone to apply for a small grant that they will almost certainly get. (This is not a real issue for us, because we still have humans eyeballing all the applications.)</li>
+
+<li>The only difference between applications is the amount they’re requesting, but there are people that we would like to bias in favor of. For example, we’d like to try very hard to get speakers or tutorial presenters to the conference, we might want to reward people doing open source work, et cetera.</li>
+</ol>
+
+<p>Selecting these critera is definitely squarely in the realm of politics, and I’d like to stick to the realm of math; so let’s just assume that we can assign scores to applicants and that those scores are fair and just. If you feel like we shouldn’t bias in favor of anyone at all, just assume that whenever I say “the score of an applicant” I mean “the number 1”.</p>
+
+<h3 id="a_slightly_smarter_greedy_algorithm">A slightly smarter greedy algorithm</h3>
+
+<p>One of the key ideas (which a lot of people seem to have when tackling this problem) is to translate an application’s score into an amount of the budget. So, for example, let’s say that the sum of all scores is 100, and your score is 10, that means you can have up to 10% of the budget allocated to you.</p>
+
+<p>So, I make a pass over all the remaining applicants. If you’re asking less than your budget slice, you get your requested grant. If you’re asking for more, I save you for a future pass. Even though the budget goes down between passes, budget slices will go up, because the total score drops.</p>
+
+<p>You can’t do this in one pass, increasing the budget as you go along if people request less than their slice, because you might introduce order dependence. For example, consider what happens when Alice and Charlie both need more than the budget allows for (and they have the same score and requested amount), and Bob needs less. If you process them in the order Alice - Bob - Charlie, Charlie may get his requested grant and Alice may not, just because Bob’s in the middle making the budget bigger for Charlie.</p>
+
+<p>Once everyone left is requesting more than their slice, they just get their slice instead of their requested amount.</p>
+
+<p>This solution is adequate, but I’m not completely satisfied; everyone besides the last pass will get full grant amounts. You can find my implementation of this algorithm <a href="https://github.com/lvh/hood/blob/master/src/hood/greedy.clj">on Github</a> as well.</p>
+
+<h3 id="a_better_model">A better model</h3>
+
+<p>I think we can do better by applying some elementary probability theory. What we really want is to maximize the total score of the applicants that we expect to see at PyCon as a consequence of financial aid. Probability theory has a thing called the expected value of a random variable, which is pretty much just the integral of the random variable with respect to the probability. In our case, that just means that we want to maximize the sum of the probability that a given applicant comes, times their score:</p>
+
+<p>$$\max \sum s_i \cdot p_i$$</p>
+
+<p>That just restates problems we can’t solve in terms of problems we can’t solve. What on earth could the probability that someone shows up be? Obviously, we can’t know the real value, since it’s specific to each individual, and dependent on a lot of random, unknowable events. We can, however, make an educated guess. If we don’t give them any money, they probably won’t come. If we give them the amount they’re asking for, they probably will.</p>
+
+<p>We could conjecture that the probability someone will come to the conference is approximately the fraction of the amount they requested that they actually received:</p>
+
+<p>$$p_i = \frac{g_i}{r_i}$$</p>
+
+<p>For example, if someone gets 90% of their requested grant, we estimate that the odds they will attend are also 90%; if we give them only 10%, we estimate it at just 10%.</p>
+
+<p>Alternatively, we could conjecture that it’s closer to the <em>square</em> of that ratio; when giving someone a value that’s very close to what they asked for, their probability of attending is still going to be very high; but if we only give them half, the odds they will attend will be closer to 25%, much lower than 50%. So, the expression becomes:</p>
+
+<p>$$p^{\prime}_i = \left(\frac{g_i}{r_i}\right)^{2}$$</p>
+
+<p>We will see how the square model emphasizes focusing the available funds on fewer grants, whereas the linear model will spread smaller grants more liberally.</p>
+
+<h3 id="an_attempt_with_constraint_solvers">An attempt with constraint solvers</h3>
+
+<p>(I would like to thank Mark Engelberg for helping me with the stuff in this chapter. It may not have panned out, but it was a very educational experience nonetheless.)</p>
+
+<p>It’d be nice if we could just declaratively describe the problem, throw it into a computer program, and have it magically tell us the answer. Of course, there are programs that do exactly that, called solvers.</p>
+
+<p>When I reached out on the Clojure mailing list, Mark Engelberg helpfully reached out and immediately handed out some cool runnable example for me to play with. Sure enough, they worked super, and with a carefully crafted three-person example we could clearly see the difference between the linear and quadratic models I was talking about above: under the square model, the concentrated grants, trying harder to give high-scoring applications the amount they requested. The linear model spread money out more evenly. That is, with the following applications:</p>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class='p'>(</span><span class='k'>def </span><span class='nv'>alice</span> <span class='p'>{</span><span class='ss'>:name</span> <span class='s'>&quot;Alice&quot;</span>, <span class='ss'>:score</span> <span class='mi'>5</span>, <span class='ss'>:requested</span> <span class='mi'>120</span><span class='p'>})</span>
+</span><span class='line'><span class='p'>(</span><span class='k'>def </span><span class='nv'>bob</span> <span class='p'>{</span><span class='ss'>:name</span> <span class='s'>&quot;Bob&quot;</span>, <span class='ss'>:score</span> <span class='mi'>4</span>, <span class='ss'>:requested</span> <span class='mi'>100</span><span class='p'>})</span>
+</span><span class='line'><span class='p'>(</span><span class='k'>def </span><span class='nv'>carol</span> <span class='p'>{</span><span class='ss'>:name</span> <span class='s'>&quot;Carol&quot;</span>, <span class='ss'>:score</span> <span class='mi'>3</span>, <span class='ss'>:requested</span> <span class='mi'>80</span><span class='p'>})</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>In a linear model, it comes up with:</p>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class='p'>{</span><span class='nv'>alice</span> <span class='mi'>120</span>
+</span><span class='line'> <span class='nv'>bob</span> <span class='mi'>80</span>
+</span><span class='line'> <span class='nv'>carol</span> <span class='mi'>0</span><span class='p'>}</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>However, in the quadratic model, the optimizer rather gives Carol (who has a lower score) a complete grant than give Bob a partial one:</p>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='clojure'><span class='line'><span class='p'>{</span><span class='nv'>alice</span> <span class='mi'>120</span>
+</span><span class='line'> <span class='nv'>bob</span> <span class='mi'>0</span>
+</span><span class='line'> <span class='nv'>carol</span> <span class='mi'>80</span><span class='p'>}</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>You can find the code <a href="https://github.com/lvh/hood/blob/master/src/hood/constraint.clj">on Github</a>. The tests that confirm the difference in behavior for the linear and quadratic models are in <a href="https://github.com/lvh/hood/blob/master/test/hood/constraint_test.clj">the tests</a>.</p>
+
+<p>There’s one issue though; it didn’t scale. Not bad enough that you’d notice on the three-person example (I thought my REPL was just being laggy), but bad enough that any real-world problem would be completely unsolvable. Why? Clearly constraint solvers are awesome real world tools with real world usage, it’s not like they’re supposed to fall over as soon as you throw a problem of reasonable size at it.</p>
+
+<p>Well, let’s do some napkin math. If we have 200 financial aid recipients that are all getting 1000 possible options (somewhere between 0 USD and 1000 USD, in whole-dollar increments), there’s 200,000 possible places to put any given dollar. If we have 100,000 USD to spend, that’s:</p>
+
+<p>$${2 \cdot 10^{5} \choose 10^{5}} = \frac{(2 \cdot 10^{5})!}{10^{5}! \cdot 10^{5}!} \approx 10^{60203}$$</p>
+
+<p>That is a very big number. I needed logarithms to compute it. It is so huge that it makes the number of atoms in the observable universe (about $10^{80}$) look like rounding error.</p>
+
+<p>In an attempt to “fix” that problem, I tried only handing out funds in chunks of 100 USD each. Then, we have 1000 chunks to hand out and 2000 places to put them:</p>
+
+<p>$${2000 \choose 1000} = \frac{2000!}{1000! \cdot 1000!} \approx 10^{600}$$</p>
+
+<p>I have made the problem 59,603 decimal orders of magnitude easier! Rejoice!</p>
+
+<p>A constraint solver really doesn’t “know” anything about the structure of the problem you’re feeding it. That’s a trade-off: in return, it grants you a lot of freedom in expressing your problem. Constraint solvers like LoCo are very valuable, they just aren’t a good fit for this problem. They are designed for problems where the constraints really constraining the solution space. We’re clearly not in that territory. We have many valid solutions, and we’re struggling to look for a <em>good</em> one.</p>
+
+<p>There are two ways we can fix this:</p>
+
+<ol>
+<li>Compromising on the freedom of expressing the problem. By pouring our problem into a specific structured shape, we may be able to use a much faster solver, specific to that class of problems. Also, by allowing arbitrary real numbers instead of just integers, we can use much faster solvers.</li>
+
+<li>Compromising on finding the <em>optimal</em> solution, instead searching for a <em>decent</em> solution. You can do that with algorithms like tabu search or simulated annealing.</li>
+</ol>
+
+<p>I will be elaborating on these problems in a future blog post.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-18T11:22:00+01:00" pubdate data-updated="true">Dec 18<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+<p>Welp, my WD 1TB Passport drive borked. Seems to be a <a href="https://discussions.apple.com/thread/5475136">common issue on Mavericks</a> with a select number of drives, including this one, apparently</p>
+
+<p>Common themes:</p>
+
+<ol>
+<li>Started with OS X complaining at me because I supposedly ejected the drive unsafely, even though the drive was still in the USB slot.</li>
+
+<li>Drive isn’t mounted automatically anymore. Console says filesystem is busted: <code>17/12/13 20:18:35,000 kernel[0]: hfs: Runtime corruption
+detected on My Passport, fsck will be forced on next mount.</code></li>
+
+<li>Drive can’t be /unmounted/ using Disk Utility either both in regular desktop mode and in recovery mode (booting with ⌘+R). This means that even trying to just nuke the partition and starting over doesn’t work; it just sits there for a while and then eventually times out saying it can’t unmount the drive.</li>
+</ol>
+
+<p>I did not, at any point, have WD’s drive management software installed (unless it managed to do it behind my back). First thing I did was put a new GUID table on it with one partition.</p>
+
+<p>Apparently the solution is to boot into Linux to fix the drive. I’ll let you know how that pans out.</p>
+
+<p>UPDATE: Booted into Linux, was able to read everything. <code>fsck</code> does report something wrong with the filesystem, but not bad enough that I can’t mount or umount it. Was able to salvage what looks to be all the data I wanted; didn’t bother to try and get e.g. Time Machine or Spotlight index data off, which is where I suspect the issues to stem from.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-15T11:29:00+01:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+<p>In writing the website for Crypto 101, my upcoming book, I’ve been toying around with AngularJS. The basic setup was done using Yeoman.</p>
+
+<p>First of all, the Yeoman Angular generator gives you a <code>karma-e2e.conf.js</code>, but doesn’t really configure grunt to do any end-to-end testing. Turns out that the new hotness for Angular scenario testing is based on Protractor. Karma isn’t deprecated, it’s just for unit tests. Protractor is based on Selenium, which is probably an upgrade :-)</p>
+
+<p>Anyway, here’s what I had to do to get started.</p>
+
+<ol>
+<li>In the root of your app, install protractor and the Selenium standalone server.</li>
+</ol>
+<figure class='code'><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install --save-dev protractor
+</span><span class='line'>./node_modules/protractor/bin/install_selenium_standalone</span></code></pre></td></tr></table></div></figure>
+<ol>
+<li>
+<p>Optionally, add <code>selenium</code> to your <code>.gitignore</code>, since it contains a ~30MB binary that doesn’t belong in your git repo.</p>
+</li>
+
+<li>
+<p>Add a <code>protractor.conf.js</code> file. Here’s mine. Remember that there’s some stuff in there for you to uncomment, so don’t just copy paste. On my machine, the default driver was Internet Explorer for Windows, which is strange given that I’m running on OS X. Oh well. This uses Chrome instead.</p>
+</li>
+</ol>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class='nx'>exports</span><span class='p'>.</span><span class='nx'>config</span> <span class='o'>=</span> <span class='p'>{</span>
+</span><span class='line'>  <span class='nx'>seleniumAddress</span><span class='o'>:</span> <span class='s1'>&#39;http://localhost:4444/wd/hub&#39;</span><span class='p'>,</span>
+</span><span class='line'>  <span class='nx'>specs</span><span class='o'>:</span> <span class='p'>[</span>
+</span><span class='line'>    <span class='c1'>// To run plain JS files, uncomment the following line:</span>
+</span><span class='line'>    <span class='c1'>// &#39;./test/integration/*.js&#39;,</span>
+</span><span class='line'>    <span class='c1'>// To run Coffeescript files, uncomment the following line:</span>
+</span><span class='line'>    <span class='c1'>// &#39;.tmp/integration/*.js&#39;</span>
+</span><span class='line'>  <span class='p'>],</span>
+</span><span class='line'>
+</span><span class='line'>  <span class='c1'>// Set capabilities.</span>
+</span><span class='line'>  <span class='nx'>capabilities</span><span class='o'>:</span> <span class='p'>{</span>
+</span><span class='line'>    <span class='s1'>&#39;browserName&#39;</span><span class='o'>:</span> <span class='s1'>&#39;chrome&#39;</span>
+</span><span class='line'>  <span class='p'>},</span>
+</span><span class='line'>
+</span><span class='line'>  <span class='nx'>jasmineNodeOpts</span><span class='o'>:</span> <span class='p'>{</span>
+</span><span class='line'>    <span class='nx'>showColors</span><span class='o'>:</span> <span class='kc'>true</span><span class='p'>,</span>
+</span><span class='line'>    <span class='nx'>defaultTimeoutInterval</span><span class='o'>:</span> <span class='mi'>30000</span>
+</span><span class='line'>  <span class='p'>}</span>
+</span><span class='line'><span class='p'>}</span>
+</span></code></pre></td></tr></table></div></figure>
+<ol>
+<li>If you’re using Coffeescript, change your Gruntfile to build your integration tests:</li>
+</ol>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'>  <span class='nx'>grunt</span><span class='p'>.</span><span class='nx'>initConfig</span><span class='p'>({</span>
+</span><span class='line'>    <span class='c1'>// ...</span>
+</span><span class='line'>    <span class='nx'>coffee</span><span class='o'>:</span> <span class='p'>{</span>
+</span><span class='line'>      <span class='c1'>// ...</span>
+</span><span class='line'>      <span class='nx'>test</span><span class='o'>:</span> <span class='p'>{</span>
+</span><span class='line'>        <span class='nx'>files</span><span class='o'>:</span> <span class='p'>[</span>
+</span><span class='line'>        <span class='c1'>// ...</span>
+</span><span class='line'>        <span class='p'>{</span>
+</span><span class='line'>          <span class='nx'>expand</span><span class='o'>:</span> <span class='kc'>true</span><span class='p'>,</span>
+</span><span class='line'>          <span class='nx'>cwd</span><span class='o'>:</span> <span class='s1'>&#39;test/integration&#39;</span><span class='p'>,</span>
+</span><span class='line'>          <span class='nx'>src</span><span class='o'>:</span> <span class='s1'>&#39;{,*/}*.coffee&#39;</span><span class='p'>,</span>
+</span><span class='line'>          <span class='nx'>dest</span><span class='o'>:</span> <span class='s1'>&#39;.tmp/integration&#39;</span><span class='p'>,</span>
+</span><span class='line'>          <span class='nx'>ext</span><span class='o'>:</span> <span class='s1'>&#39;.js&#39;</span>
+</span><span class='line'>        <span class='p'>}]</span>
+</span><span class='line'>      <span class='p'>}</span>
+</span><span class='line'>    <span class='p'>},</span>
+</span><span class='line'>  <span class='c1'>// ...</span>
+</span><span class='line'><span class='p'>})</span>
+</span></code></pre></td></tr></table></div></figure>
+<ol>
+<li>
+<p>Write some tests in <code>test/integration</code>.</p>
+</li>
+
+<li>
+<p>You can now manually run your tests. First run Selenium:</p>
+</li>
+</ol>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class='p'>.</span><span class='o'>/</span><span class='nx'>node_modules</span><span class='o'>/</span><span class='nx'>protractor</span><span class='o'>/</span><span class='nx'>bin</span><span class='o'>/</span><span class='nx'>install_selenium_standalone</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>Then run your tests:</p>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class='p'>.</span><span class='o'>/</span><span class='nx'>node_modules</span><span class='o'>/</span><span class='nx'>protractor</span><span class='o'>/</span><span class='nx'>bin</span><span class='o'>/</span><span class='nx'>protractor</span> <span class='nx'>protractor</span><span class='p'>.</span><span class='nx'>conf</span><span class='p'>.</span><span class='nx'>js</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>Once I figure out the proper way to do this in Grunt, I’ll let you know.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-19T21:47:00+02:00" pubdate data-updated="true">Oct 19<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+<p>This has been brewing since I read <a href="https://www.change.org/en-GB/petitions/linus-torvalds-remove-rdrand-from-dev-random-4/responses/9066">Linus’ response to the petition to remove <code>RDRAND</code> from /dev/random</a>.</p>
+
+<p>For those of you who don’t know, <code>RDRAND</code> is a CPU instruction introduced by Intel on recent CPUs. It (supposedly) uses a hardware entropy source, and runs it through AES in CBC-MAC mode, to produce random numbers.</p>
+
+<p>Out of fear that <code>RDRAND</code> may somehow be backdoored, someone petitioned to remove <code>RDRAND</code> support to “improve the overall security of the kernel”. If <code>RDRAND</code> contains a back door, and an unknown attacker can control the output, that could break pretty much all userland crypto.</p>
+
+<p>Linus fulminated, as he is wont to do. He suggested we go read <code>drivers/char/random.c</code>. I quote (expletives and insults omitted):</p>
+
+<p>&gt; we use rdrand as <em>one</em> of many inputs into the random pool, and we &gt; use it as a way to <em>improve</em> that random pool. So even if rdrand &gt; were to be back-doored by the NSA, our use of rdrand actually &gt; improves the quality of the random numbers you get from &gt; /dev/random.</p>
+
+<p>I went ahead and read <code>random.c</code>. You can read it for yourself <a href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/char/random.c">in Linus’ tree</a>.</p>
+
+<p>Disclaimer: I am not an expert in this piece of code. I have no doubt Linus is far more familiar with it than I am. I’d love to be proven wrong. I’m just taking his advice and reading some code.</p>
+
+<p>The function I’m interested in is <code>extract_buf</code>:</p>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'>    <span class='cm'>/*</span>
+</span><span class='line'><span class='cm'>	 * If we have a architectural hardware random number</span>
+</span><span class='line'><span class='cm'>	 * generator, mix that in, too.</span>
+</span><span class='line'><span class='cm'>	 */</span>
+</span><span class='line'>	<span class='k'>for</span> <span class='p'>(</span><span class='n'>i</span> <span class='o'>=</span> <span class='mi'>0</span><span class='p'>;</span> <span class='n'>i</span> <span class='o'>&lt;</span> <span class='n'>LONGS</span><span class='p'>(</span><span class='n'>EXTRACT_SIZE</span><span class='p'>);</span> <span class='n'>i</span><span class='o'>++</span><span class='p'>)</span> <span class='p'>{</span>
+</span><span class='line'>		<span class='kt'>unsigned</span> <span class='kt'>long</span> <span class='n'>v</span><span class='p'>;</span>
+</span><span class='line'>		<span class='k'>if</span> <span class='p'>(</span><span class='o'>!</span><span class='n'>arch_get_random_long</span><span class='p'>(</span><span class='o'>&amp;</span><span class='n'>v</span><span class='p'>))</span>
+</span><span class='line'>			<span class='k'>break</span><span class='p'>;</span>
+</span><span class='line'>		<span class='n'>hash</span><span class='p'>.</span><span class='n'>l</span><span class='p'>[</span><span class='n'>i</span><span class='p'>]</span> <span class='o'>^=</span> <span class='n'>v</span><span class='p'>;</span>
+</span><span class='line'>	<span class='p'>}</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>This is in the extraction phase. This is after the hash is being mixed back in to the pool (and that’s for backtracking attacks: not intended as an input to the pool). It seems to me like the output of <code>arch_get_random_long</code> is being XORed in with the extracted output, not with the pool.</p>
+
+<p>If I were to put on my tin-foil hat, I would suggest that the difficulty has now been moved from being able to subvert the pool as one of its entropy sources (which we think is impossible), versus being able to see what you’re about to be XORed with. The latter seems a lot closer to the realm of stuff a microcode instruction can do.</p>
+
+<p>To put it into Python:</p>
+<figure class='code'><figcaption><span /></figcaption><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class='kn'>from</span> <span class='nn'>inspect</span> <span class='kn'>import</span> <span class='n'>currentframe</span>
+</span><span class='line'><span class='kn'>from</span> <span class='nn'>random</span> <span class='kn'>import</span> <span class='n'>getrandbits</span>
+</span><span class='line'>
+</span><span class='line'><span class='k'>def</span> <span class='nf'>extract_buf</span><span class='p'>():</span>
+</span><span class='line'>    <span class='sd'>&quot;&quot;&quot;Gets 16 bytes from the pool, and mixes them with RDRAND output.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class='n'>pool_bits</span> <span class='o'>=</span> <span class='n'>extract_from_pool</span><span class='p'>()</span>
+</span><span class='line'>    <span class='n'>rdrand_bits</span> <span class='o'>=</span> <span class='n'>rdrand</span><span class='p'>()</span>
+</span><span class='line'>    <span class='k'>return</span>  <span class='n'>pool_bits</span> <span class='o'>^</span> <span class='n'>rdrand_bits</span>
+</span><span class='line'>
+</span><span class='line'><span class='k'>def</span> <span class='nf'>extract_from_pool</span><span class='p'>():</span>
+</span><span class='line'>    <span class='sd'>&quot;&quot;&quot;Pretend to get some good, unpredictable bytes from the pool.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    Actually gets a long with some non-cryptographically secure random</span>
+</span><span class='line'><span class='sd'>    bits from random.getrandbits, which is usually a Mersenne Twister.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class='k'>return</span> <span class='n'>getrandbits</span><span class='p'>(</span><span class='mi'>32</span><span class='p'>)</span>
+</span><span class='line'>
+</span><span class='line'><span class='k'>def</span> <span class='nf'>rdrand</span><span class='p'>():</span>
+</span><span class='line'>    <span class='sd'>&quot;&quot;&quot;</span>
+</span><span class='line'><span class='sd'>    A malicious hardware instruction.</span>
+</span><span class='line'><span class='sd'>    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class='n'>pool_bits</span> <span class='o'>=</span> <span class='n'>currentframe</span><span class='p'>()</span><span class='o'>.</span><span class='n'>f_back</span><span class='o'>.</span><span class='n'>f_locals</span><span class='p'>[</span><span class='s'>&quot;pool_bits&quot;</span><span class='p'>]</span>
+</span><span class='line'>    <span class='k'>return</span> <span class='n'>pool_bits</span> <span class='o'>^</span> <span class='mh'>0xabad1dea</span>
+</span><span class='line'>
+</span><span class='line'><span class='k'>if</span> <span class='n'>__name__</span> <span class='o'>==</span> <span class='s'>&quot;__main__&quot;</span><span class='p'>:</span>
+</span><span class='line'>    <span class='k'>assert</span> <span class='n'>extract_buf</span><span class='p'>()</span> <span class='o'>==</span> <span class='mh'>0xabad1dea</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>Why can’t RDRAND work like this?</p>
+
+<p>Some comments based on feedback I’ve gotten so far:</p>
+
+<ol>
+<li>This attack does not need to know where the PRNG state lives in memory. First of all, this isn’t an attack on the PRNG state, it’s on the PRNG output. Secondly, the instruction only needs to peek ahead at what is about to happen (specifically, what’s about to be XORed with) the RDRAND output. That doesn’t require knowing where the PRNG state (or its output) is being stored in memory; we’re already talking register level at that point.</li>
+
+<li>While it’s certainly true that if you can’t trust the CPU, you can’t trust anything, that doesn’t really make this problem go away. <code>RDRAND</code> being broken wouldn’t make software crash, which is a lot harder for almost all other instructions. <code>RDRAND</code> being broken wouldn’t result in measurable side-effects, unlike what would happen if <code>PCLMULDQ</code> contained a back door. Furthermore, it’s a lot easier to backdoor one single microcode instruction and a lot more plausible and feasible for a CSPRNG to be backdoored than it is to think of a CPU as some kind of intelligent being that’s actively malicious or being remotely controlled.</li>
+</ol>
+
+<p>For what it’s worth, it seems <a href="https://twitter.com/zooko/status/392334674690723840">Zooko agrees with me</a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/30/securing-against-timing-attacks-with-twisted/">Securing Against Timing Attacks With Twisted</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-30T18:55:00+01:00" pubdate data-updated="true">Jan 30<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+<h2 id="what_are_timing_attacks">What are timing attacks?</h2>
+
+<p>Timing attacks are side-channel attacks that rely on inferring secret information from operations by measuring how long they take to execute.</p>
+
+<p>A complete explanation is outside of the scope of this article, but the <a href="https://en.wikipedia.org/wiki/Timing_attack">Wikipedia article</a> might be a good starting point for the interested reader.</p>
+
+<h2 id="why_should_i_care_about_them">Why should I care about them?</h2>
+
+<p>Because they can creep in before you know it, and break your otherwise fine system.</p>
+
+<p>A common way they’re introduced are string comparisons. String comparisons in many langauge implementations, including all implementations of Python I know of, short-circuit. They work roughly like this:</p>
+<figure class='code'><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class='k'>def</span> <span class='nf'>strcmp</span><span class='p'>(</span><span class='n'>s1</span><span class='p'>,</span> <span class='n'>s2</span><span class='p'>):</span>
+</span><span class='line'>    <span class='k'>if</span> <span class='nb'>len</span><span class='p'>(</span><span class='n'>s1</span><span class='p'>)</span> <span class='o'>!=</span> <span class='nb'>len</span><span class='p'>(</span><span class='n'>s2</span><span class='p'>):</span>
+</span><span class='line'>        <span class='k'>return</span> <span class='bp'>False</span>
+</span><span class='line'>    <span class='k'>for</span> <span class='n'>c1</span><span class='p'>,</span> <span class='n'>c2</span> <span class='ow'>in</span> <span class='nb'>zip</span><span class='p'>(</span><span class='n'>s1</span><span class='p'>,</span> <span class='n'>s2</span><span class='p'>):</span>
+</span><span class='line'>        <span class='k'>if</span> <span class='n'>c1</span> <span class='o'>!=</span> <span class='n'>c2</span><span class='p'>:</span>
+</span><span class='line'>            <span class='k'>return</span> <span class='bp'>False</span>
+</span><span class='line'>    <span class='k'>return</span> <span class='bp'>True</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>This means that as soon as they can prove the two strings are not equal, they return <code>False</code> and ignore the rest of the string. This is a very simple and effective performance optimization. And that’s precisely why, from a security point of view, it’s a liability.</p>
+
+<p>Since it takes longer to compare “The quick brown fox jumps over the lazy dog” to “The quick brown fox jumps over the lazy god” than it does to compare it to “Lorem ipsum”, or even a Lipsum of the same length, an attacker can use that timing information to figure out what the original string is that is being compared to, even when he shouldn’t.</p>
+
+<h2 id="why_did_you_care">Why did you care?</h2>
+
+<p>Password resets.</p>
+
+<p>The typically recommended way of doing them is to generate a random number, one that’s sufficiently long that an attacker can’t guess it. Then, you relay that number to the user using some alternative channel (usually a URL in an e-mail).</p>
+
+<p>Bar the random number, those URLs are predictable. That means an attacker can trivially try any number he wants. If an attacker is allowed to do that enough, he could measure timing differences between different numbers (introduced by string comparison functions that short-circuit or even by the database’s index) to efficiently deduce the value of a “good” number.</p>
+
+<p>Also, if membership is private, an attacker may exploit timing differences in the password reset <em>request</em> function to farm e-mail addresses.</p>
+
+<h2 id="how_do_i_protect_against_timing_attacks">How do I protect against timing attacks?</h2>
+
+<p>Just to be clear: timing attacks are a complicated problem, and this article describes just one strategy I’ve applied to help secure against them.</p>
+
+<p>The easiest way to prevent a timing attack is to make sure that the timing your hypothetical attacker can measure is unrelated to the work you have to do.</p>
+
+<p>Since I was using <a href="http://twistedmatrix.com">Twisted</a> and <a href="http://amp-protocol.net/">AMP</a>, this was actually quite easy. I wrote a decorator for AMP responder functions that does exactly that:</p>
+<figure class='code'><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class='k'>def</span> <span class='nf'>_immediateResponder</span><span class='p'>(</span><span class='n'>f</span><span class='p'>):</span>
+</span><span class='line'>    <span class='sd'>&quot;&quot;&quot;</span>
+</span><span class='line'><span class='sd'>    A decorator for responder functions that should return immediately and</span>
+</span><span class='line'><span class='sd'>    execute asynchronously, as a defense against timing attacks.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    The responder decorator should be applied after (above) this decorator::</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>        @SomeCommand.responder</span>
+</span><span class='line'><span class='sd'>        @_immediateResponder</span>
+</span><span class='line'><span class='sd'>        def responder(...):</span>
+</span><span class='line'><span class='sd'>            ....</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    This should be timing attack resistant since it is unconditional: the</span>
+</span><span class='line'><span class='sd'>    the AMP response is returned immediately, and the real responder is</span>
+</span><span class='line'><span class='sd'>    scheduled to run at the next chance the reactor has to do so.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    This only works with AMP commands with empty responses. That&#39;s probably a</span>
+</span><span class='line'><span class='sd'>    good idea anyway: almost all information you could add to the response</span>
+</span><span class='line'><span class='sd'>    is liable to introduce a timing attack vulnerability.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    Since this precludes your ability to communicate success or failure to</span>
+</span><span class='line'><span class='sd'>    the caller, the decorated function should return quite quickly (or, if it</span>
+</span><span class='line'><span class='sd'>    can&#39;t, that should be clearly documented). Otherwise, you may end up in a</span>
+</span><span class='line'><span class='sd'>    a race condition, where the caller assumes the operation has completed,</span>
+</span><span class='line'><span class='sd'>    but it is in progress or hasn&#39;t started yet.</span>
+</span><span class='line'>
+</span><span class='line'><span class='sd'>    The original responder function is available on the decorated function as</span>
+</span><span class='line'><span class='sd'>    the ``responderFunction`` attribute.</span>
+</span><span class='line'><span class='sd'>    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class='nd'>@functools.wraps</span><span class='p'>(</span><span class='n'>f</span><span class='p'>)</span>
+</span><span class='line'>    <span class='k'>def</span> <span class='nf'>wrapped</span><span class='p'>(</span><span class='bp'>self</span><span class='p'>,</span> <span class='o'>*</span><span class='n'>args</span><span class='p'>,</span> <span class='o'>**</span><span class='n'>kwargs</span><span class='p'>):</span>
+</span><span class='line'>        <span class='n'>reactor</span><span class='o'>.</span><span class='n'>callLater</span><span class='p'>(</span><span class='mi'>0</span><span class='p'>,</span> <span class='n'>f</span><span class='p'>,</span> <span class='bp'>self</span><span class='p'>,</span> <span class='o'>*</span><span class='n'>args</span><span class='p'>,</span> <span class='o'>**</span><span class='n'>kwargs</span><span class='p'>)</span>
+</span><span class='line'>        <span class='k'>return</span> <span class='p'>{}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class='n'>wrapped</span><span class='o'>.</span><span class='n'>responderFunction</span> <span class='o'>=</span> <span class='n'>f</span>
+</span><span class='line'>    <span class='k'>return</span> <span class='n'>wrapped</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>When I get an incoming RPC call, the function doing the actual work is scheduled to run at the next reactor iteration. Then, an empty response is returned. All of this happens in amortized constant time, and independent of any secrets. As a result, it can’t really leak much about them.</p>
+
+<h2 id="an_abstraction_too_high">An abstraction too high</h2>
+
+<p>The above was an effective response to a proof-of-concept timing attack exploit. Unfortunately, that doesn’t mean you’ve fixed every timing attack.</p>
+
+<p>In particular, this example is a few layers of abstraction removed from the grit of real-world I/O. Just because I returned <code>{}</code> (an empty response) immediately, doesn’t mean the underlying IO happens immediately.</p>
+
+<p>In particular, the write output latency could be coerced to depend on the computation time, because the function passed to it could be executed before the <code>write</code>. If that happens, and the time it takes is dependant on some secret, delaying the write, the latency on the attacker’s side could be used to measure the work done.</p>
+
+<p>I have not yet been able to turn the above into a working exploit.</p>
+
+<p>There are a number of ways this could be mitigated. Since there’s no working exploit, it’s unclear if this mitigation would render a timing attack infeasible.</p>
+
+<p>One way I’ve considered to mitigate this is to limit the time that the reactor is blocked. In my concrete example, this was fortunately already the case, since one of the first things it did was defer to a thread that released the GIL (to compute the key from the password using <code>scrypt</code>). Alternatively, if you’re doing this for Python code, you could write your function cooperatively.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/28/moving-to-octopress-on-github-pages/">Moving to Octopress on Github Pages</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-28T10:58:00+01:00" pubdate data-updated="true">Jan 28<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+<p>Long overdue, I’m told.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/11/27/designing-a-rest-api-logging-in/">Designing a REST API: Logging In</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-11-27T00:00:00+01:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><div>Hey. As many of you probably know, I&#8217;m building a business, and that business involves a REST API being consumed by browsers (for now).</div>
+<p />
+<div>The problem I&#8217;m hitting is registration and logging in. It just doesn&#8217;t seem to be a problem that fits REST very well &#8211; maybe I&#8217;m thinking too much about services and not enough about resources, so I&#8217;m writing this blog posts to get my thoughts in order and hopefully get some useful feedback.</div>
+<p />
+<div>This post is about user registration and login, and how they&#8217;re hard to fit into REST.</div>
+<p />
+<div>Context: users are uniquely identified by a user id, which is a random string of sufficient size. These ids are immutable and uniquely refer to this user from registration until forever. User emails are also unique, but they can change, so they are not a good way to refer to a user. Users register and log in using email and password.</div>
+<p />
+<div><strong><span style="font-size: medium;">Option 1: separate authentication endpoint</span></strong></div>
+<p />
+<div>The idea here is that there are two things:</div>
+<div>
+<ul>
+<li>the REST API, which authenticated things talk to</li>
+<li>the authentication endpoint, where unauthenticated things go to become authenticated</li>
+</ul>
+The downside is that there are two things. One of them speaks REST, and the other speaks gnarly ad-hoc RPC or maybe JSON-RPC or something.</div>
+<p />
+<div>The upside is that the REST API only needs to understand one kind of token.</div>
+<p />
+<div><span style="font-size: medium;"><strong>Option 2: everything in REST</strong></span></div>
+<p />
+<blockquote class="gmail_quote" style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0.8ex; border-left-width: 1px; border-left-color: #cccccc; border-left-style: solid; padding-left: 1ex;">Special cases aren&#8217;t special enough to break the rules.</blockquote>
+<blockquote class="gmail_quote" style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0.8ex; border-left-width: 1px; border-left-color: #cccccc; border-left-style: solid; padding-left: 1ex;">&#8211; Zen of Python</blockquote>
+<p />
+<div>The advantage is that there is one canonical source for everything. Everything including access grants (which should be nice for OAuth later). You can use the REST API to perform any action, see anything in the system&#8230;</div>
+<p />
+<div>The downsides:</div>
+<div>
+<ul>
+<li>the REST API has to understand more than one kind of authentication. This also might make it a bit uglier to interoperate with OAuth later.</li>
+<li>Logging in takes too many round trips. First I have to query <span style="font-family: courier new,monospace;">users/?email={EMAIL}</span><span style="font-family: arial,helvetica,sans-serif;">&nbsp;to go from e-mail address to user id. Then, I have to POST to users/accessGrants &#8211; which is if I&#8217;m allowed to guess the URL, which I really shouldn&#8217;t, I should GET users/ first (HATEOAS and all that &#8211; but I&#8217;m willing to ignore that for now). All of this happens over HTTPS with HTTP Basic auth. TLS handshakes are slow, and verifying securely stored passwords is even slower.</span></li>
+</ul>
+</div>
+<p />
+<div><strong><span style="font-size: medium;">Option 2b: everything in REST, with shortcuts</span></strong></div>
+<blockquote class="gmail_quote" style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0.8ex; border-left-width: 1px; border-left-color: #cccccc; border-left-style: solid; padding-left: 1ex;">Although practicality beats purity.</blockquote>
+<blockquote class="gmail_quote" style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0.8ex; border-left-width: 1px; border-left-color: #cccccc; border-left-style: solid; padding-left: 1ex;">&#8211; Zen of Python&nbsp;</blockquote>
+<div>&#8230; but, unfortunately, also:</div>
+<blockquote class="gmail_quote" style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0.8ex; border-left-width: 1px; border-left-color: #cccccc; border-left-style: solid; padding-left: 1ex;">
+<div>There should be one&#8211; and preferably only one &#8211;obvious way to do it.</div>
+</blockquote>
+<blockquote class="gmail_quote" style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0.8ex; border-left-width: 1px; border-left-color: #cccccc; border-left-style: solid; padding-left: 1ex;">&#8211; Zen of Python&nbsp;</blockquote>
+<p />
+<div>The upsides are the same as for the REST API, except we get rid of the downside that logging in takes too many round trips, because there&#8217;s a shortcut for that.</div>
+<p />
+<div>That shortcut would be something that speaks some kind of ad-hoccy RPC, or possibly JSON-RPC. One of the exported methods/procedures would be &#8220;getGrant&#8221;, which takes a username and password and returns the key. These endpoints talk to the same database behind the scenes. Killer feature: one round trip.</div>
+<p />
+<div>Downside is that the API should probably still be able to take user credentials, since this is is a shortcut&#8230;.</div>
+<p />
+<div>Yes, I know OAuth exists. For now, we have no interest in opening this API up yet. We&#8217;ll do that as soon as we have a platform worth caring about, an API that doesn&#8217;t change every three seconds, and a security expert that&#8217;s reviewed it.</div>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/05/12/i-don-t-understand-rest-pagination/">I Don&#8217;t Understand REST Pagination</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-12T00:00:00+02:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Hey.<p /><br />So, in <a href="https://github.com/lvh/txyoga">txYoga</a>, in implemented pagination in terms of query parameters to a collection. If you want to access the range of elements [100, 110), you would say: <span style="font-family: courier new,monospace;"><a href="http://whatever/collection?start=100;stop=110">http://whatever/collection?start=100;stop=110</a></span>. The feature here is that pages give you the link to the next and previous page. The response (JSON) looks something like <span style="font-family: courier new,monospace;">{&quot;results&quot;: [&#8230;], &quot;next&quot;: nextURL, &quot;prev&quot;: prevURL}</span>. That way, you pretty much just have to follow URLs to walk down the collection as a doubly  linked list of pages. The supposed feature is that I can change how my pages work, and users hopefully won&#39;t notice, since they shouldn&#39;t be building their own URLs anyway.<p /> Now, at the same time, I&#39;m looking at <a href="http://dojotoolkit.org/reference-guide/dojo/store/JsonRest.html">dojo&#39;s JsonRest API</a>. It&#39;s suggesting that I use the Range and Content-Range headers for pagination support. It also has a single JSON array as a response (so, [{&#8230;}, &#8230;]) instead of my JSON object. I started RFC diving and hey look, they&#39;re right, HTTP understands <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.12">ranges with arbitrary units</a>. So, are my URLs wrong? Are people supposed to conjure Range URLs themselves? Why are these darned ranges inclusive? Another problem is that the specification doesn&#39;t really seem to support non-numeric ranges, whereas to txYoga, that&#39;s not really a problem as long as the underlying collection understands it.<p /> Isn&#39;t REST supposed to be hypertext-driven? Aren&#39;t people basically supposed to never construct URLs, and rely on me to provide them to them? Where am I supposed to put those URLs? Yaaargh.<p /> <br />cheers<div>lvh</div>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/05/06/crowdsourcing-opinions-on-a-rest-api-post-put-or-both-/">Crowdsourcing Opinions on a REST API: POST, PUT or Both?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-06T00:00:00+02:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">As some of you undoubtedly know, I&#39;m writing a thing called txYoga, which is a REST framework for Twisted.<p />The fundamental operations in this post are CRUD:<br /><ol><li>Creating elements</li><li>Retrieving them</li> <li>Updating them</li><li>Deleting them</li></ol>Now, retrieving is obvious: send a GET request to the element. Getting rid of them is too: same thing, but a DELETE. Updates are done using PUT to the element. Creating elements, though, is a bit more ambiguous:<br /> <ol><li>If the client knows the complete path to the element (so, particularly the final part of the new element&#39;s URI), it PUTs to that URI (for which there is currently no element).</li><li>If the client doesn&#39;t know or care, it POSTs to the collection. The collection creates the element, and probably returns the URL under which the new element is available.<br /> </li></ol>One of the fundamental differences between POST and PUT is that PUT is idempotent, but POST is not. If you send me the same PUT request once, twice or ten times, you&#39;ll end up with the same state. POSTing to the collection might work once (or pretty much indefinitely, if you&#39;re producing objects with an UUID identifier for example).<p /> This is because in txYoga, each element has exactly one identifying attribute (which is the thing that&#39;s used to access the element). That&#39;s what makes PUT feels so awkward: what you&#39;re putting contains the information to decide what the name of the object is (since it has to have the identifying attribute), but the object doesn&#39;t know what name it&#39;s going to be put under (since that name only exists after the object is created), so you have to repeat yourself. With POST, you don&#39;t really care.<p /> Additionally, you&#39;d be using the same thing for updating and creating new elements, which I guess sort-of makes sense, but reminds me of Perl&#39;s autovivification and not in a good way.<p />The question is: should I support both PUT and POST for creating elements? On the one hand, There should be one&#8211; and preferably only one &#8211;obvious way to do it. On the other, this is what REST pretty much does &#8211; and practicality beats purity (although this isn&#39;t very practical for me&#8230;).
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/2/"><i class="fa fa-chevron-circle-left fa-2x icon-color"></i></a>
+    
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline"  href="https://twitter.com/lvh"  data-widget-id="451753700516585472">Tweets by @lvh</a>
+    <script>!function(d,s,id){var
+      js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">Optimization Problems and PyCon Financial Aid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/lvh">@lvh</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'lvh',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <!-- <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Laurens Van Houtven -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+
+
+</footer> -->
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
