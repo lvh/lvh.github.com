@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Pycon | lvh]]></title>
-  <link href="http://lvh.github.com/blog/categories/pycon/atom.xml" rel="self"/>
-  <link href="http://lvh.github.com/"/>
-  <updated>2014-04-05T23:23:13+02:00</updated>
-  <id>http://lvh.github.com/</id>
+  <link href="http://www.lvh.io/blog/categories/pycon/atom.xml" rel="self"/>
+  <link href="http://www.lvh.io/"/>
+  <updated>2014-04-05T23:26:13+02:00</updated>
+  <id>http://www.lvh.io/</id>
   <author>
     <name><![CDATA[Laurens Van Houtven]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Optimal Hotel Room Pairing]]></title>
-    <link href="http://lvh.github.com/blog/2014/03/18/optimal-hotel-room-pairing/"/>
+    <link href="http://www.lvh.io/blog/2014/03/18/optimal-hotel-room-pairing/"/>
     <updated>2014-03-18T13:05:52+01:00</updated>
-    <id>http://lvh.github.com/blog/2014/03/18/optimal-hotel-room-pairing</id>
+    <id>http://www.lvh.io/blog/2014/03/18/optimal-hotel-room-pairing</id>
     <content type="html"><![CDATA[
 <p>The greedy hotel pairing algorithm from my <a href="http://blog.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">previous post</a> gives good solutions. If you make some fairly reasonable-sounding assumptions about the problem, <em>very</em> good solutions. At any rate nicer than forcing a human to drudge through it; both in terms of person-hours spent and quality of the solutions.</p>
 
@@ -79,9 +79,9 @@
   
   <entry>
     <title type="html"><![CDATA[Optimization Problems and PyCon Financial Aid]]></title>
-    <link href="http://lvh.github.com/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/"/>
+    <link href="http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/"/>
     <updated>2014-03-10T16:47:00+01:00</updated>
-    <id>http://lvh.github.com/blog/2014/03/10/optimization-problems-and-pycon-financial-aid</id>
+    <id>http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid</id>
     <content type="html"><![CDATA[
 <p>This year, I have partly taken on some new responsibilities in organizing PyCon. Specifically, I’ve done some work on financial aid. (Next year, I will be taking on the position of financial aid chair.) There have been some challenges that I’ve thrown some code at. Some of it stuck.</p>
 

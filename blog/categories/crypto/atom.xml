@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Crypto | lvh]]></title>
-  <link href="http://lvh.github.com/blog/categories/crypto/atom.xml" rel="self"/>
-  <link href="http://lvh.github.com/"/>
-  <updated>2014-04-05T23:23:13+02:00</updated>
-  <id>http://lvh.github.com/</id>
+  <link href="http://www.lvh.io/blog/categories/crypto/atom.xml" rel="self"/>
+  <link href="http://www.lvh.io/"/>
+  <updated>2014-04-05T23:26:13+02:00</updated>
+  <id>http://www.lvh.io/</id>
   <author>
     <name><![CDATA[Laurens Van Houtven]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Thoughts on RDRAND in Linux]]></title>
-    <link href="http://lvh.github.com/blog/2013/10/19/thoughts-on-rdrand-in-linux/"/>
+    <link href="http://www.lvh.io/blog/2013/10/19/thoughts-on-rdrand-in-linux/"/>
     <updated>2013-10-19T21:47:00+02:00</updated>
-    <id>http://lvh.github.com/blog/2013/10/19/thoughts-on-rdrand-in-linux</id>
+    <id>http://www.lvh.io/blog/2013/10/19/thoughts-on-rdrand-in-linux</id>
     <content type="html"><![CDATA[
 <p>This has been brewing since I read <a href="https://www.change.org/en-GB/petitions/linus-torvalds-remove-rdrand-from-dev-random-4/responses/9066">Linus’ response to the petition to remove <code>RDRAND</code> from /dev/random</a>.</p>
 

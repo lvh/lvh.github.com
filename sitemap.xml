@@ -2,174 +2,170 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>
-            http://lvh.github.com/blog/2010/09/26/building-a-continuous-deployment-system-part-one/
+            http://www.lvh.io/blog/2010/09/26/building-a-continuous-deployment-system-part-one/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2010/09/26/building-a-continuous-deployment-system-part-two-what-is-it-/
+            http://www.lvh.io/blog/2010/09/26/building-a-continuous-deployment-system-part-two-what-is-it-/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2010/09/27/building-a-continuous-deployment-system-part-three-preparing-for-continuous-deployment/
+            http://www.lvh.io/blog/2010/09/27/building-a-continuous-deployment-system-part-three-preparing-for-continuous-deployment/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2010/09/28/a-continuous-deployment-interlude-picking-a-development-stack/
+            http://www.lvh.io/blog/2010/09/28/a-continuous-deployment-interlude-picking-a-development-stack/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2010/09/29/a-continuous-deployment-interlude-rolling-your-own-development-stack/
+            http://www.lvh.io/blog/2010/09/29/a-continuous-deployment-interlude-rolling-your-own-development-stack/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2010/09/29/designing-a-continuous-deployment-system-on-being-language-agnostic/
+            http://www.lvh.io/blog/2010/09/29/designing-a-continuous-deployment-system-on-being-language-agnostic/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
-        <loc>http://lvh.github.com/blog/2010/09/29/we-now-have-an-animal-mascot-/</loc>
+        <loc>http://www.lvh.io/blog/2010/09/29/we-now-have-an-animal-mascot-/</loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
-        <loc>http://lvh.github.com/blog/2010/09/29/well-now-this-changes-everything-/</loc>
-        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://lvh.github.com/blog/2010/09/30/designing-a-continuous-deployment-system-deployment-formats-and-content/
-        </loc>
+        <loc>http://www.lvh.io/blog/2010/09/29/well-now-this-changes-everything-/</loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2010/10/01/designing-a-continuous-deployment-system-cautious-deployment/
+            http://www.lvh.io/blog/2010/09/30/designing-a-continuous-deployment-system-deployment-formats-and-content/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2010/10/04/cautious-deployment-for-continuous-availability/
-        </loc>
-        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
-    </url>
-    <url>
-        <loc>http://lvh.github.com/blog/2010/10/13/pycon-us-talk/</loc>
-        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://lvh.github.com/blog/2011/03/05/religious-wars-considered-harmful-considered-harmful/
-        </loc>
-        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
-    </url>
-    <url>
-        <loc>http://lvh.github.com/blog/2011/03/05/why-do-people-hate-launchpad-so-much-/</loc>
-        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://lvh.github.com/blog/2011/03/06/a-compiled-list-of-launchpad-s-perceived-flaws/
+            http://www.lvh.io/blog/2010/10/01/designing-a-continuous-deployment-system-cautious-deployment/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2011/03/06/bridging-the-gap-between-launchpad-and-github/
+            http://www.lvh.io/blog/2010/10/04/cautious-deployment-for-continuous-availability/
+        </loc>
+        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.lvh.io/blog/2010/10/13/pycon-us-talk/</loc>
+        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://www.lvh.io/blog/2011/03/05/religious-wars-considered-harmful-considered-harmful/
+        </loc>
+        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.lvh.io/blog/2011/03/05/why-do-people-hate-launchpad-so-much-/</loc>
+        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://www.lvh.io/blog/2011/03/06/a-compiled-list-of-launchpad-s-perceived-flaws/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2011/03/08/on-sysadmins-programmers-and-reconciliation-a-response-to-zed-shaw-s-post-/
+            http://www.lvh.io/blog/2011/03/06/bridging-the-gap-between-launchpad-and-github/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2011/03/09/reflections-on-stories-from-disgruntled-launchpad-users/
+            http://www.lvh.io/blog/2011/03/08/on-sysadmins-programmers-and-reconciliation-a-response-to-zed-shaw-s-post-/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2011/05/06/crowdsourcing-opinions-on-a-rest-api-post-put-or-both-/
+            http://www.lvh.io/blog/2011/03/09/reflections-on-stories-from-disgruntled-launchpad-users/
         </loc>
-        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
-    </url>
-    <url>
-        <loc>http://lvh.github.com/blog/2011/05/12/i-don-t-understand-rest-pagination/</loc>
-        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
-    </url>
-    <url>
-        <loc>http://lvh.github.com/blog/2011/11/27/designing-a-rest-api-logging-in/</loc>
-        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
-    </url>
-    <url>
-        <loc>http://lvh.github.com/blog/2013/01/28/moving-to-octopress-on-github-pages/</loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2013/01/30/securing-against-timing-attacks-with-twisted/
+            http://www.lvh.io/blog/2011/05/06/crowdsourcing-opinions-on-a-rest-api-post-put-or-both-/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
-        <loc>http://lvh.github.com/blog/2013/10/19/thoughts-on-rdrand-in-linux/</loc>
+        <loc>http://www.lvh.io/blog/2011/05/12/i-don-t-understand-rest-pagination/</loc>
+        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.lvh.io/blog/2011/11/27/designing-a-rest-api-logging-in/</loc>
+        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.lvh.io/blog/2013/01/28/moving-to-octopress-on-github-pages/</loc>
+        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.lvh.io/blog/2013/01/30/securing-against-timing-attacks-with-twisted/</loc>
+        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.lvh.io/blog/2013/10/19/thoughts-on-rdrand-in-linux/</loc>
+        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.lvh.io/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/</loc>
+        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.lvh.io/blog/2013/12/18/external-drive-lossage-on-mavericks/</loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
         <loc>
-            http://lvh.github.com/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/
+            http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/
         </loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
-        <loc>http://lvh.github.com/blog/2013/12/18/external-drive-lossage-on-mavericks/</loc>
+        <loc>http://www.lvh.io/blog/2014/03/18/optimal-hotel-room-pairing/</loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
-        <loc>
-            http://lvh.github.com/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/
-        </loc>
+        <loc>http://www.lvh.io/archives/</loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
-        <loc>http://lvh.github.com/blog/2014/03/18/optimal-hotel-room-pairing/</loc>
+        <loc>http://www.lvh.io/blog/archives/</loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
-        <loc>http://lvh.github.com/archives/</loc>
+        <loc>http://www.lvh.io/blog/</loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
-        <loc>http://lvh.github.com/blog/archives/</loc>
-        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
-    </url>
-    <url>
-        <loc>http://lvh.github.com/blog/</loc>
-        <lastmod>2014-04-03T15:06:50+02:00</lastmod>
-    </url>
-    <url>
-        <loc>http://lvh.github.com/</loc>
+        <loc>http://www.lvh.io/</loc>
         <lastmod>2014-04-03T17:23:07+02:00</lastmod>
     </url>
     <url>
-        <loc>http://lvh.github.com/robots.txt</loc>
+        <loc>http://www.lvh.io/robots.txt</loc>
         <lastmod>2014-04-03T15:06:50+02:00</lastmod>
     </url>
     <url>
-        <loc>http://lvh.github.com/talks/</loc>
+        <loc>http://www.lvh.io/talks/</loc>
         <lastmod>2014-04-05T22:35:59+02:00</lastmod>
     </url>
 </urlset>
