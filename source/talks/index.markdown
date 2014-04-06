@@ -12,12 +12,12 @@ missing or you have some missing talk materials, please get in touch!
 
 A common criticism of the [Twisted](https://www.twistedmatrix.com)
 framework is that it supposedly "infects" all your code. Supposedly,
-if you use Twisted, you're forced to use Twisted-specific code
-exclusively, and are shut off from the wide gamut of available Python
+you're forced to use Twisted-specific code exclusively as soon as you
+start using it. You wouldn't be able to use the majority of Python
 packages. I'm convinced that's a myth; this talk attempts to debunk
 it.
 
-[HTML slides](//www.lvh.io/TwistedMixing),
+[Slides (HTML)](//www.lvh.io/TwistedMixing),
 [source repo](https://github.com/lvh/TwistedMixing). This is a
 full-length talk (30 minutes).
 
@@ -33,7 +33,7 @@ works in your browser.
 [introductory crypto course](https://www.crypto101.io) of the same
 name. I started working on the course after giving this talk.)
 
-[Keynote slides](https://www.dropbox.com/sh/a9p6rc21p67dhte/YMDFsEPUTs),
+[Slides (Keynote)](https://www.dropbox.com/sh/a9p6rc21p67dhte/YMDFsEPUTs),
 [source repo](https://github.com/lvh/Crypto101). This is a
 keynote-length talk (45 minutes).
 
@@ -49,7 +49,7 @@ Fractal architectures invert that idea, creating independent and
 atomic units that can be easily scaled horizontally, in order to
 produce highly robust low-latency systems.
 
-[Speaker Deck slides](https://speakerdeck.com/pyconza/pyconza-2012-fractal-architectures-by-laurens-van-houtven).
+[Slides (Speaker Deck)](https://speakerdeck.com/pyconza/pyconza-2012-fractal-architectures-by-laurens-van-houtven).
 This is a full-length talk (30 minutes).
 
 Presented at DjangoCon EU 2013
