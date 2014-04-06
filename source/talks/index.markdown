@@ -18,7 +18,8 @@ packages. I'm convinced that's a myth; this talk attempts to debunk
 it.
 
 [HTML slides](//www.lvh.io/TwistedMixing),
-[source repo](https://github.com/lvh/TwistedMixing).
+[source repo](https://github.com/lvh/TwistedMixing). This is a
+full-length talk (30 minutes).
 
 Presented at: PyCon 2014 (soon!) and Pykonik.
 
