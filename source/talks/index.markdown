@@ -64,10 +64,9 @@ ignoring the security concerns regarding password storage, or using
 outdated and flawed technology. This talk explores how to do password
 storage securely.
 
-[Slides (Google Docs)](https://docs.google.com/presentation/d/1Sa-Zb1-LR6S8qcQdGBWxq6EJfg7Fwi67CNXNE-hosvM/edit?usp=sharing&authkey=CK26240L)
+[Slides (Google Docs)](https://docs.google.com/presentation/d/1Sa-Zb1-LR6S8qcQdGBWxq6EJfg7Fwi67CNXNE-hosvM/edit?usp=sharing&authkey=CK26240L). This is a lightning talk (5 minutes).
 
 Presented at PyCon DE 2012, PyCon ZA 2012 and several other places.
-This is a lightning talk (5 minutes).
 
 ## Continuous Deployment
 
