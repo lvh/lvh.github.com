@@ -49,8 +49,12 @@ Fractal architectures invert that idea, creating independent and
 atomic units that can be easily scaled horizontally, in order to
 produce highly robust low-latency systems.
 
-[Slides (Speaker Deck)](https://speakerdeck.com/pyconza/pyconza-2012-fractal-architectures-by-laurens-van-houtven).
-This is a full-length talk (30 minutes).
+[Slides (Speaker Deck)](https://speakerdeck.com/pyconza/pyconza-2012-fractal-architectures-by-laurens-van-houtven), [slides (Keynote)](https://www.dropbox.com/s/znbkzltbmlnf1va/FractalArchitectures.key), [source repo](https://github.com/lvh/FractalArchitectures). This is a full-length talk (30 minutes).
+
+I thought I lost these slides. I recovered them thanks to Speaker's
+Corner, the South African public speaking company that provided their
+services at PyCon ZA. I'd like to thank Sam Manclark and Speaker's
+Corner for helping me get them back.
 
 Presented at DjangoCon EU 2013
 ([video](https://www.youtube.com/watch?v=bw_HntuE7Cg)), Pykonik, PyCon
