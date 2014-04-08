@@ -9,7 +9,7 @@
   <meta name="author" content="Laurens Van Houtven">
 
   
-  <meta name="description" content="Hello again :-)I tweeted something. I&#39;m quite proud of it. It&#39;s exactly 140 characters, and it captures the essence of the last few days&#39 &hellip;">
+  <meta name="description" content="As some of you undoubtedly know, I&#39;m writing a thing called txYoga, which is a REST framework for Twisted.The fundamental operations in this post &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,6 +94,42 @@ MathJax.Hub.Config({
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2011/05/06/crowdsourcing-opinions-on-a-rest-api-post-put-or-both-/">Crowdsourcing Opinions on a REST API: POST, PUT or Both?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-06T00:00:00-04:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">As some of you undoubtedly know, I&#39;m writing a thing called txYoga, which is a REST framework for Twisted.<p />The fundamental operations in this post are CRUD:<br /><ol><li>Creating elements</li><li>Retrieving them</li> <li>Updating them</li><li>Deleting them</li></ol>Now, retrieving is obvious: send a GET request to the element. Getting rid of them is too: same thing, but a DELETE. Updates are done using PUT to the element. Creating elements, though, is a bit more ambiguous:<br /> <ol><li>If the client knows the complete path to the element (so, particularly the final part of the new element&#39;s URI), it PUTs to that URI (for which there is currently no element).</li><li>If the client doesn&#39;t know or care, it POSTs to the collection. The collection creates the element, and probably returns the URL under which the new element is available.<br /> </li></ol>One of the fundamental differences between POST and PUT is that PUT is idempotent, but POST is not. If you send me the same PUT request once, twice or ten times, you&#39;ll end up with the same state. POSTing to the collection might work once (or pretty much indefinitely, if you&#39;re producing objects with an UUID identifier for example).<p /> This is because in txYoga, each element has exactly one identifying attribute (which is the thing that&#39;s used to access the element). That&#39;s what makes PUT feels so awkward: what you&#39;re putting contains the information to decide what the name of the object is (since it has to have the identifying attribute), but the object doesn&#39;t know what name it&#39;s going to be put under (since that name only exists after the object is created), so you have to repeat yourself. With POST, you don&#39;t really care.<p /> Additionally, you&#39;d be using the same thing for updating and creating new elements, which I guess sort-of makes sense, but reminds me of Perl&#39;s autovivification and not in a good way.<p />The question is: should I support both PUT and POST for creating elements? On the one hand, There should be one&#8211; and preferably only one &#8211;obvious way to do it. On the other, this is what REST pretty much does &#8211; and practicality beats purity (although this isn&#39;t very practical for me&#8230;).
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2011/03/09/reflections-on-stories-from-disgruntled-launchpad-users/">Reflections on Stories From (Disgruntled) Launchpad Users</a></h1>
     
     
@@ -110,7 +146,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-03-09T00:00:00+01:00" pubdate data-updated="true"></time>
+<time datetime="2011-03-09T00:00:00-05:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -146,7 +182,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-03-08T00:00:00+01:00" pubdate data-updated="true"></time>
+<time datetime="2011-03-08T00:00:00-05:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -182,7 +218,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-03-06T00:00:00+01:00" pubdate data-updated="true"></time>
+<time datetime="2011-03-06T00:00:00-05:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -218,7 +254,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-03-06T00:00:00+01:00" pubdate data-updated="true"></time>
+<time datetime="2011-03-06T00:00:00-05:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -272,7 +308,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-03-05T00:00:00+01:00" pubdate data-updated="true"></time>
+<time datetime="2011-03-05T00:00:00-05:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -308,7 +344,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-03-05T00:00:00+01:00" pubdate data-updated="true"></time>
+<time datetime="2011-03-05T00:00:00-05:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -344,7 +380,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2010-10-13T00:00:00+02:00" pubdate data-updated="true"></time>
+<time datetime="2010-10-13T00:00:00-04:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -380,7 +416,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2010-10-04T00:00:00+02:00" pubdate data-updated="true"></time>
+<time datetime="2010-10-04T00:00:00-04:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -449,7 +485,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2010-10-01T00:00:00+02:00" pubdate data-updated="true"></time>
+<time datetime="2010-10-01T00:00:00-04:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -457,42 +493,6 @@ MathJax.Hub.Config({
 
 
   <div class="entry-content">This article will be about a deployment scheduling technique which I call operationally cautious deployment. (I didn&#39;t pick the name so the acronym would end up being OCD! Honest! I swear!).<p /><div>Note: This isn&#39;t <i>new</i>. I didn&#39;t invent it. The fact that a big number of people around the globe with similar problems have come up with this idea independently and that most of them are happy with the results speaks for itself: this is mostly just common sense thinking applied to fixing a real problem. It&#39;s one of those things that sound obvious when you have them explained to you, but you probably wouldn&#39;t come up with unless you spend quiet a bit of time pondering the problem.</div> <p /><div>So you have a wonderful continuous deployment system! Congratulations! You deploy a new version, monitor your cluster of hosts, and create wonderful graphs:</div><p /><div>[[posterous-content:NBFS9fiUjfTCi8Xr5KIW]]<br /> </div><p /><div>Except, of course, it&#39;s not that simple. Your test suite, no matter how much you&#39;ve honed and polished it, is imperfect. It will contain subtle assumptions that just aren&#39;t true in deployment. (When I say &quot;subtle assumptions&quot;, I mean the kind that you don&#39;t know are assumptions until everything blows up.). If you&#39;re going to be deploying software all the time, deploying something that has a fatal mistake in it is a matter of when, not if. So one day, the real graph is going to look something like this:</div> <p /><div>[[posterous-content:5k8ymL4PxLDrYfbFgL8h]]<br /></div><div>It would be much nicer if we could deploy more cautiously. Try it out, and only go through with the complete deployment. A sort of live test, deploying with a feedback loop. That might look a bit like this:</div> <p /><div>[[posterous-content:apvQ27GHbg2rEh2CWgEa]]</div><div>That deploys the new version to 2**N servers, with N starting at 0 and increasing until all servers use the target version. The number of servers deployed to is exponential, because that gives us the behavior we wanted: slow and cautious at first, and rapid as soon as we think it&#39;ll work.</div> <p /><div><div>Of course, that doesn&#39;t give you an example of a failure mode. Failures look a bit like this:</div><div>[[posterous-content:tibBqAUzF8OCiIOWmnDZ]]</div> </div><div>Just like in the previous picture, a roll-out of a new version starts. Except this time, the new version doesn&#39;t actually work. The system catches this, and reverts the hosts that have already converted.</div> <p /><div>Of course, the package is still broken! You didn&#39;t fix the problem yet, you just reduced its impact. Your dev room should still look roughly like an control room from a bad Cold War movie right after the other party&#39;s launched a bunch of nukes.</div> <p /><div>It&#39;s just another bug, albeit a particularly nasty show-stopping one. Like all bugs, they&#39;re not so much bugs in the software as they are bugs in the test suite that incorrectly specified the requirements for the software. This becomes painfully obvious here: there&#39;s something broken, but your test suite didn&#39;t catch it. Hopefully, it&#39;s something that&#39;s at all testable.</div> <p /><div>The difference between this state of panic and the original state of panic is that, ideally, your users never noticed there was a problem.</div><p /><div>There&#39;s one obvious problem with all of this. Being able to continue deployment on positive feedback and revert deployments on negative feedback relies on actually having feedback. Useful health metrics for a cluster are halfway between art and science, and are definitely outside of the scope of this article.</div> <p /><div>The next article will be about another benefit of cautious deployment: continuous <i>availability</i>. That one is probably going to be halfway between an article about continuous deployment and a rant about how people need to learn more statistics.</div>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/09/30/designing-a-continuous-deployment-system-deployment-formats-and-content/">Designing a Continuous Deployment System: Deployment Formats and Content</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-09-30T00:00:00+02:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><div>Hi and welcome again to my articles on continuous deployment! In this article, I&#39;m going to talk about <i>what</i> exactly I think you should deploy and what format you should use to deploy it in.</div><p /> <div>Again, the stuff here probably isn&#39;t super controversial. I&#39;m probably not kicking any shins in this one unless you&#39;ve already done continuous deployment and you picked something else. Analogous with the last article, if you don&#39;t really care about deployment formats, save yourself the time and don&#39;t bother reading.</div> <p /><div>When getting in touch with a few people I know are doing continuous deployment, there are a number of things I&#39;ve heard people say about formats and what exactly to deploy. Here&#39;s what they used:</div> <div><ol><li>Distribution packages (debs, rpms&#8230;)</li><li>Language&#39;s native packages (eggs, gems, &#8230;)</li><li>The development environment</li><li>The test environment</li></ol></div><div>(Although it appears that this list confounds two things (formats and content); that&#39;s not entirely true. These packages are generated using standard practice packaging rules with standard content, almost as if they were part of a distribution/PyPI/Rubyforge&#8230;)</div> <p /><div>Some people have reported success deploying native packages. It definitely has it&#39;s advantages in terms of accounting, plus you get to use all of the tools already available for managing package installation on large networks. (As a practical example: PPAs and apt repositories in general, together with Landscape or other tools for managing updates for Ubuntu servers.) Hence, the choice for native packages is understandable: in big existing companies, using existing infrastructure is a big plus.</div> <p /><div>When greenfielding, however, I would prefer to avoid both distribution packages and native packages. One problem is that pretty much all of these are designed for system-wide installations. There are methods of getting around this, such as Python&#39;s virtualenvs, but that makes the system specific to a particular language and set of deployment tools, and I&#39;ve already argued in a previous post why I&#39;d rather avoid that unless there really is no better option.<span style="font-family: arial, helvetica, sans-serif;"> Since nowhere near every reasonable development platform has such a sandboxing tool, it&#39;s not possible to form an abstraction over it.</span></div> <p /><div>A related problem is that it&#39;s generally impossible to reliably install multiple versions of these concurrently in a widely supported way (again,with the exception of language-specific tricks like virtualenvs). That&#39;s not necessarily a huge problem, but it does make reverting to an older version slightly harder. That might not seem like a big deal, but easy reverts are a big part of cautious deployment (more about that in the next installment). Additionally, there&#39;s nothing to prevent a bad/broken package from having side effects that break older installs as well &#8211; as usual, shared mutable state is asking for trouble.</div> <p /><div>Another thing I&#39;ve seen people package is their development environment. Unless you&#39;re also using this as the base for your tests, I think this is a very bad idea. I think we&#39;ve all had cases where something worked fine on a development box, and started breaking for new checkouts. During development, all sorts of stuff Some languages/development environments are more susceptible to these problems than others, but they&#39;re prevalent enough to want to avoid the problem altogether.</div> <p /><div>Even if you are testing your development environment, I dislike it for purity reasons. The people doing this said they did that because it was the easiest way to get stuff running, and they just went along with the path of least resistance. As much as I&#39;m willing to believe that&#39;s true, I also believe that if you need a developer to chant some magic runes and sacrifice a chicken over a checkout of your code before it&#39;ll actually work, you&#39;re doing it wrong.</div> <p />I think repackaging test environments for deployment is a sensible idea. I talked this over with Holger Krekel, the guy who wrote <a href="http://codespeak.net/tox/" target="_blank">Tox</a>, and he immediately pointed out a flaw in that plan: it&#39;ll only work reliably if the testing environment is identical to the deployment environment in terms of platform, architecture, versions of available software&#8230; I thought this was a limitation at first, but I&#39;m now convinced this is a useful limitation (another idea I stole from Holger ;)). If you didn&#39;t <i>test</i> it in environment X, what business do you have <i>deploying</i> it there? <p /><div>I think I&#39;ve got most of the annoying administrative stuff out of the way now, maybe we can move on to more interesting things that are actually specific to continuous deployment :-) That starts with the next article, which, as I&#39;ve already hinted above, will be about &quot;cautious deployment&quot;, a robust technique for scheduling deployment.</div>
 </div>
   
   
@@ -524,6 +524,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/04/06/more-on-financial-aid-grant-optimization/">More on Financial Aid Grant Optimization</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
       </li>
     
@@ -537,10 +541,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a>
       </li>
     
   </ul>

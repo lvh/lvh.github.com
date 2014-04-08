@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>More on Financial Aid Grant Optimization - lvh</title>
+  <meta name="author" content="Laurens Van Houtven">
+
+  
+  <meta name="description" content="In a previous post, I talked about ways to optimize PyCon financial aid grants. This is a follow-up on those efforts. Quick recap: There is a fixed &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.lvh.io/blog/2014/04/06/more-on-financial-aid-grant-optimization">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="lvh" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-36779422-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.lvh.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/talks">Talks</a></li>
+</ul>
+
+</nav>
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">lvh</a></h1>
+  
+    <h2>crypto & distributed systems</h2>
+  
+</hgroup>
+
+
+</header> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">More on Financial Aid Grant Optimization</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-06T14:34:27-04:00" pubdate data-updated="true">Apr 6<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">
+<p>In <a href="http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">a previous post</a>, I talked about ways to optimize PyCon financial aid grants. This is a follow-up on those efforts. Quick recap:</p>
+
+<ul>
+<li>There is a fixed budget $b$ available for grants, between 100k and 200k USD.</li>
+
+<li>There are a number of people (approximately 300) requesting various amounts $r_i$ (approximately between 100 USD and 2000 USD) of financial aid, and receive a grant $g_i$ so that $0 \le g_i \le r_i$.</li>
+
+<li>Financial aid applicants can be assigned scores $s_i$, a relative value describing how much we’d like to have them at PyCon.</li>
+
+<li>PyCon wants to optimize the total expected value of scores. That means getting as many people as possible to come, weighted by score.</li>
+
+<li>We’ve conjectured that we can estimate the probability $p_i$ that someone attends as either $g_i/r_i$, or $(g_i/r_i)^2$. The former prefers to spread the budget across a larger number of smaller grants, whereas the latter prefers to focus the budget into a smaller number of larger grants.</li>
+</ul>
+
+<p>If any of that doesn’t make sense, you should read <a href="http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">the previous blog post</a> for more details.</p>
+
+<p>In short, we’re trying to solve the optimization problem:</p>
+
+<p>$$\max \sum E[S_i] = \sum s_i \cdot p_i$$</p>
+
+<p>Since most optimization texts appear to prefer minimization, alternatively:</p>
+
+<p>$$\min - \sum s_i \cdot p_i$$</p>
+
+<p>Subject to a budget constraint and an individual grant constraint:</p>
+
+<p>$$\sum g_i \le b$$</p>
+
+<p>$$0 \le g_i \le r_i$$</p>
+
+<p>The greater-than-zero constraint for individual grants is fairly important, otherwise the algorithm might casually give you answers like:</p>
+<figure class='code'><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>k = 1: [ 10.  20. -20.  30.  50.  10.  50.], sum: 150.0</span></code></pre></td></tr></table></div></figure>
+<p>That list in the middle are the per-person grants. Notice how the algorithm feels that the third person really ought to pony up some cash so that some of the other people can go to PyCon ;-)</p>
+
+<h2 id="squared_problems">Squared problems</h2>
+
+<p>In the <a href="http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">previous blog post</a> I ran into issues using a very generic constraint solver. I ended that post saying that I would try to remeedy that by applying a more specific solver that takes advantage of a particular structure of the problem.</p>
+
+<p>When you set $p_i = g_i/r_i$, this turns into a linear programming problem, since $r_i$ is a constant. When you set $p_i = \left(g_i/r_i\right)^2$, it turns into a quadratic programming problem. Turns out there’s two things I missed about the quadratic problem:</p>
+
+<ul>
+<li>The resulting problem is not convex. That means it’s (probably) difficult to solve.</li>
+
+<li>The estimated probability that someone will attend falls off sharply as soon as they don’t receive the full amount they requested. At 50% of the requested grant, the estimated probability of attending is only 25%; at 90%, it’s 81%. This is the opposite of what we want; when someone receives approximately 90% of their grant amount.</li>
+</ul>
+
+<h2 id="fixing_the_model">Fixing the model</h2>
+
+<p>That doesn’t mean we should put the $(g_i/r_i)^k$ out to pasture: it just means that I didn’t pick the $k$ I really wanted. Specifically, if I were to pick $k=1/2$, I’d get:</p>
+
+<p>$$p_i = \left(\frac{g_i}{r_i}\right)^{1/2} = \sqrt{\frac{g_i}{r_i}}$$</p>
+
+<p>In general, if $k = 1/n$:</p>
+
+<p>$$p_i = \left(\frac{g_i}{r_i}\right)^{1/n} = \sqrt[n]{\frac{g_i}{r_i}}$$</p>
+
+<p>That problem <em>is</em> convex, but it isn’t linear, quadratic, or some other easy specific problem. It’s just constrained multivariate convex optimization. That’s okay, there are still a couple of applicable optimization algorithms.</p>
+
+<p>Some of these algorithms require the derivative of the goal function with respect to a particular grant size $g_j$ at a particular point. In case we don’t have the real derivative, we can still provide a numerical approximation. In our case, we don’t really need to approximate, since the derivatives are fairly easy to compute analytically:</p>
+
+<p>$$\frac{\partial}{\partial g_j} \sum_i s_i \cdot \sqrt[n]{\frac{g_i}{r_i}} = \frac{s_j \cdot {g_j}^{\frac{1}{n} - 1}}{\sqrt[n]{r_j} \cdot n}$$</p>
+
+<h2 id="finding_a_solution_with_python">Finding a solution with Python</h2>
+
+<p>There are a few Python packages that contain optimization algorithms:</p>
+
+<ul>
+<li>SciPy</li>
+
+<li>cvxopt</li>
+
+<li>pyopt</li>
+</ul>
+
+<p>Someone originally pointed me towards cvxopt. While I’m sure it’s excellent software, I already knew SciPy, so I went with that.</p>
+
+<p>SciPy’s optimization module provides the following algorithms:</p>
+
+<ul>
+<li><code>fmin_l_bfgs_b</code> - Zhu, Byrd, and Nocedal’s constrained optimizer</li>
+
+<li><code>fmin_tnc</code> - Truncated Newton code</li>
+
+<li><code>fmin_cobyla</code> - Constrained optimization by linear approximation</li>
+
+<li><code>fmin_slsqp</code> - Minimization using sequential least-squares programming</li>
+
+<li><code>nnls</code> - Linear least-squares problem with non-negativity constraint</li>
+</ul>
+
+<p>The first two are not applicable because they only appear to support bounds on individual variables. I also need a constraint over the <em>sum</em> of variables for the budget: $\sum g_i \le b$. The last one isn’t applicable because this isn’t a linear least-squares problem. That leaves <code>cobyla</code> and <code>slsqp</code>.</p>
+
+<h2 id="experimenting_with_linear_approximation_cobyla">Experimenting with linear approximation (COBYLA)</h2>
+
+<p>Making COBYLA work ended up being pretty easy. The only non-trivial part is expressing all your constraints as expressions greater than or equal to zero.</p>
+
+<p>I’ve uploaded my IPython notebook (<a href="http://nbviewer.ipython.org/gist/lvh/10107818">viewer</a>, <a href="https://gist.github.com/lvh/10107818">gist</a>).</p>
+
+<p>This produced the following results:</p>
+<figure class='code'><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>scores: [1 1 1 2 3 5 5]
+</span><span class='line'>requested: [10 20 30 30 50 10 50] total: 200, budget: 150
+</span><span class='line'>k = 1/0.5: [ 10.  20.  30.  30.  50.  10.   0.], sum: 150.0
+</span><span class='line'>k = 1/1: [ 10.  -0.   0.  30.  50.  10.  50.], sum: 150.0
+</span><span class='line'>k = 1/2: [ 10.  10.   7.  27.  36.  10.  50.], sum: 150.0
+</span><span class='line'>k = 1/3: [ 10.  11.   9.  25.  35.  10.  50.], sum: 150.0
+</span><span class='line'>k = 1/5: [ 10.  11.  10.  24.  35.  10.  50.], sum: 150.0
+</span><span class='line'>k = 1/10: [ 10.  11.  11.  23.  35.  10.  50.], sum: 150.0
+</span><span class='line'>k = 1/100: [ 10.  11.  11.  23.  34.  10.  50.], sum: 150.0</span></code></pre></td></tr></table></div></figure>
+<p>Some takeaways:</p>
+
+<ul>
+<li>As predicted, as $1/k$ increases, the optimization gradually starts spreading the budget out more evenly; preferring to give many partial grants rather than a few large ones.</li>
+
+<li>This effect is mostly only pronounced for $1/k = 2, 3$; after that, increasing $1/k$ doesn’t make much of a difference anymore. This is what I’d expect when I visualize the $p_i$ functions in my head, but I haven’t ruled out numerical instability.</li>
+
+<li>Even at high $1/k$, the two high scorers get their full grant amount. That’s quite understandable for the one that’s only asking for 10, but even the one asking for a large grant gets it unconditionally. This probably means that tweaking the scoring functions is going to be very important.</li>
+
+<li>The linear version is apparently already quite brutal: the person with score 3 requesting 50 simply gets it entirely, leaving no budget left over for the people with score 1.</li>
+</ul>
+
+<p>Since I’m so pleased with these results, I’m skipping <code>slsqp</code> until I feel like it. Next up, I’ll try to compare the COBYLA results above with the results of the greedy algorithm under various fitness metrics.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Laurens Van Houtven</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-06T14:34:27-04:00" pubdate data-updated="true">Apr 6<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/pycon/'>pycon</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.lvh.io/blog/2014/04/06/more-on-financial-aid-grant-optimization/" data-via="lvh" data-counturl="http://www.lvh.io/blog/2014/04/06/more-on-financial-aid-grant-optimization/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/03/18/optimal-hotel-room-pairing/" title="Previous Post: Optimal hotel room pairing">&laquo; Optimal hotel room pairing</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline"  href="https://twitter.com/lvh"  data-widget-id="451753700516585472">Tweets by @lvh</a>
+    <script>!function(d,s,id){var
+      js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/04/06/more-on-financial-aid-grant-optimization/">More on Financial Aid Grant Optimization</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">Optimization Problems and PyCon Financial Aid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/lvh">@lvh</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'lvh',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <!-- <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Laurens Van Houtven -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+
+
+</footer> -->
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

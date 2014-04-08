@@ -107,7 +107,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2014-03-10T16:47:00+01:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
+<time datetime="2014-03-10T16:47:00-04:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
         
       </p>
     
@@ -187,11 +187,11 @@ MathJax.Hub.Config({
 
 <h3 id="a_better_model">A better model</h3>
 
-<p>I think we can do better by applying some elementary probability theory. What we really want is to maximize the total score of the applicants that we expect to see at PyCon as a consequence of financial aid. Probability theory has a thing called the expected value of a random variable, which is pretty much just the integral of the random variable with respect to the probability. In our case, that just means that we want to maximize the sum of the probability that a given applicant comes, times their score:</p>
+<p>I think we can do better by applying some elementary probability theory. What we really want is to maximize the total score of the applicants that we expect to see at PyCon as a consequence of financial aid. Probability theory has a thing called the expected value of a random variable, which is pretty much just the integral of the random variable with respect to the probability. In our case, that just means that we want to maximize the sum of the probabiliies that a given applicant will come to PyCon given a particular grant amount, weighted by their score:</p>
 
 <p>$$\max \sum s_i \cdot p_i$$</p>
 
-<p>That just restates problems we can’t solve in terms of problems we can’t solve. What on earth could the probability that someone shows up be? Obviously, we can’t know the real value, since it’s specific to each individual, and dependent on a lot of random, unknowable events. We can, however, make an educated guess. If we don’t give them any money, they probably won’t come. If we give them the amount they’re asking for, they probably will.</p>
+<p>That just restates problems we can’t solve in terms of problems we can’t solve. What on earth could the probability that someone shows up be? We can’t know the real value, since it’s specific to each individual, and dependent on a lot of random, unknowable events. We can, however, make an educated guess. If we don’t give them any money, they probably won’t come. If we give them the amount they’re asking for, they probably will.</p>
 
 <p>We could conjecture that the probability someone will come to the conference is approximately the fraction of the amount they requested that they actually received:</p>
 
@@ -202,6 +202,8 @@ MathJax.Hub.Config({
 <p>Alternatively, we could conjecture that it’s closer to the <em>square</em> of that ratio; when giving someone a value that’s very close to what they asked for, their probability of attending is still going to be very high; but if we only give them half, the odds they will attend will be closer to 25%, much lower than 50%. So, the expression becomes:</p>
 
 <p>$$p^{\prime}_i = \left(\frac{g_i}{r_i}\right)^{2}$$</p>
+
+<p><em>Update:</em> I now realize that this is probably not the expression that I actually want: it falls off very quickly as soon as an applicant gets anything less than the full amount. I’ve elaborated on this in <a href="http://www.lvh.io/blog/2014/04/06/more-on-financial-aid-grant-optimization/">a new blog post</a>.</p>
 
 <p>We will see how the square model emphasizes focusing the available funds on fewer grants, whereas the linear model will spread smaller grants more liberally.</p>
 
@@ -284,7 +286,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2014-03-10T16:47:00+01:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
+<time datetime="2014-03-10T16:47:00-04:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
       
 
 <span class="categories">
@@ -333,6 +335,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/04/06/more-on-financial-aid-grant-optimization/">More on Financial Aid Grant Optimization</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
       </li>
     
@@ -346,10 +352,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a>
       </li>
     
   </ul>

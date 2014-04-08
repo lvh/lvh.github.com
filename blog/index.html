@@ -9,7 +9,7 @@
   <meta name="author" content="Laurens Van Houtven">
 
   
-  <meta name="description" content="The greedy hotel pairing algorithm from my previous post gives good solutions. If you make some fairly reasonable-sounding assumptions about the &hellip;">
+  <meta name="description" content="In a previous post, I talked about ways to optimize PyCon financial aid grants. This is a follow-up on those efforts. Quick recap: There is a fixed &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,6 +94,173 @@ MathJax.Hub.Config({
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2014/04/06/more-on-financial-aid-grant-optimization/">More on Financial Aid Grant Optimization</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-06T14:34:27-04:00" pubdate data-updated="true">Apr 6<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+<p>In <a href="http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">a previous post</a>, I talked about ways to optimize PyCon financial aid grants. This is a follow-up on those efforts. Quick recap:</p>
+
+<ul>
+<li>There is a fixed budget $b$ available for grants, between 100k and 200k USD.</li>
+
+<li>There are a number of people (approximately 300) requesting various amounts $r_i$ (approximately between 100 USD and 2000 USD) of financial aid, and receive a grant $g_i$ so that $0 \le g_i \le r_i$.</li>
+
+<li>Financial aid applicants can be assigned scores $s_i$, a relative value describing how much we’d like to have them at PyCon.</li>
+
+<li>PyCon wants to optimize the total expected value of scores. That means getting as many people as possible to come, weighted by score.</li>
+
+<li>We’ve conjectured that we can estimate the probability $p_i$ that someone attends as either $g_i/r_i$, or $(g_i/r_i)^2$. The former prefers to spread the budget across a larger number of smaller grants, whereas the latter prefers to focus the budget into a smaller number of larger grants.</li>
+</ul>
+
+<p>If any of that doesn’t make sense, you should read <a href="http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">the previous blog post</a> for more details.</p>
+
+<p>In short, we’re trying to solve the optimization problem:</p>
+
+<p>$$\max \sum E[S_i] = \sum s_i \cdot p_i$$</p>
+
+<p>Since most optimization texts appear to prefer minimization, alternatively:</p>
+
+<p>$$\min - \sum s_i \cdot p_i$$</p>
+
+<p>Subject to a budget constraint and an individual grant constraint:</p>
+
+<p>$$\sum g_i \le b$$</p>
+
+<p>$$0 \le g_i \le r_i$$</p>
+
+<p>The greater-than-zero constraint for individual grants is fairly important, otherwise the algorithm might casually give you answers like:</p>
+<figure class='code'><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>k = 1: [ 10.  20. -20.  30.  50.  10.  50.], sum: 150.0</span></code></pre></td></tr></table></div></figure>
+<p>That list in the middle are the per-person grants. Notice how the algorithm feels that the third person really ought to pony up some cash so that some of the other people can go to PyCon ;-)</p>
+
+<h2 id="squared_problems">Squared problems</h2>
+
+<p>In the <a href="http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">previous blog post</a> I ran into issues using a very generic constraint solver. I ended that post saying that I would try to remeedy that by applying a more specific solver that takes advantage of a particular structure of the problem.</p>
+
+<p>When you set $p_i = g_i/r_i$, this turns into a linear programming problem, since $r_i$ is a constant. When you set $p_i = \left(g_i/r_i\right)^2$, it turns into a quadratic programming problem. Turns out there’s two things I missed about the quadratic problem:</p>
+
+<ul>
+<li>The resulting problem is not convex. That means it’s (probably) difficult to solve.</li>
+
+<li>The estimated probability that someone will attend falls off sharply as soon as they don’t receive the full amount they requested. At 50% of the requested grant, the estimated probability of attending is only 25%; at 90%, it’s 81%. This is the opposite of what we want; when someone receives approximately 90% of their grant amount.</li>
+</ul>
+
+<h2 id="fixing_the_model">Fixing the model</h2>
+
+<p>That doesn’t mean we should put the $(g_i/r_i)^k$ out to pasture: it just means that I didn’t pick the $k$ I really wanted. Specifically, if I were to pick $k=1/2$, I’d get:</p>
+
+<p>$$p_i = \left(\frac{g_i}{r_i}\right)^{1/2} = \sqrt{\frac{g_i}{r_i}}$$</p>
+
+<p>In general, if $k = 1/n$:</p>
+
+<p>$$p_i = \left(\frac{g_i}{r_i}\right)^{1/n} = \sqrt[n]{\frac{g_i}{r_i}}$$</p>
+
+<p>That problem <em>is</em> convex, but it isn’t linear, quadratic, or some other easy specific problem. It’s just constrained multivariate convex optimization. That’s okay, there are still a couple of applicable optimization algorithms.</p>
+
+<p>Some of these algorithms require the derivative of the goal function with respect to a particular grant size $g_j$ at a particular point. In case we don’t have the real derivative, we can still provide a numerical approximation. In our case, we don’t really need to approximate, since the derivatives are fairly easy to compute analytically:</p>
+
+<p>$$\frac{\partial}{\partial g_j} \sum_i s_i \cdot \sqrt[n]{\frac{g_i}{r_i}} = \frac{s_j \cdot {g_j}^{\frac{1}{n} - 1}}{\sqrt[n]{r_j} \cdot n}$$</p>
+
+<h2 id="finding_a_solution_with_python">Finding a solution with Python</h2>
+
+<p>There are a few Python packages that contain optimization algorithms:</p>
+
+<ul>
+<li>SciPy</li>
+
+<li>cvxopt</li>
+
+<li>pyopt</li>
+</ul>
+
+<p>Someone originally pointed me towards cvxopt. While I’m sure it’s excellent software, I already knew SciPy, so I went with that.</p>
+
+<p>SciPy’s optimization module provides the following algorithms:</p>
+
+<ul>
+<li><code>fmin_l_bfgs_b</code> - Zhu, Byrd, and Nocedal’s constrained optimizer</li>
+
+<li><code>fmin_tnc</code> - Truncated Newton code</li>
+
+<li><code>fmin_cobyla</code> - Constrained optimization by linear approximation</li>
+
+<li><code>fmin_slsqp</code> - Minimization using sequential least-squares programming</li>
+
+<li><code>nnls</code> - Linear least-squares problem with non-negativity constraint</li>
+</ul>
+
+<p>The first two are not applicable because they only appear to support bounds on individual variables. I also need a constraint over the <em>sum</em> of variables for the budget: $\sum g_i \le b$. The last one isn’t applicable because this isn’t a linear least-squares problem. That leaves <code>cobyla</code> and <code>slsqp</code>.</p>
+
+<h2 id="experimenting_with_linear_approximation_cobyla">Experimenting with linear approximation (COBYLA)</h2>
+
+<p>Making COBYLA work ended up being pretty easy. The only non-trivial part is expressing all your constraints as expressions greater than or equal to zero.</p>
+
+<p>I’ve uploaded my IPython notebook (<a href="http://nbviewer.ipython.org/gist/lvh/10107818">viewer</a>, <a href="https://gist.github.com/lvh/10107818">gist</a>).</p>
+
+<p>This produced the following results:</p>
+<figure class='code'><div class='highlight'><table><tr><td class='gutter'><pre class='line-numbers'><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>scores: [1 1 1 2 3 5 5]
+</span><span class='line'>requested: [10 20 30 30 50 10 50] total: 200, budget: 150
+</span><span class='line'>k = 1/0.5: [ 10.  20.  30.  30.  50.  10.   0.], sum: 150.0
+</span><span class='line'>k = 1/1: [ 10.  -0.   0.  30.  50.  10.  50.], sum: 150.0
+</span><span class='line'>k = 1/2: [ 10.  10.   7.  27.  36.  10.  50.], sum: 150.0
+</span><span class='line'>k = 1/3: [ 10.  11.   9.  25.  35.  10.  50.], sum: 150.0
+</span><span class='line'>k = 1/5: [ 10.  11.  10.  24.  35.  10.  50.], sum: 150.0
+</span><span class='line'>k = 1/10: [ 10.  11.  11.  23.  35.  10.  50.], sum: 150.0
+</span><span class='line'>k = 1/100: [ 10.  11.  11.  23.  34.  10.  50.], sum: 150.0</span></code></pre></td></tr></table></div></figure>
+<p>Some takeaways:</p>
+
+<ul>
+<li>As predicted, as $1/k$ increases, the optimization gradually starts spreading the budget out more evenly; preferring to give many partial grants rather than a few large ones.</li>
+
+<li>This effect is mostly only pronounced for $1/k = 2, 3$; after that, increasing $1/k$ doesn’t make much of a difference anymore. This is what I’d expect when I visualize the $p_i$ functions in my head, but I haven’t ruled out numerical instability.</li>
+
+<li>Even at high $1/k$, the two high scorers get their full grant amount. That’s quite understandable for the one that’s only asking for 10, but even the one asking for a large grant gets it unconditionally. This probably means that tweaking the scoring functions is going to be very important.</li>
+
+<li>The linear version is apparently already quite brutal: the person with score 3 requesting 50 simply gets it entirely, leaving no budget left over for the people with score 1.</li>
+</ul>
+
+<p>Since I’m so pleased with these results, I’m skipping <code>slsqp</code> until I feel like it. Next up, I’ll try to compare the COBYLA results above with the results of the greedy algorithm under various fitness metrics.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a></h1>
     
     
@@ -110,7 +277,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2014-03-18T13:05:52+01:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
+<time datetime="2014-03-18T08:05:52-04:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
         
       </p>
     
@@ -201,7 +368,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2014-03-10T16:47:00+01:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
+<time datetime="2014-03-10T16:47:00-04:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
         
       </p>
     
@@ -281,11 +448,11 @@ MathJax.Hub.Config({
 
 <h3 id="a_better_model">A better model</h3>
 
-<p>I think we can do better by applying some elementary probability theory. What we really want is to maximize the total score of the applicants that we expect to see at PyCon as a consequence of financial aid. Probability theory has a thing called the expected value of a random variable, which is pretty much just the integral of the random variable with respect to the probability. In our case, that just means that we want to maximize the sum of the probability that a given applicant comes, times their score:</p>
+<p>I think we can do better by applying some elementary probability theory. What we really want is to maximize the total score of the applicants that we expect to see at PyCon as a consequence of financial aid. Probability theory has a thing called the expected value of a random variable, which is pretty much just the integral of the random variable with respect to the probability. In our case, that just means that we want to maximize the sum of the probabiliies that a given applicant will come to PyCon given a particular grant amount, weighted by their score:</p>
 
 <p>$$\max \sum s_i \cdot p_i$$</p>
 
-<p>That just restates problems we can’t solve in terms of problems we can’t solve. What on earth could the probability that someone shows up be? Obviously, we can’t know the real value, since it’s specific to each individual, and dependent on a lot of random, unknowable events. We can, however, make an educated guess. If we don’t give them any money, they probably won’t come. If we give them the amount they’re asking for, they probably will.</p>
+<p>That just restates problems we can’t solve in terms of problems we can’t solve. What on earth could the probability that someone shows up be? We can’t know the real value, since it’s specific to each individual, and dependent on a lot of random, unknowable events. We can, however, make an educated guess. If we don’t give them any money, they probably won’t come. If we give them the amount they’re asking for, they probably will.</p>
 
 <p>We could conjecture that the probability someone will come to the conference is approximately the fraction of the amount they requested that they actually received:</p>
 
@@ -296,6 +463,8 @@ MathJax.Hub.Config({
 <p>Alternatively, we could conjecture that it’s closer to the <em>square</em> of that ratio; when giving someone a value that’s very close to what they asked for, their probability of attending is still going to be very high; but if we only give them half, the odds they will attend will be closer to 25%, much lower than 50%. So, the expression becomes:</p>
 
 <p>$$p^{\prime}_i = \left(\frac{g_i}{r_i}\right)^{2}$$</p>
+
+<p><em>Update:</em> I now realize that this is probably not the expression that I actually want: it falls off very quickly as soon as an applicant gets anything less than the full amount. I’ve elaborated on this in <a href="http://www.lvh.io/blog/2014/04/06/more-on-financial-aid-grant-optimization/">a new blog post</a>.</p>
 
 <p>We will see how the square model emphasizes focusing the available funds on fewer grants, whereas the linear model will spread smaller grants more liberally.</p>
 
@@ -384,7 +553,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2013-12-18T11:22:00+01:00" pubdate data-updated="true">Dec 18<span>th</span>, 2013</time>
+<time datetime="2013-12-18T11:22:00-05:00" pubdate data-updated="true">Dec 18<span>th</span>, 2013</time>
         
       </p>
     
@@ -438,7 +607,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   
 
 
-<time datetime="2013-11-15T11:29:00+01:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
+<time datetime="2013-11-15T11:29:00-05:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
         
       </p>
     
@@ -592,7 +761,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   
 
 
-<time datetime="2013-10-19T21:47:00+02:00" pubdate data-updated="true">Oct 19<span>th</span>, 2013</time>
+<time datetime="2013-10-19T21:47:00-04:00" pubdate data-updated="true">Oct 19<span>th</span>, 2013</time>
         
       </p>
     
@@ -739,7 +908,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   
 
 
-<time datetime="2013-01-30T18:55:00+01:00" pubdate data-updated="true">Jan 30<span>th</span>, 2013</time>
+<time datetime="2013-01-30T18:55:00-05:00" pubdate data-updated="true">Jan 30<span>th</span>, 2013</time>
         
       </p>
     
@@ -910,7 +1079,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   
 
 
-<time datetime="2013-01-28T10:58:00+01:00" pubdate data-updated="true">Jan 28<span>th</span>, 2013</time>
+<time datetime="2013-01-28T10:58:00-05:00" pubdate data-updated="true">Jan 28<span>th</span>, 2013</time>
         
       </p>
     
@@ -947,7 +1116,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   
 
 
-<time datetime="2011-11-27T00:00:00+01:00" pubdate data-updated="true"></time>
+<time datetime="2011-11-27T00:00:00-05:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -1033,7 +1202,7 @@ The downside is that there are two things. One of them speaks REST, and the othe
   
 
 
-<time datetime="2011-05-12T00:00:00+02:00" pubdate data-updated="true"></time>
+<time datetime="2011-05-12T00:00:00-04:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -1041,42 +1210,6 @@ The downside is that there are two things. One of them speaks REST, and the othe
 
 
   <div class="entry-content">Hey.<p /><br />So, in <a href="https://github.com/lvh/txyoga">txYoga</a>, in implemented pagination in terms of query parameters to a collection. If you want to access the range of elements [100, 110), you would say: <span style="font-family: courier new,monospace;"><a href="http://whatever/collection?start=100;stop=110">http://whatever/collection?start=100;stop=110</a></span>. The feature here is that pages give you the link to the next and previous page. The response (JSON) looks something like <span style="font-family: courier new,monospace;">{&quot;results&quot;: [&#8230;], &quot;next&quot;: nextURL, &quot;prev&quot;: prevURL}</span>. That way, you pretty much just have to follow URLs to walk down the collection as a doubly  linked list of pages. The supposed feature is that I can change how my pages work, and users hopefully won&#39;t notice, since they shouldn&#39;t be building their own URLs anyway.<p /> Now, at the same time, I&#39;m looking at <a href="http://dojotoolkit.org/reference-guide/dojo/store/JsonRest.html">dojo&#39;s JsonRest API</a>. It&#39;s suggesting that I use the Range and Content-Range headers for pagination support. It also has a single JSON array as a response (so, [{&#8230;}, &#8230;]) instead of my JSON object. I started RFC diving and hey look, they&#39;re right, HTTP understands <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.12">ranges with arbitrary units</a>. So, are my URLs wrong? Are people supposed to conjure Range URLs themselves? Why are these darned ranges inclusive? Another problem is that the specification doesn&#39;t really seem to support non-numeric ranges, whereas to txYoga, that&#39;s not really a problem as long as the underlying collection understands it.<p /> Isn&#39;t REST supposed to be hypertext-driven? Aren&#39;t people basically supposed to never construct URLs, and rely on me to provide them to them? Where am I supposed to put those URLs? Yaaargh.<p /> <br />cheers<div>lvh</div>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/05/06/crowdsourcing-opinions-on-a-rest-api-post-put-or-both-/">Crowdsourcing Opinions on a REST API: POST, PUT or Both?</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-05-06T00:00:00+02:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">As some of you undoubtedly know, I&#39;m writing a thing called txYoga, which is a REST framework for Twisted.<p />The fundamental operations in this post are CRUD:<br /><ol><li>Creating elements</li><li>Retrieving them</li> <li>Updating them</li><li>Deleting them</li></ol>Now, retrieving is obvious: send a GET request to the element. Getting rid of them is too: same thing, but a DELETE. Updates are done using PUT to the element. Creating elements, though, is a bit more ambiguous:<br /> <ol><li>If the client knows the complete path to the element (so, particularly the final part of the new element&#39;s URI), it PUTs to that URI (for which there is currently no element).</li><li>If the client doesn&#39;t know or care, it POSTs to the collection. The collection creates the element, and probably returns the URL under which the new element is available.<br /> </li></ol>One of the fundamental differences between POST and PUT is that PUT is idempotent, but POST is not. If you send me the same PUT request once, twice or ten times, you&#39;ll end up with the same state. POSTing to the collection might work once (or pretty much indefinitely, if you&#39;re producing objects with an UUID identifier for example).<p /> This is because in txYoga, each element has exactly one identifying attribute (which is the thing that&#39;s used to access the element). That&#39;s what makes PUT feels so awkward: what you&#39;re putting contains the information to decide what the name of the object is (since it has to have the identifying attribute), but the object doesn&#39;t know what name it&#39;s going to be put under (since that name only exists after the object is created), so you have to repeat yourself. With POST, you don&#39;t really care.<p /> Additionally, you&#39;d be using the same thing for updating and creating new elements, which I guess sort-of makes sense, but reminds me of Perl&#39;s autovivification and not in a good way.<p />The question is: should I support both PUT and POST for creating elements? On the one hand, There should be one&#8211; and preferably only one &#8211;obvious way to do it. On the other, this is what REST pretty much does &#8211; and practicality beats purity (although this isn&#39;t very practical for me&#8230;).
 </div>
   
   
@@ -1106,6 +1239,10 @@ The downside is that there are two things. One of them speaks REST, and the othe
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/04/06/more-on-financial-aid-grant-optimization/">More on Financial Aid Grant Optimization</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
       </li>
     
@@ -1119,10 +1256,6 @@ The downside is that there are two things. One of them speaks REST, and the othe
     
       <li class="post">
         <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/10/19/thoughts-on-rdrand-in-linux/">Thoughts on RDRAND in Linux</a>
       </li>
     
   </ul>
