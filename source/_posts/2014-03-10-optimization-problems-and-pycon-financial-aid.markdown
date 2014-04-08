@@ -169,18 +169,19 @@ applicants that we expect to see at PyCon as a consequence of
 financial aid. Probability theory has a thing called the expected
 value of a random variable, which is pretty much just the integral of
 the random variable with respect to the probability. In our case, that
-just means that we want to maximize the sum of the probability that a
-given applicant comes, times their score:
+just means that we want to maximize the sum of the probabiliies that a
+given applicant will come to PyCon given a particular grant amount,
+weighted by their score:
 
 $$\max \sum s_i \cdot p_i$$
 
 That just restates problems we can't solve in terms of problems we
 can't solve. What on earth could the probability that someone shows up
-be? Obviously, we can't know the real value, since it's specific to
-each individual, and dependent on a lot of random, unknowable events.
-We can, however, make an educated guess. If we don't give them any
-money, they probably won't come. If we give them the amount they're
-asking for, they probably will.
+be? We can't know the real value, since it's specific to each
+individual, and dependent on a lot of random, unknowable events. We
+can, however, make an educated guess. If we don't give them any money,
+they probably won't come. If we give them the amount they're asking
+for, they probably will.
 
 We could conjecture that the probability someone will come to the
 conference is approximately the fraction of the amount they requested
@@ -199,6 +200,13 @@ high; but if we only give them half, the odds they will attend will be
 closer to 25%, much lower than 50%. So, the expression becomes:
 
 $$p^{\prime}_i = \left(\frac{g_i}{r_i}\right)^{2}$$
+
+*Update:* I now realize that this is probably not the expression that
+ I actually want: it falls off very quickly as soon as an applicant
+ gets anything less than the full amount. I've elaborated on this in
+ [a new blog post][model-update].
+
+[model-update]: http://www.lvh.io/blog/2014/04/06/more-on-financial-aid-grant-optimization/
 
 We will see how the square model emphasizes focusing the available
 funds on fewer grants, whereas the linear model will spread smaller
