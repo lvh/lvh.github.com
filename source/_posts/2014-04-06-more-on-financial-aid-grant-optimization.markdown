@@ -76,8 +76,7 @@ problem:
 - The estimated probability that someone will attend falls off sharply
   as soon as they don't receive the full amount they requested. At 50%
   of the requested grant, the estimated probability of attending is
-  only 25%; at 90%, it's 81%. This is the opposite of what we want;
-  when someone receives approximately 90% of their grant amount.
+  only 25%; at 90%, it's 81%. This is the opposite of what we want.
 
 ## Fixing the model
 
@@ -88,7 +87,6 @@ if I were to pick $k=1/2$, I'd get:
 $$p_i = \left(\frac{g_i}{r_i}\right)^{1/2} = \sqrt{\frac{g_i}{r_i}}$$
 
 In general, if $k = 1/n$:
-
 
 $$p_i = \left(\frac{g_i}{r_i}\right)^{1/n} = \sqrt[n]{\frac{g_i}{r_i}}$$
 
