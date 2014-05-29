@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Pycon | lvh]]></title>
   <link href="http://www.lvh.io/blog/categories/pycon/atom.xml" rel="self"/>
   <link href="http://www.lvh.io/"/>
-  <updated>2014-04-08T12:03:25-04:00</updated>
+  <updated>2014-05-29T13:28:49+02:00</updated>
   <id>http://www.lvh.io/</id>
   <author>
     <name><![CDATA[Laurens Van Houtven]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[More on Financial Aid Grant Optimization]]></title>
     <link href="http://www.lvh.io/blog/2014/04/06/more-on-financial-aid-grant-optimization/"/>
-    <updated>2014-04-06T14:34:27-04:00</updated>
+    <updated>2014-04-06T20:34:27+02:00</updated>
     <id>http://www.lvh.io/blog/2014/04/06/more-on-financial-aid-grant-optimization</id>
     <content type="html"><![CDATA[
 <p>In <a href="http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">a previous post</a>, I talked about ways to optimize PyCon financial aid grants. This is a follow-up on those efforts. Quick recap:</p>
@@ -51,9 +51,9 @@
 
 <p>The greater-than-zero constraint for individual grants is fairly important, otherwise the algorithm might casually give you answers like:</p>
 
-<p>“` k = 1: [10. 20. -20. 30. 50. 10. 50.], sum: 150.0</p>
+<p>“ = 1: [10. 20. -20. 30. 50. 10. 50.], sum: 150.0</p>
 
-<p>“`</p>
+<p>“</p>
 
 <p>That list in the middle are the per-person grants. Notice how the algorithm feels that the third person really ought to pony up some cash so that some of the other people can go to PyCon ;-)</p>
 
@@ -66,7 +66,7 @@
 <ul>
 <li>The resulting problem is not convex. That means it’s (probably) difficult to solve.</li>
 
-<li>The estimated probability that someone will attend falls off sharply as soon as they don’t receive the full amount they requested. At 50% of the requested grant, the estimated probability of attending is only 25%; at 90%, it’s 81%. This is the opposite of what we want; when someone receives approximately 90% of their grant amount.</li>
+<li>The estimated probability that someone will attend falls off sharply as soon as they don’t receive the full amount they requested. At 50% of the requested grant, the estimated probability of attending is only 25%; at 90%, it’s 81%. This is the opposite of what we want.</li>
 </ul>
 
 <h2 id="fixing_the_model">Fixing the model</h2>
@@ -123,9 +123,9 @@
 
 <p>This produced the following results:</p>
 
-<p>“` scores: [1 1 1 2 3 5 5] requested: [10 20 30 30 50 10 50] total: 200, budget: 150 k = 1/0.5: [10. 20. 30. 30. 50. 10. 0.], sum: 150.0 k = 1/1: [10. -0. 0. 30. 50. 10. 50.], sum: 150.0 k = 1/2: [10. 10. 7. 27. 36. 10. 50.], sum: 150.0 k = 1/3: [10. 11. 9. 25. 35. 10. 50.], sum: 150.0 k = 1/5: [10. 11. 10. 24. 35. 10. 50.], sum: 150.0 k = 1/10: [10. 11. 11. 23. 35. 10. 50.], sum: 150.0 k = 1/100: [10. 11. 11. 23. 34. 10. 50.], sum: 150.0</p>
+<p>“cores: [1 1 1 2 3 5 5] requested: [10 20 30 30 50 10 50] total: 200, budget: 150 k = 1/0.5: [10. 20. 30. 30. 50. 10. 0.], sum: 150.0 k = 1/1: [10. -0. 0. 30. 50. 10. 50.], sum: 150.0 k = 1/2: [10. 10. 7. 27. 36. 10. 50.], sum: 150.0 k = 1/3: [10. 11. 9. 25. 35. 10. 50.], sum: 150.0 k = 1/5: [10. 11. 10. 24. 35. 10. 50.], sum: 150.0 k = 1/10: [10. 11. 11. 23. 35. 10. 50.], sum: 150.0 k = 1/100: [10. 11. 11. 23. 34. 10. 50.], sum: 150.0</p>
 
-<p>“`</p>
+<p>“</p>
 
 <p>Some takeaways:</p>
 
@@ -146,7 +146,7 @@
   <entry>
     <title type="html"><![CDATA[Optimal Hotel Room Pairing]]></title>
     <link href="http://www.lvh.io/blog/2014/03/18/optimal-hotel-room-pairing/"/>
-    <updated>2014-03-18T08:05:52-04:00</updated>
+    <updated>2014-03-18T13:05:52+01:00</updated>
     <id>http://www.lvh.io/blog/2014/03/18/optimal-hotel-room-pairing</id>
     <content type="html"><![CDATA[
 <p>The greedy hotel pairing algorithm from my <a href="http://blog.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">previous post</a> gives good solutions. If you make some fairly reasonable-sounding assumptions about the problem, <em>very</em> good solutions. At any rate nicer than forcing a human to drudge through it; both in terms of person-hours spent and quality of the solutions.</p>
@@ -210,7 +210,7 @@
   <entry>
     <title type="html"><![CDATA[Optimization Problems and PyCon Financial Aid]]></title>
     <link href="http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/"/>
-    <updated>2014-03-10T16:47:00-04:00</updated>
+    <updated>2014-03-10T16:47:00+01:00</updated>
     <id>http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid</id>
     <content type="html"><![CDATA[
 <p>This year, I have partly taken on some new responsibilities in organizing PyCon. Specifically, I’ve done some work on financial aid. (Next year, I will be taking on the position of financial aid chair.) There have been some challenges that I’ve thrown some code at. Some of it stuck.</p>
@@ -313,21 +313,21 @@
 
 <p>When I reached out on the Clojure mailing list, Mark Engelberg helpfully reached out and immediately handed out some cool runnable example for me to play with. Sure enough, they worked super, and with a carefully crafted three-person example we could clearly see the difference between the linear and quadratic models I was talking about above: under the square model, the concentrated grants, trying harder to give high-scoring applications the amount they requested. The linear model spread money out more evenly. That is, with the following applications:</p>
 
-<p>“`clojure (def alice ) (def bob ) (def carol )</p>
+<p>“ojure (def alice ) (def bob ) (def carol )</p>
 
-<p>“`</p>
+<p>“</p>
 
 <p>In a linear model, it comes up with:</p>
 
-<p>“`clojure {alice 120 bob 80 carol 0}</p>
+<p>“ojure {alice 120 bob 80 carol 0}</p>
 
-<p>“`</p>
+<p>“</p>
 
 <p>However, in the quadratic model, the optimizer rather gives Carol (who has a lower score) a complete grant than give Bob a partial one:</p>
 
-<p>“`clojure {alice 120 bob 0 carol 80}</p>
+<p>“ojure {alice 120 bob 0 carol 80}</p>
 
-<p>“`</p>
+<p>“</p>
 
 <p>You can find the code <a href="https://github.com/lvh/hood/blob/master/src/hood/constraint.clj">on Github</a>. The tests that confirm the difference in behavior for the linear and quadratic models are in <a href="https://github.com/lvh/hood/blob/master/test/hood/constraint_test.clj">the tests</a>.</p>
 

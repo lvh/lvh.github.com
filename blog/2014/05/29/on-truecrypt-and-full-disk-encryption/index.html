@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>On TrueCrypt and Full-disk Encryption - lvh</title>
+  <meta name="author" content="Laurens Van Houtven">
+
+  
+  <meta name="description" content="Since the early hours of May 29th (CEST), the TrueCrypt website (https://www.truecrypt.org) has pointed to http://truecrypt.sourceforge.net/, with &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.lvh.io/blog/2014/05/29/on-truecrypt-and-full-disk-encryption">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="lvh" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-36779422-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.lvh.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/talks">Talks</a></li>
+</ul>
+
+</nav>
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">lvh</a></h1>
+  
+    <h2>crypto & distributed systems</h2>
+  
+</hgroup>
+
+
+</header> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">On TrueCrypt and Full-disk Encryption</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-29T10:53:30+02:00" pubdate data-updated="true">May 29<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content">
+<p>Since the early hours of May 29th (CEST), <a href="https://www.truecrypt.org">the TrueCrypt website (<code>https://www.truecrypt.org</code>)</a> has pointed to <code>http://truecrypt.sourceforge.net/</code>, with an ominous-looking error message:</p>
+
+<blockquote>
+<p>WARNING: Using TrueCrypt is not secure as it may contain unfixed security issues</p>
+</blockquote>
+
+<blockquote>
+<p>This page exists only to help migrate existing data encrypted by TrueCrypt.</p>
+</blockquote>
+
+<blockquote>
+<p>The development of TrueCrypt was ended in 5/2014 after Microsoft terminated support of Windows XP. Windows 8/7/Vista and later offer integrated support for encrypted disks and virtual disk images. Such integrated support is also available on other platforms (click here for more information). You should migrate any data encrypted by TrueCrypt to encrypted disks or virtual disk images supported on your platform.</p>
+</blockquote>
+
+<p>The website then explains how you can install BitLocker, a proprietary disk encryption system available in many versions of Windows, as well as how you could “rescue” existing TrueCrypt volumes.</p>
+
+<p>People were pretty unhappy, for a variety of reasons:</p>
+
+<ul>
+<li>Lack of trust in proprietary full-disk encryption software.</li>
+
+<li>Many versions of Windows didn’t even ship with BitLocker, only a few “premium” versions did.</li>
+</ul>
+
+<p>As a proprietary system, BitLocker is not susceptible to the same amount of public scrutiny as a publicly available system. This is in stark contrast with TrueCrypt, where Matt Green recently raised around 70k USD to perform an <a href="http://istruecryptauditedyet.com/">audit</a>.</p>
+
+<p>There are variety of scenarios that could’ve caused the TrueCypt website to suddenly sport that message. The live Internet audience has speculated wildly. I’ll share my thoughts on that near the end of this post, but there are two points I’d like to make that I think are far more important:</p>
+
+<ol>
+<li>Consider if full-disk encryption is really what you want.</li>
+
+<li>If it is, consider if it should be TrueCrypt.</li>
+</ol>
+
+<h3 id="fulldisk_encryption">Full-disk encryption</h3>
+
+<p>Something I learned from the inimitable <a href="https://zooko.com">Zooko</a>:</p>
+
+<blockquote>
+<p>Security isn’t about perfect versus imperfect or about better versus worse, it’s about <em>this</em> attack surface versus <em>that</em> attack surface.</p>
+</blockquote>
+
+<p>You can’t just add more encryption to something and expect to somehow get better security. You have to consider what it is buying you.</p>
+
+<p>Full-disk encryption buys you one simple thing: if someone steals your device while the encrypted volume is locked, they probably can’t read it.</p>
+
+<p>If the encrypted volume is unlocked, it’s over; and that’s the state it’s probably usually in. If the key lives in RAM (it usually does), there’s a variety of ways that can be extracted. There’s devices that have complete direct memory access, including everything that speaks FireWire or has FireWire-compatibility built-in. Even if you shut off your machine, cold boot attacks mean that the key can be extracted for a limited about of time. Various jurisdictions can try to force you to hand over the keys.</p>
+
+<p>If an attacker can write to the (encrypted!) volume, it’s probably over. Virtually all sector-level full-disk encryption formats are unauthenticated (with good reason), they’re all malleable and vulnerable to (adaptive) chosen-ciphertext attacks.</p>
+
+<p>If you’re encrypting files or blobs of data within other files, an authenticated encryption scheme like GPG is far more useful.</p>
+
+<p>Don’t get me wrong. Full-disk encryption is a good idea, and you should do it. I’m just saying that what it actually protects against is pretty limited.</p>
+
+<p>For more details, try Thomas &amp; Erin Ptacek’s <a href="http://sockpuppet.org/blog/2014/04/30/you-dont-want-xts/">blog post</a> on why XTS isn’t what you want. XTS is a way to build tweakable ciphers that can be used to create full-disk encryption; but the post applies to full-disk encryption generically as well.</p>
+
+<h3 id="truecrypt_as_a_fulldisk_encryption_mechanism">TrueCrypt as a full-disk encryption mechanism</h3>
+
+<p>So, you probably want full-disk encryption, and you probably want to make sure that sensitive data is encrypted on top of that. Great. What full-disk encryption scheme do you use?</p>
+
+<p>I don’t want to bash TrueCrypt. It is (was, perhaps?) a great go-to project for full-disk encryption. It got a lot of things right. It also got a bunch of things wrong.</p>
+
+<p>TrueCrypt was made by a bunch of people we don’t know occasionally throwing a bunch of binaries over the wall. The source is available (under a non-OSI license), so you could audit that and compile your own binaries, but the truth is that the vast majority of TrueCrypt users never actually did that.</p>
+
+<p>The TrueCrypt disk format and encryption standards are a bit iffy. It has terrible file system support. It has major performance issues, partially due to questionable cryptographic practices such as cipher cascades. It was great for when it was originally conceived and full-disk encryption was still new and exciting, it’s still pretty decent now, but we can certainly do better.</p>
+
+<h3 id="what_actually_happened_to_the_website">What actually happened to the website?</h3>
+
+<p>We don’t really know. There’s a couple of guesses.</p>
+
+<p>First of all, it looks like it are the original authors that folded: the key is the same one that was being used to sign releases months ago. Of course, that could mean that it was compromised or that they were forced to hand it over.</p>
+
+<p>Since the DNS records changed, the e-mail server behavior changed, the same key was used, the Sourceforge client was involved, and fairly major changes to the source code were involved, it’s unlikely that it’s a simple defacement.</p>
+
+<p>It’s unlikely that they folded because they felt discovery of some backdoor was imminent. Folding would actually stop that discovery, because the source was already open.</p>
+
+<p>It’s strange that they would point to alternatives like Bitlocker for Windows and even more dubious alternatives for other operating systems. The authors certainly knew that this would not be an acceptable alternative for the vast majority of their users.</p>
+
+<p>Additionally, the support window for XP ending isn’t a particularly convincing impetus for migrating away from TrueCrypt <em>right now</em>. This has lead some to believe that it’s an automated release. Worse, it could be a gagged response: a big and powerful three-letter agency might be twisting their arm and forcing them to fold, in return for something else (like, say, not being thrown in a Gitmo cell and forgotten about). Again: at this point that is pure speculation.</p>
+
+<p>Another option is that some of the developers just really, genuinely folded. They felt that for atechnical users, BitLocker was good enough, while the particularly discerning TrueCrypt user would be able to find some other alternative.</p>
+
+<p>Bottom line is that none of this really matters.</p>
+
+<h3 id="so_what_do_i_do_now">So what do I do now?</h3>
+
+<p>If you’re on Linux, dm-crypt + cryptsetup + LUKS is probably what you want. If you’re on OS X, FileVault 2 is probably what you want. If you’re on Windows, your options are looking a bit thin right now:</p>
+
+<ul>
+<li>Keep using old versions of TrueCrypt.</li>
+</ul>
+<hr /></div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Laurens Van Houtven</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-29T10:53:30+02:00" pubdate data-updated="true">May 29<span>th</span>, 2014</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.lvh.io/blog/2014/05/29/on-truecrypt-and-full-disk-encryption/" data-via="lvh" data-counturl="http://www.lvh.io/blog/2014/05/29/on-truecrypt-and-full-disk-encryption/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/06/more-on-financial-aid-grant-optimization/" title="Previous Post: More on financial aid grant optimization">&laquo; More on financial aid grant optimization</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline"  href="https://twitter.com/lvh"  data-widget-id="451753700516585472">Tweets by @lvh</a>
+    <script>!function(d,s,id){var
+      js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/05/29/on-truecrypt-and-full-disk-encryption/">On TrueCrypt and Full-disk Encryption</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/06/more-on-financial-aid-grant-optimization/">More on Financial Aid Grant Optimization</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/optimal-hotel-room-pairing/">Optimal Hotel Room Pairing</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">Optimization Problems and PyCon Financial Aid</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/lvh">@lvh</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'lvh',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <!-- <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Laurens Van Houtven -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+
+
+</footer> -->
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

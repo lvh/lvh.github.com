@@ -9,7 +9,7 @@
   <meta name="author" content="Laurens Van Houtven">
 
   
-  <meta name="description" content="As some of you undoubtedly know, I&#39;m writing a thing called txYoga, which is a REST framework for Twisted.The fundamental operations in this post &hellip;">
+  <meta name="description" content="Hey.So, in txYoga, in implemented pagination in terms of query parameters to a collection. If you want to access the range of elements [100, 110), &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,6 +94,42 @@ MathJax.Hub.Config({
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2011/05/12/i-don-t-understand-rest-pagination/">I Don&#8217;t Understand REST Pagination</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-12T00:00:00+02:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">Hey.<p /><br />So, in <a href="https://github.com/lvh/txyoga">txYoga</a>, in implemented pagination in terms of query parameters to a collection. If you want to access the range of elements [100, 110), you would say: <span style="font-family: courier new,monospace;"><a href="http://whatever/collection?start=100;stop=110">http://whatever/collection?start=100;stop=110</a></span>. The feature here is that pages give you the link to the next and previous page. The response (JSON) looks something like <span style="font-family: courier new,monospace;">{&quot;results&quot;: [&#8230;], &quot;next&quot;: nextURL, &quot;prev&quot;: prevURL}</span>. That way, you pretty much just have to follow URLs to walk down the collection as a doubly  linked list of pages. The supposed feature is that I can change how my pages work, and users hopefully won&#39;t notice, since they shouldn&#39;t be building their own URLs anyway.<p /> Now, at the same time, I&#39;m looking at <a href="http://dojotoolkit.org/reference-guide/dojo/store/JsonRest.html">dojo&#39;s JsonRest API</a>. It&#39;s suggesting that I use the Range and Content-Range headers for pagination support. It also has a single JSON array as a response (so, [{&#8230;}, &#8230;]) instead of my JSON object. I started RFC diving and hey look, they&#39;re right, HTTP understands <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.12">ranges with arbitrary units</a>. So, are my URLs wrong? Are people supposed to conjure Range URLs themselves? Why are these darned ranges inclusive? Another problem is that the specification doesn&#39;t really seem to support non-numeric ranges, whereas to txYoga, that&#39;s not really a problem as long as the underlying collection understands it.<p /> Isn&#39;t REST supposed to be hypertext-driven? Aren&#39;t people basically supposed to never construct URLs, and rely on me to provide them to them? Where am I supposed to put those URLs? Yaaargh.<p /> <br />cheers<div>lvh</div>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2011/05/06/crowdsourcing-opinions-on-a-rest-api-post-put-or-both-/">Crowdsourcing Opinions on a REST API: POST, PUT or Both?</a></h1>
     
     
@@ -110,7 +146,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-05-06T00:00:00-04:00" pubdate data-updated="true"></time>
+<time datetime="2011-05-06T00:00:00+02:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -146,7 +182,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-03-09T00:00:00-05:00" pubdate data-updated="true"></time>
+<time datetime="2011-03-09T00:00:00+01:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -182,7 +218,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-03-08T00:00:00-05:00" pubdate data-updated="true"></time>
+<time datetime="2011-03-08T00:00:00+01:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -218,7 +254,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-03-06T00:00:00-05:00" pubdate data-updated="true"></time>
+<time datetime="2011-03-06T00:00:00+01:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -254,7 +290,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-03-06T00:00:00-05:00" pubdate data-updated="true"></time>
+<time datetime="2011-03-06T00:00:00+01:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -308,7 +344,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-03-05T00:00:00-05:00" pubdate data-updated="true"></time>
+<time datetime="2011-03-05T00:00:00+01:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -344,7 +380,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2011-03-05T00:00:00-05:00" pubdate data-updated="true"></time>
+<time datetime="2011-03-05T00:00:00+01:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -380,7 +416,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2010-10-13T00:00:00-04:00" pubdate data-updated="true"></time>
+<time datetime="2010-10-13T00:00:00+02:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -416,7 +452,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2010-10-04T00:00:00-04:00" pubdate data-updated="true"></time>
+<time datetime="2010-10-04T00:00:00+02:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -464,42 +500,6 @@ MathJax.Hub.Config({
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/10/01/designing-a-continuous-deployment-system-cautious-deployment/">Designing a Continuous Deployment System: Cautious Deployment</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-10-01T00:00:00-04:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">This article will be about a deployment scheduling technique which I call operationally cautious deployment. (I didn&#39;t pick the name so the acronym would end up being OCD! Honest! I swear!).<p /><div>Note: This isn&#39;t <i>new</i>. I didn&#39;t invent it. The fact that a big number of people around the globe with similar problems have come up with this idea independently and that most of them are happy with the results speaks for itself: this is mostly just common sense thinking applied to fixing a real problem. It&#39;s one of those things that sound obvious when you have them explained to you, but you probably wouldn&#39;t come up with unless you spend quiet a bit of time pondering the problem.</div> <p /><div>So you have a wonderful continuous deployment system! Congratulations! You deploy a new version, monitor your cluster of hosts, and create wonderful graphs:</div><p /><div>[[posterous-content:NBFS9fiUjfTCi8Xr5KIW]]<br /> </div><p /><div>Except, of course, it&#39;s not that simple. Your test suite, no matter how much you&#39;ve honed and polished it, is imperfect. It will contain subtle assumptions that just aren&#39;t true in deployment. (When I say &quot;subtle assumptions&quot;, I mean the kind that you don&#39;t know are assumptions until everything blows up.). If you&#39;re going to be deploying software all the time, deploying something that has a fatal mistake in it is a matter of when, not if. So one day, the real graph is going to look something like this:</div> <p /><div>[[posterous-content:5k8ymL4PxLDrYfbFgL8h]]<br /></div><div>It would be much nicer if we could deploy more cautiously. Try it out, and only go through with the complete deployment. A sort of live test, deploying with a feedback loop. That might look a bit like this:</div> <p /><div>[[posterous-content:apvQ27GHbg2rEh2CWgEa]]</div><div>That deploys the new version to 2**N servers, with N starting at 0 and increasing until all servers use the target version. The number of servers deployed to is exponential, because that gives us the behavior we wanted: slow and cautious at first, and rapid as soon as we think it&#39;ll work.</div> <p /><div><div>Of course, that doesn&#39;t give you an example of a failure mode. Failures look a bit like this:</div><div>[[posterous-content:tibBqAUzF8OCiIOWmnDZ]]</div> </div><div>Just like in the previous picture, a roll-out of a new version starts. Except this time, the new version doesn&#39;t actually work. The system catches this, and reverts the hosts that have already converted.</div> <p /><div>Of course, the package is still broken! You didn&#39;t fix the problem yet, you just reduced its impact. Your dev room should still look roughly like an control room from a bad Cold War movie right after the other party&#39;s launched a bunch of nukes.</div> <p /><div>It&#39;s just another bug, albeit a particularly nasty show-stopping one. Like all bugs, they&#39;re not so much bugs in the software as they are bugs in the test suite that incorrectly specified the requirements for the software. This becomes painfully obvious here: there&#39;s something broken, but your test suite didn&#39;t catch it. Hopefully, it&#39;s something that&#39;s at all testable.</div> <p /><div>The difference between this state of panic and the original state of panic is that, ideally, your users never noticed there was a problem.</div><p /><div>There&#39;s one obvious problem with all of this. Being able to continue deployment on positive feedback and revert deployments on negative feedback relies on actually having feedback. Useful health metrics for a cluster are halfway between art and science, and are definitely outside of the scope of this article.</div> <p /><div>The next article will be about another benefit of cautious deployment: continuous <i>availability</i>. That one is probably going to be halfway between an article about continuous deployment and a rant about how people need to learn more statistics.</div>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/"><i class="fa fa-chevron-circle-left fa-2x icon-color"></i></a>
@@ -524,6 +524,10 @@ MathJax.Hub.Config({
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/05/29/on-truecrypt-and-full-disk-encryption/">On TrueCrypt and Full-disk Encryption</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/04/06/more-on-financial-aid-grant-optimization/">More on Financial Aid Grant Optimization</a>
       </li>
     
@@ -537,10 +541,6 @@ MathJax.Hub.Config({
     
       <li class="post">
         <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
       </li>
     
   </ul>

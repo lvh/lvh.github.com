@@ -9,7 +9,7 @@
   <meta name="author" content="Laurens Van Houtven">
 
   
-  <meta name="description" content="In a previous post, I talked about ways to optimize PyCon financial aid grants. This is a follow-up on those efforts. Quick recap: There is a fixed &hellip;">
+  <meta name="description" content="Since the early hours of May 29th (CEST), the TrueCrypt website (https://www.truecrypt.org) has pointed to http://truecrypt.sourceforge.net/, with &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,6 +94,133 @@ MathJax.Hub.Config({
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2014/05/29/on-truecrypt-and-full-disk-encryption/">On TrueCrypt and Full-disk Encryption</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-29T10:53:30+02:00" pubdate data-updated="true">May 29<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+<p>Since the early hours of May 29th (CEST), <a href="https://www.truecrypt.org">the TrueCrypt website (<code>https://www.truecrypt.org</code>)</a> has pointed to <code>http://truecrypt.sourceforge.net/</code>, with an ominous-looking error message:</p>
+
+<blockquote>
+<p>WARNING: Using TrueCrypt is not secure as it may contain unfixed security issues</p>
+</blockquote>
+
+<blockquote>
+<p>This page exists only to help migrate existing data encrypted by TrueCrypt.</p>
+</blockquote>
+
+<blockquote>
+<p>The development of TrueCrypt was ended in 5/2014 after Microsoft terminated support of Windows XP. Windows 8/7/Vista and later offer integrated support for encrypted disks and virtual disk images. Such integrated support is also available on other platforms (click here for more information). You should migrate any data encrypted by TrueCrypt to encrypted disks or virtual disk images supported on your platform.</p>
+</blockquote>
+
+<p>The website then explains how you can install BitLocker, a proprietary disk encryption system available in many versions of Windows, as well as how you could “rescue” existing TrueCrypt volumes.</p>
+
+<p>People were pretty unhappy, for a variety of reasons:</p>
+
+<ul>
+<li>Lack of trust in proprietary full-disk encryption software.</li>
+
+<li>Many versions of Windows didn’t even ship with BitLocker, only a few “premium” versions did.</li>
+</ul>
+
+<p>As a proprietary system, BitLocker is not susceptible to the same amount of public scrutiny as a publicly available system. This is in stark contrast with TrueCrypt, where Matt Green recently raised around 70k USD to perform an <a href="http://istruecryptauditedyet.com/">audit</a>.</p>
+
+<p>There are variety of scenarios that could’ve caused the TrueCypt website to suddenly sport that message. The live Internet audience has speculated wildly. I’ll share my thoughts on that near the end of this post, but there are two points I’d like to make that I think are far more important:</p>
+
+<ol>
+<li>Consider if full-disk encryption is really what you want.</li>
+
+<li>If it is, consider if it should be TrueCrypt.</li>
+</ol>
+
+<h3 id="fulldisk_encryption">Full-disk encryption</h3>
+
+<p>Something I learned from the inimitable <a href="https://zooko.com">Zooko</a>:</p>
+
+<blockquote>
+<p>Security isn’t about perfect versus imperfect or about better versus worse, it’s about <em>this</em> attack surface versus <em>that</em> attack surface.</p>
+</blockquote>
+
+<p>You can’t just add more encryption to something and expect to somehow get better security. You have to consider what it is buying you.</p>
+
+<p>Full-disk encryption buys you one simple thing: if someone steals your device while the encrypted volume is locked, they probably can’t read it.</p>
+
+<p>If the encrypted volume is unlocked, it’s over; and that’s the state it’s probably usually in. If the key lives in RAM (it usually does), there’s a variety of ways that can be extracted. There’s devices that have complete direct memory access, including everything that speaks FireWire or has FireWire-compatibility built-in. Even if you shut off your machine, cold boot attacks mean that the key can be extracted for a limited about of time. Various jurisdictions can try to force you to hand over the keys.</p>
+
+<p>If an attacker can write to the (encrypted!) volume, it’s probably over. Virtually all sector-level full-disk encryption formats are unauthenticated (with good reason), they’re all malleable and vulnerable to (adaptive) chosen-ciphertext attacks.</p>
+
+<p>If you’re encrypting files or blobs of data within other files, an authenticated encryption scheme like GPG is far more useful.</p>
+
+<p>Don’t get me wrong. Full-disk encryption is a good idea, and you should do it. I’m just saying that what it actually protects against is pretty limited.</p>
+
+<p>For more details, try Thomas &amp; Erin Ptacek’s <a href="http://sockpuppet.org/blog/2014/04/30/you-dont-want-xts/">blog post</a> on why XTS isn’t what you want. XTS is a way to build tweakable ciphers that can be used to create full-disk encryption; but the post applies to full-disk encryption generically as well.</p>
+
+<h3 id="truecrypt_as_a_fulldisk_encryption_mechanism">TrueCrypt as a full-disk encryption mechanism</h3>
+
+<p>So, you probably want full-disk encryption, and you probably want to make sure that sensitive data is encrypted on top of that. Great. What full-disk encryption scheme do you use?</p>
+
+<p>I don’t want to bash TrueCrypt. It is (was, perhaps?) a great go-to project for full-disk encryption. It got a lot of things right. It also got a bunch of things wrong.</p>
+
+<p>TrueCrypt was made by a bunch of people we don’t know occasionally throwing a bunch of binaries over the wall. The source is available (under a non-OSI license), so you could audit that and compile your own binaries, but the truth is that the vast majority of TrueCrypt users never actually did that.</p>
+
+<p>The TrueCrypt disk format and encryption standards are a bit iffy. It has terrible file system support. It has major performance issues, partially due to questionable cryptographic practices such as cipher cascades. It was great for when it was originally conceived and full-disk encryption was still new and exciting, it’s still pretty decent now, but we can certainly do better.</p>
+
+<h3 id="what_actually_happened_to_the_website">What actually happened to the website?</h3>
+
+<p>We don’t really know. There’s a couple of guesses.</p>
+
+<p>First of all, it looks like it are the original authors that folded: the key is the same one that was being used to sign releases months ago. Of course, that could mean that it was compromised or that they were forced to hand it over.</p>
+
+<p>Since the DNS records changed, the e-mail server behavior changed, the same key was used, the Sourceforge client was involved, and fairly major changes to the source code were involved, it’s unlikely that it’s a simple defacement.</p>
+
+<p>It’s unlikely that they folded because they felt discovery of some backdoor was imminent. Folding would actually stop that discovery, because the source was already open.</p>
+
+<p>It’s strange that they would point to alternatives like Bitlocker for Windows and even more dubious alternatives for other operating systems. The authors certainly knew that this would not be an acceptable alternative for the vast majority of their users.</p>
+
+<p>Additionally, the support window for XP ending isn’t a particularly convincing impetus for migrating away from TrueCrypt <em>right now</em>. This has lead some to believe that it’s an automated release. Worse, it could be a gagged response: a big and powerful three-letter agency might be twisting their arm and forcing them to fold, in return for something else (like, say, not being thrown in a Gitmo cell and forgotten about). Again: at this point that is pure speculation.</p>
+
+<p>Another option is that some of the developers just really, genuinely folded. They felt that for atechnical users, BitLocker was good enough, while the particularly discerning TrueCrypt user would be able to find some other alternative.</p>
+
+<p>Bottom line is that none of this really matters.</p>
+
+<h3 id="so_what_do_i_do_now">So what do I do now?</h3>
+
+<p>If you’re on Linux, dm-crypt + cryptsetup + LUKS is probably what you want. If you’re on OS X, FileVault 2 is probably what you want. If you’re on Windows, your options are looking a bit thin right now:</p>
+
+<ul>
+<li>Keep using old versions of TrueCrypt.</li>
+</ul>
+<hr /></div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2014/04/06/more-on-financial-aid-grant-optimization/">More on Financial Aid Grant Optimization</a></h1>
     
     
@@ -110,7 +237,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2014-04-06T14:34:27-04:00" pubdate data-updated="true">Apr 6<span>th</span>, 2014</time>
+<time datetime="2014-04-06T20:34:27+02:00" pubdate data-updated="true">Apr 6<span>th</span>, 2014</time>
         
       </p>
     
@@ -162,7 +289,7 @@ MathJax.Hub.Config({
 <ul>
 <li>The resulting problem is not convex. That means it’s (probably) difficult to solve.</li>
 
-<li>The estimated probability that someone will attend falls off sharply as soon as they don’t receive the full amount they requested. At 50% of the requested grant, the estimated probability of attending is only 25%; at 90%, it’s 81%. This is the opposite of what we want; when someone receives approximately 90% of their grant amount.</li>
+<li>The estimated probability that someone will attend falls off sharply as soon as they don’t receive the full amount they requested. At 50% of the requested grant, the estimated probability of attending is only 25%; at 90%, it’s 81%. This is the opposite of what we want.</li>
 </ul>
 
 <h2 id="fixing_the_model">Fixing the model</h2>
@@ -277,7 +404,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2014-03-18T08:05:52-04:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
+<time datetime="2014-03-18T13:05:52+01:00" pubdate data-updated="true">Mar 18<span>th</span>, 2014</time>
         
       </p>
     
@@ -368,7 +495,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2014-03-10T16:47:00-04:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
+<time datetime="2014-03-10T16:47:00+01:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
         
       </p>
     
@@ -553,7 +680,7 @@ MathJax.Hub.Config({
   
 
 
-<time datetime="2013-12-18T11:22:00-05:00" pubdate data-updated="true">Dec 18<span>th</span>, 2013</time>
+<time datetime="2013-12-18T11:22:00+01:00" pubdate data-updated="true">Dec 18<span>th</span>, 2013</time>
         
       </p>
     
@@ -561,7 +688,7 @@ MathJax.Hub.Config({
 
 
   <div class="entry-content">
-<p>Welp, my WD 1TB Passport drive borked. Seems to be a <a href="https://discussions.apple.com/thread/5475136">common issue on Mavericks</a> with a select number of drives, including this one, apparently</p>
+<p>Welp, my WD 1TB Passport drive borked. Seems to be a <a href="https://discussions.apple.com/thread/5475136">common issue on Mavericks</a> with a select number of drives, including this one, apparently…</p>
 
 <p>Common themes:</p>
 
@@ -607,7 +734,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   
 
 
-<time datetime="2013-11-15T11:29:00-05:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
+<time datetime="2013-11-15T11:29:00+01:00" pubdate data-updated="true">Nov 15<span>th</span>, 2013</time>
         
       </p>
     
@@ -761,7 +888,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   
 
 
-<time datetime="2013-10-19T21:47:00-04:00" pubdate data-updated="true">Oct 19<span>th</span>, 2013</time>
+<time datetime="2013-10-19T21:47:00+02:00" pubdate data-updated="true">Oct 19<span>th</span>, 2013</time>
         
       </p>
     
@@ -908,7 +1035,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   
 
 
-<time datetime="2013-01-30T18:55:00-05:00" pubdate data-updated="true">Jan 30<span>th</span>, 2013</time>
+<time datetime="2013-01-30T18:55:00+01:00" pubdate data-updated="true">Jan 30<span>th</span>, 2013</time>
         
       </p>
     
@@ -1079,7 +1206,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   
 
 
-<time datetime="2013-01-28T10:58:00-05:00" pubdate data-updated="true">Jan 28<span>th</span>, 2013</time>
+<time datetime="2013-01-28T10:58:00+01:00" pubdate data-updated="true">Jan 28<span>th</span>, 2013</time>
         
       </p>
     
@@ -1116,7 +1243,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   
 
 
-<time datetime="2011-11-27T00:00:00-05:00" pubdate data-updated="true"></time>
+<time datetime="2011-11-27T00:00:00+01:00" pubdate data-updated="true"></time>
         
       </p>
     
@@ -1181,42 +1308,6 @@ The downside is that there are two things. One of them speaks REST, and the othe
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/05/12/i-don-t-understand-rest-pagination/">I Don&#8217;t Understand REST Pagination</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-05-12T00:00:00-04:00" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content">Hey.<p /><br />So, in <a href="https://github.com/lvh/txyoga">txYoga</a>, in implemented pagination in terms of query parameters to a collection. If you want to access the range of elements [100, 110), you would say: <span style="font-family: courier new,monospace;"><a href="http://whatever/collection?start=100;stop=110">http://whatever/collection?start=100;stop=110</a></span>. The feature here is that pages give you the link to the next and previous page. The response (JSON) looks something like <span style="font-family: courier new,monospace;">{&quot;results&quot;: [&#8230;], &quot;next&quot;: nextURL, &quot;prev&quot;: prevURL}</span>. That way, you pretty much just have to follow URLs to walk down the collection as a doubly  linked list of pages. The supposed feature is that I can change how my pages work, and users hopefully won&#39;t notice, since they shouldn&#39;t be building their own URLs anyway.<p /> Now, at the same time, I&#39;m looking at <a href="http://dojotoolkit.org/reference-guide/dojo/store/JsonRest.html">dojo&#39;s JsonRest API</a>. It&#39;s suggesting that I use the Range and Content-Range headers for pagination support. It also has a single JSON array as a response (so, [{&#8230;}, &#8230;]) instead of my JSON object. I started RFC diving and hey look, they&#39;re right, HTTP understands <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.12">ranges with arbitrary units</a>. So, are my URLs wrong? Are people supposed to conjure Range URLs themselves? Why are these darned ranges inclusive? Another problem is that the specification doesn&#39;t really seem to support non-numeric ranges, whereas to txYoga, that&#39;s not really a problem as long as the underlying collection understands it.<p /> Isn&#39;t REST supposed to be hypertext-driven? Aren&#39;t people basically supposed to never construct URLs, and rely on me to provide them to them? Where am I supposed to put those URLs? Yaaargh.<p /> <br />cheers<div>lvh</div>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/"><i class="fa fa-chevron-circle-left fa-2x icon-color"></i></a>
@@ -1239,6 +1330,10 @@ The downside is that there are two things. One of them speaks REST, and the othe
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/05/29/on-truecrypt-and-full-disk-encryption/">On TrueCrypt and Full-disk Encryption</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/04/06/more-on-financial-aid-grant-optimization/">More on Financial Aid Grant Optimization</a>
       </li>
     
@@ -1252,10 +1347,6 @@ The downside is that there are two things. One of them speaks REST, and the othe
     
       <li class="post">
         <a href="/blog/2013/12/18/external-drive-lossage-on-mavericks/">External Drive Lossage on Mavericks</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/">Using Protractor With AngularJS and Yeoman</a>
       </li>
     
   </ul>

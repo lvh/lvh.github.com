@@ -4,7 +4,7 @@
   <title><![CDATA[lvh]]></title>
   <link href="http://www.lvh.io/atom.xml" rel="self"/>
   <link href="http://www.lvh.io/"/>
-  <updated>2014-04-08T12:03:25-04:00</updated>
+  <updated>2014-05-29T13:28:49+02:00</updated>
   <id>http://www.lvh.io/</id>
   <author>
     <name><![CDATA[Laurens Van Houtven]]></name>
@@ -14,9 +14,109 @@
 
   
   <entry>
+    <title type="html"><![CDATA[On TrueCrypt and Full-disk Encryption]]></title>
+    <link href="http://www.lvh.io/blog/2014/05/29/on-truecrypt-and-full-disk-encryption/"/>
+    <updated>2014-05-29T10:53:30+02:00</updated>
+    <id>http://www.lvh.io/blog/2014/05/29/on-truecrypt-and-full-disk-encryption</id>
+    <content type="html"><![CDATA[
+<p>Since the early hours of May 29th (CEST), <a href="https://www.truecrypt.org">the TrueCrypt website (<code>https://www.truecrypt.org</code>)</a> has pointed to <code>http://truecrypt.sourceforge.net/</code>, with an ominous-looking error message:</p>
+
+<blockquote>
+<p>WARNING: Using TrueCrypt is not secure as it may contain unfixed security issues</p>
+</blockquote>
+
+<blockquote>
+<p>This page exists only to help migrate existing data encrypted by TrueCrypt.</p>
+</blockquote>
+
+<blockquote>
+<p>The development of TrueCrypt was ended in 5/2014 after Microsoft terminated support of Windows XP. Windows 8/7/Vista and later offer integrated support for encrypted disks and virtual disk images. Such integrated support is also available on other platforms (click here for more information). You should migrate any data encrypted by TrueCrypt to encrypted disks or virtual disk images supported on your platform.</p>
+</blockquote>
+
+<p>The website then explains how you can install BitLocker, a proprietary disk encryption system available in many versions of Windows, as well as how you could “rescue” existing TrueCrypt volumes.</p>
+
+<p>People were pretty unhappy, for a variety of reasons:</p>
+
+<ul>
+<li>Lack of trust in proprietary full-disk encryption software.</li>
+
+<li>Many versions of Windows didn’t even ship with BitLocker, only a few “premium” versions did.</li>
+</ul>
+
+<p>As a proprietary system, BitLocker is not susceptible to the same amount of public scrutiny as a publicly available system. This is in stark contrast with TrueCrypt, where Matt Green recently raised around 70k USD to perform an <a href="http://istruecryptauditedyet.com/">audit</a>.</p>
+
+<p>There are variety of scenarios that could’ve caused the TrueCypt website to suddenly sport that message. The live Internet audience has speculated wildly. I’ll share my thoughts on that near the end of this post, but there are two points I’d like to make that I think are far more important:</p>
+
+<ol>
+<li>Consider if full-disk encryption is really what you want.</li>
+
+<li>If it is, consider if it should be TrueCrypt.</li>
+</ol>
+
+<h3 id="fulldisk_encryption">Full-disk encryption</h3>
+
+<p>Something I learned from the inimitable <a href="https://zooko.com">Zooko</a>:</p>
+
+<blockquote>
+<p>Security isn’t about perfect versus imperfect or about better versus worse, it’s about <em>this</em> attack surface versus <em>that</em> attack surface.</p>
+</blockquote>
+
+<p>You can’t just add more encryption to something and expect to somehow get better security. You have to consider what it is buying you.</p>
+
+<p>Full-disk encryption buys you one simple thing: if someone steals your device while the encrypted volume is locked, they probably can’t read it.</p>
+
+<p>If the encrypted volume is unlocked, it’s over; and that’s the state it’s probably usually in. If the key lives in RAM (it usually does), there’s a variety of ways that can be extracted. There’s devices that have complete direct memory access, including everything that speaks FireWire or has FireWire-compatibility built-in. Even if you shut off your machine, cold boot attacks mean that the key can be extracted for a limited about of time. Various jurisdictions can try to force you to hand over the keys.</p>
+
+<p>If an attacker can write to the (encrypted!) volume, it’s probably over. Virtually all sector-level full-disk encryption formats are unauthenticated (with good reason), they’re all malleable and vulnerable to (adaptive) chosen-ciphertext attacks.</p>
+
+<p>If you’re encrypting files or blobs of data within other files, an authenticated encryption scheme like GPG is far more useful.</p>
+
+<p>Don’t get me wrong. Full-disk encryption is a good idea, and you should do it. I’m just saying that what it actually protects against is pretty limited.</p>
+
+<p>For more details, try Thomas &amp; Erin Ptacek’s <a href="http://sockpuppet.org/blog/2014/04/30/you-dont-want-xts/">blog post</a> on why XTS isn’t what you want. XTS is a way to build tweakable ciphers that can be used to create full-disk encryption; but the post applies to full-disk encryption generically as well.</p>
+
+<h3 id="truecrypt_as_a_fulldisk_encryption_mechanism">TrueCrypt as a full-disk encryption mechanism</h3>
+
+<p>So, you probably want full-disk encryption, and you probably want to make sure that sensitive data is encrypted on top of that. Great. What full-disk encryption scheme do you use?</p>
+
+<p>I don’t want to bash TrueCrypt. It is (was, perhaps?) a great go-to project for full-disk encryption. It got a lot of things right. It also got a bunch of things wrong.</p>
+
+<p>TrueCrypt was made by a bunch of people we don’t know occasionally throwing a bunch of binaries over the wall. The source is available (under a non-OSI license), so you could audit that and compile your own binaries, but the truth is that the vast majority of TrueCrypt users never actually did that.</p>
+
+<p>The TrueCrypt disk format and encryption standards are a bit iffy. It has terrible file system support. It has major performance issues, partially due to questionable cryptographic practices such as cipher cascades. It was great for when it was originally conceived and full-disk encryption was still new and exciting, it’s still pretty decent now, but we can certainly do better.</p>
+
+<h3 id="what_actually_happened_to_the_website">What actually happened to the website?</h3>
+
+<p>We don’t really know. There’s a couple of guesses.</p>
+
+<p>First of all, it looks like it are the original authors that folded: the key is the same one that was being used to sign releases months ago. Of course, that could mean that it was compromised or that they were forced to hand it over.</p>
+
+<p>Since the DNS records changed, the e-mail server behavior changed, the same key was used, the Sourceforge client was involved, and fairly major changes to the source code were involved, it’s unlikely that it’s a simple defacement.</p>
+
+<p>It’s unlikely that they folded because they felt discovery of some backdoor was imminent. Folding would actually stop that discovery, because the source was already open.</p>
+
+<p>It’s strange that they would point to alternatives like Bitlocker for Windows and even more dubious alternatives for other operating systems. The authors certainly knew that this would not be an acceptable alternative for the vast majority of their users.</p>
+
+<p>Additionally, the support window for XP ending isn’t a particularly convincing impetus for migrating away from TrueCrypt <em>right now</em>. This has lead some to believe that it’s an automated release. Worse, it could be a gagged response: a big and powerful three-letter agency might be twisting their arm and forcing them to fold, in return for something else (like, say, not being thrown in a Gitmo cell and forgotten about). Again: at this point that is pure speculation.</p>
+
+<p>Another option is that some of the developers just really, genuinely folded. They felt that for atechnical users, BitLocker was good enough, while the particularly discerning TrueCrypt user would be able to find some other alternative.</p>
+
+<p>Bottom line is that none of this really matters.</p>
+
+<h3 id="so_what_do_i_do_now">So what do I do now?</h3>
+
+<p>If you’re on Linux, dm-crypt + cryptsetup + LUKS is probably what you want. If you’re on OS X, FileVault 2 is probably what you want. If you’re on Windows, your options are looking a bit thin right now:</p>
+
+<ul>
+<li>Keep using old versions of TrueCrypt.</li>
+</ul>
+<hr />]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[More on Financial Aid Grant Optimization]]></title>
     <link href="http://www.lvh.io/blog/2014/04/06/more-on-financial-aid-grant-optimization/"/>
-    <updated>2014-04-06T14:34:27-04:00</updated>
+    <updated>2014-04-06T20:34:27+02:00</updated>
     <id>http://www.lvh.io/blog/2014/04/06/more-on-financial-aid-grant-optimization</id>
     <content type="html"><![CDATA[
 <p>In <a href="http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">a previous post</a>, I talked about ways to optimize PyCon financial aid grants. This is a follow-up on those efforts. Quick recap:</p>
@@ -63,7 +163,7 @@
 <ul>
 <li>The resulting problem is not convex. That means it’s (probably) difficult to solve.</li>
 
-<li>The estimated probability that someone will attend falls off sharply as soon as they don’t receive the full amount they requested. At 50% of the requested grant, the estimated probability of attending is only 25%; at 90%, it’s 81%. This is the opposite of what we want; when someone receives approximately 90% of their grant amount.</li>
+<li>The estimated probability that someone will attend falls off sharply as soon as they don’t receive the full amount they requested. At 50% of the requested grant, the estimated probability of attending is only 25%; at 90%, it’s 81%. This is the opposite of what we want.</li>
 </ul>
 
 <h2 id="fixing_the_model">Fixing the model</h2>
@@ -156,7 +256,7 @@
   <entry>
     <title type="html"><![CDATA[Optimal Hotel Room Pairing]]></title>
     <link href="http://www.lvh.io/blog/2014/03/18/optimal-hotel-room-pairing/"/>
-    <updated>2014-03-18T08:05:52-04:00</updated>
+    <updated>2014-03-18T13:05:52+01:00</updated>
     <id>http://www.lvh.io/blog/2014/03/18/optimal-hotel-room-pairing</id>
     <content type="html"><![CDATA[
 <p>The greedy hotel pairing algorithm from my <a href="http://blog.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/">previous post</a> gives good solutions. If you make some fairly reasonable-sounding assumptions about the problem, <em>very</em> good solutions. At any rate nicer than forcing a human to drudge through it; both in terms of person-hours spent and quality of the solutions.</p>
@@ -220,7 +320,7 @@
   <entry>
     <title type="html"><![CDATA[Optimization Problems and PyCon Financial Aid]]></title>
     <link href="http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid/"/>
-    <updated>2014-03-10T16:47:00-04:00</updated>
+    <updated>2014-03-10T16:47:00+01:00</updated>
     <id>http://www.lvh.io/blog/2014/03/10/optimization-problems-and-pycon-financial-aid</id>
     <content type="html"><![CDATA[
 <p>This year, I have partly taken on some new responsibilities in organizing PyCon. Specifically, I’ve done some work on financial aid. (Next year, I will be taking on the position of financial aid chair.) There have been some challenges that I’ve thrown some code at. Some of it stuck.</p>
@@ -378,10 +478,10 @@
   <entry>
     <title type="html"><![CDATA[External Drive Lossage on Mavericks]]></title>
     <link href="http://www.lvh.io/blog/2013/12/18/external-drive-lossage-on-mavericks/"/>
-    <updated>2013-12-18T11:22:00-05:00</updated>
+    <updated>2013-12-18T11:22:00+01:00</updated>
     <id>http://www.lvh.io/blog/2013/12/18/external-drive-lossage-on-mavericks</id>
     <content type="html"><![CDATA[
-<p>Welp, my WD 1TB Passport drive borked. Seems to be a <a href="https://discussions.apple.com/thread/5475136">common issue on Mavericks</a> with a select number of drives, including this one, apparently</p>
+<p>Welp, my WD 1TB Passport drive borked. Seems to be a <a href="https://discussions.apple.com/thread/5475136">common issue on Mavericks</a> with a select number of drives, including this one, apparently…</p>
 
 <p>Common themes:</p>
 
@@ -405,7 +505,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   <entry>
     <title type="html"><![CDATA[Using Protractor With AngularJS and Yeoman]]></title>
     <link href="http://www.lvh.io/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman/"/>
-    <updated>2013-11-15T11:29:00-05:00</updated>
+    <updated>2013-11-15T11:29:00+01:00</updated>
     <id>http://www.lvh.io/blog/2013/11/15/using-protractor-with-angularjs-and-yeoman</id>
     <content type="html"><![CDATA[
 <p>In writing the website for Crypto 101, my upcoming book, I’ve been toying around with AngularJS. The basic setup was done using Yeoman.</p>
@@ -532,7 +632,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   <entry>
     <title type="html"><![CDATA[Thoughts on RDRAND in Linux]]></title>
     <link href="http://www.lvh.io/blog/2013/10/19/thoughts-on-rdrand-in-linux/"/>
-    <updated>2013-10-19T21:47:00-04:00</updated>
+    <updated>2013-10-19T21:47:00+02:00</updated>
     <id>http://www.lvh.io/blog/2013/10/19/thoughts-on-rdrand-in-linux</id>
     <content type="html"><![CDATA[
 <p>This has been brewing since I read <a href="https://www.change.org/en-GB/petitions/linus-torvalds-remove-rdrand-from-dev-random-4/responses/9066">Linus’ response to the petition to remove <code>RDRAND</code> from /dev/random</a>.</p>
@@ -652,7 +752,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   <entry>
     <title type="html"><![CDATA[Securing Against Timing Attacks With Twisted]]></title>
     <link href="http://www.lvh.io/blog/2013/01/30/securing-against-timing-attacks-with-twisted/"/>
-    <updated>2013-01-30T18:55:00-05:00</updated>
+    <updated>2013-01-30T18:55:00+01:00</updated>
     <id>http://www.lvh.io/blog/2013/01/30/securing-against-timing-attacks-with-twisted</id>
     <content type="html"><![CDATA[
 <h2 id="what_are_timing_attacks">What are timing attacks?</h2>
@@ -796,7 +896,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   <entry>
     <title type="html"><![CDATA[Moving to Octopress on Github Pages]]></title>
     <link href="http://www.lvh.io/blog/2013/01/28/moving-to-octopress-on-github-pages/"/>
-    <updated>2013-01-28T10:58:00-05:00</updated>
+    <updated>2013-01-28T10:58:00+01:00</updated>
     <id>http://www.lvh.io/blog/2013/01/28/moving-to-octopress-on-github-pages</id>
     <content type="html"><![CDATA[
 <p>Long overdue, I’m told.</p>
@@ -806,7 +906,7 @@ detected on My Passport, fsck will be forced on next mount.</code></li>
   <entry>
     <title type="html"><![CDATA[Designing a REST API: Logging In]]></title>
     <link href="http://www.lvh.io/blog/2011/11/27/designing-a-rest-api-logging-in/"/>
-    <updated>2011-11-27T00:00:00-05:00</updated>
+    <updated>2011-11-27T00:00:00+01:00</updated>
     <id>http://www.lvh.io/blog/2011/11/27/designing-a-rest-api-logging-in</id>
     <content type="html"><![CDATA[<div>Hey. As many of you probably know, I&#8217;m building a business, and that business involves a REST API being consumed by browsers (for now).</div>
 <p />
@@ -865,7 +965,7 @@ The downside is that there are two things. One of them speaks REST, and the othe
   <entry>
     <title type="html"><![CDATA[I Don't Understand REST Pagination]]></title>
     <link href="http://www.lvh.io/blog/2011/05/12/i-don-t-understand-rest-pagination/"/>
-    <updated>2011-05-12T00:00:00-04:00</updated>
+    <updated>2011-05-12T00:00:00+02:00</updated>
     <id>http://www.lvh.io/blog/2011/05/12/i-don-t-understand-rest-pagination</id>
     <content type="html"><![CDATA[Hey.<p /><br />So, in <a href="https://github.com/lvh/txyoga">txYoga</a>, in implemented pagination in terms of query parameters to a collection. If you want to access the range of elements [100, 110), you would say: <span style="font-family: courier new,monospace;"><a href="http://whatever/collection?start=100;stop=110">http://whatever/collection?start=100;stop=110</a></span>. The feature here is that pages give you the link to the next and previous page. The response (JSON) looks something like <span style="font-family: courier new,monospace;">{&quot;results&quot;: [&#8230;], &quot;next&quot;: nextURL, &quot;prev&quot;: prevURL}</span>. That way, you pretty much just have to follow URLs to walk down the collection as a doubly  linked list of pages. The supposed feature is that I can change how my pages work, and users hopefully won&#39;t notice, since they shouldn&#39;t be building their own URLs anyway.<p /> Now, at the same time, I&#39;m looking at <a href="http://dojotoolkit.org/reference-guide/dojo/store/JsonRest.html">dojo&#39;s JsonRest API</a>. It&#39;s suggesting that I use the Range and Content-Range headers for pagination support. It also has a single JSON array as a response (so, [{&#8230;}, &#8230;]) instead of my JSON object. I started RFC diving and hey look, they&#39;re right, HTTP understands <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.12">ranges with arbitrary units</a>. So, are my URLs wrong? Are people supposed to conjure Range URLs themselves? Why are these darned ranges inclusive? Another problem is that the specification doesn&#39;t really seem to support non-numeric ranges, whereas to txYoga, that&#39;s not really a problem as long as the underlying collection understands it.<p /> Isn&#39;t REST supposed to be hypertext-driven? Aren&#39;t people basically supposed to never construct URLs, and rely on me to provide them to them? Where am I supposed to put those URLs? Yaaargh.<p /> <br />cheers<div>lvh</div>
 ]]></content>
@@ -874,7 +974,7 @@ The downside is that there are two things. One of them speaks REST, and the othe
   <entry>
     <title type="html"><![CDATA[Crowdsourcing Opinions on a REST API: POST, PUT or Both?]]></title>
     <link href="http://www.lvh.io/blog/2011/05/06/crowdsourcing-opinions-on-a-rest-api-post-put-or-both-/"/>
-    <updated>2011-05-06T00:00:00-04:00</updated>
+    <updated>2011-05-06T00:00:00+02:00</updated>
     <id>http://www.lvh.io/blog/2011/05/06/crowdsourcing-opinions-on-a-rest-api-post-put-or-both-</id>
     <content type="html"><![CDATA[As some of you undoubtedly know, I&#39;m writing a thing called txYoga, which is a REST framework for Twisted.<p />The fundamental operations in this post are CRUD:<br /><ol><li>Creating elements</li><li>Retrieving them</li> <li>Updating them</li><li>Deleting them</li></ol>Now, retrieving is obvious: send a GET request to the element. Getting rid of them is too: same thing, but a DELETE. Updates are done using PUT to the element. Creating elements, though, is a bit more ambiguous:<br /> <ol><li>If the client knows the complete path to the element (so, particularly the final part of the new element&#39;s URI), it PUTs to that URI (for which there is currently no element).</li><li>If the client doesn&#39;t know or care, it POSTs to the collection. The collection creates the element, and probably returns the URL under which the new element is available.<br /> </li></ol>One of the fundamental differences between POST and PUT is that PUT is idempotent, but POST is not. If you send me the same PUT request once, twice or ten times, you&#39;ll end up with the same state. POSTing to the collection might work once (or pretty much indefinitely, if you&#39;re producing objects with an UUID identifier for example).<p /> This is because in txYoga, each element has exactly one identifying attribute (which is the thing that&#39;s used to access the element). That&#39;s what makes PUT feels so awkward: what you&#39;re putting contains the information to decide what the name of the object is (since it has to have the identifying attribute), but the object doesn&#39;t know what name it&#39;s going to be put under (since that name only exists after the object is created), so you have to repeat yourself. With POST, you don&#39;t really care.<p /> Additionally, you&#39;d be using the same thing for updating and creating new elements, which I guess sort-of makes sense, but reminds me of Perl&#39;s autovivification and not in a good way.<p />The question is: should I support both PUT and POST for creating elements? On the one hand, There should be one&#8211; and preferably only one &#8211;obvious way to do it. On the other, this is what REST pretty much does &#8211; and practicality beats purity (although this isn&#39;t very practical for me&#8230;).
 ]]></content>
@@ -883,7 +983,7 @@ The downside is that there are two things. One of them speaks REST, and the othe
   <entry>
     <title type="html"><![CDATA[Reflections on Stories From (Disgruntled) Launchpad Users]]></title>
     <link href="http://www.lvh.io/blog/2011/03/09/reflections-on-stories-from-disgruntled-launchpad-users/"/>
-    <updated>2011-03-09T00:00:00-05:00</updated>
+    <updated>2011-03-09T00:00:00+01:00</updated>
     <id>http://www.lvh.io/blog/2011/03/09/reflections-on-stories-from-disgruntled-launchpad-users</id>
     <content type="html"><![CDATA[Hello again :-)<p /><br />I tweeted something. I&#39;m quite proud of it. It&#39;s exactly 140 characters, and it captures the essence of the last few days&#39; worth of articles quite well. Obviously it makes concessions to accuracy for reasons of brevity, but here goes anyway:<p /> <div style="margin-left: 40px;">It seems to me Github people use Github as a coping mechanism for git, and Launchpad people use Bazaar and a coping mechanism for Launchpad.</div><br />That explains virtually all of the feedback and workflow I&#39;ve received. It seems Github users use git as a tool to get code into Github as quickly as possible, so magic and sprinkles can be added to it. That means the Github people have done an excellent job. It&#39;s managed to create an environment where you have awesome features like truly polished pull requests and a great code browser that lets you peek into someone else&#39;s repository without you having to worry about adding a remote, fetching objects, removing a remote&#8230;<p /> Github tries to minimize your exposure to git &#8211; <a href="http://chriswanstrath.com/hub/">hub</a> even more so (with hub, clones and pulls look like they do with bzr for me. Huge win.). Even without having to call git&#39;s UX bad, that makes (business) sense: the Github people aren&#39;t the git people so they want you in their service as much as possible. And man, have they succeeded.<p /> On the other side of that argument, there&#39;s Launchpad and Bazaar. Most of the discussions about Launchpad&#39;s UI warts (and, keeping in mind my last article, some of them are just a question of catering to a different audience but some of them really are simply faults) go something like this:<br /> <div style="margin-left: 40px;"><b>unhappy user:</b> Hey lvh, take a look at $BOGUS_UI_CHOICE. Come on, you have to admit, that just sucks.<br /><b>lvh</b>: Huh. You&#39;re right &#8211; that is pretty bad. I just never noticed because I use $BZR_INVOCATION to get to that information.<br /> </div><br />Case in point: merge proposals. Apparently they had an in-page diff. I had no idea.<p />Github users use Github to do things. Launchpad users use Launchpad as branch storage + metadata (bug tracker, merge proposals, primarily) so they can convince bzr to do things. When Github users go to Launchpad, perhaps without truly trying to use it, they see the prospect of using something like Github but worse. When Launchpad users go to Github, they see the prospect of getting to use git for everything instead of bzr. (And, let&#39;s be honest &#8211; if you&#39;re diffing between remotes all day, Github is more pleasant than plain git, and bzr is too.)<p /> cheers<div>lvh</div>
 ]]></content>
@@ -892,7 +992,7 @@ The downside is that there are two things. One of them speaks REST, and the othe
   <entry>
     <title type="html"><![CDATA[On Sysadmins, Programmers, and Reconciliation (a Response to Zed Shaw's Post)]]></title>
     <link href="http://www.lvh.io/blog/2011/03/08/on-sysadmins-programmers-and-reconciliation-a-response-to-zed-shaw-s-post-/"/>
-    <updated>2011-03-08T00:00:00-05:00</updated>
+    <updated>2011-03-08T00:00:00+01:00</updated>
     <id>http://www.lvh.io/blog/2011/03/08/on-sysadmins-programmers-and-reconciliation-a-response-to-zed-shaw-s-post-</id>
     <content type="html"><![CDATA[Zed Shaw posted <a href="http://sheddingbikes.com/posts/1299555462.html">a response</a> to <a href="http://b.lvh.cc/why-do-people-hate-launchpad-so-much">my article on why people hate Launchpad</a>. Apart from causing the number of readers to skyrocket by an order of magnitude, it&#39;s given me some new perspective on the problem. As always, I love feedback, especially if people agree with things I say ;-)<p /> Assuming Zed&#39;s right (and I think he&#39;s at the very least got a point), <a href="http://b.lvh.cc/a-compiled-list-of-launchpads-perceived-flaws">my previous list of grievances</a> splits up into two things:<br /> <ol> <li>Things that make Launchpad more like Github. In Zed&#39;s terminology, make Launchpad less of a sysadmin place and more of a programmer place. Following Zed&#39;s conclusion, these are bad changes.<br /></li><li>Things that make everyone&#39;s life easier and aren&#39;t necessarily about one group versus the other. As the contrapositive to Zed&#39;s conclusion, they are good changes.<br /> </li></ol>Now, I think at least some of the UI changes from that list are in that last group. Particularly the code browser UI issues (and they are legion &#8211; Loggerhead is on occasion hard to like) are something I don&#39;t really see how anyone could object to. Concrete examples are:<br /> <ul><li>Renaming &quot;View branch content&quot; to &quot;View code&quot;. &quot;Code&quot; is a word programmers scan for. To quote Zed&#39;s article: code, code, code. Contrary to popular belief you can actually access trunk&#39;s code with a single click from the project&#39;s front page! It&#39;s just cleverly hidden.<br /> </li><li>Merging the branch and branch content pages, embedding Loggerhead in the page like Github&#39;s file browser, instead of making it a separate page. Sysadminny types probably wouldn&#39;t ever have looked at that page in the first place.</li> <li>Removing dead project features (like translations, blueprints, answers) for J. Random User</li></ul>There are, of course, also ideas that would piss off the syadminny group, like moving series around or putting a Github style code browser on the overview page. (Probably explains why I dislike that last feature.)<p /> But yeah: if you fixed every single point in that list of perceived flaws, my in-brain mockup of what Launchpad 2.0 would look like would still decidedly be Launchpad and not Github: which is probably what Zed is talking about. And, like he said, that doesn&#39;t actually have to be problem.<p /> I agree that both Github and Launchpad would be very hard-pressed to transform into something everyone likes, but the &quot;why&quot; of that wasn&#39;t quite clear enough in my head yet for me to write a blog post about it (my posts are bad enough when I&#39;m convinced I do know what I want to say). Zed&#39;s article helped quite a bit there.<p /> The difference is I have no idea what this third system that caters to both in the same place would look like yet. Zed probably has a better idea of what he&#39;s talking about than I do.<p />My idea is different. It&#39;s probably a bit worse, since you&#39;d have N places where code live instead of 1, but at least in the short run it seems like less effort to end up with a working thing. The idea goes like this: if Github and Launchpad are really different beasts catering to different beasts, maybe we shouldn&#39;t try to make them be the same, and instead let them cooperate. This is why I think (well, hope) the idea of <a href="http://b.lvh.cc/bridging-the-gap-between-launchpad-and-github">bridging Launchpad and Github</a> &#8211; having them play nicely together in the same sandbox instead of the current situation we&#39;re they&#39;re direct competitors &#8211; may have some value to it.<p /> I&#39;d really like some feedback on Github fans on that. I <i>know</i> Launchpad people are going to like it since they can pretty much just use Launchpad and don&#39;t have to care Github exists. I&#39;m hoping people don&#39;t find Launchpad so revolting that using its bug tracker and merge proposals (as cited in that article I linked, features at least as good on Launchpad as on Github) becomes a contribution blocker.<p /> cheers<br />lvh
 ]]></content>
@@ -901,7 +1001,7 @@ The downside is that there are two things. One of them speaks REST, and the othe
   <entry>
     <title type="html"><![CDATA[Bridging the Gap Between Launchpad and Github]]></title>
     <link href="http://www.lvh.io/blog/2011/03/06/bridging-the-gap-between-launchpad-and-github/"/>
-    <updated>2011-03-06T00:00:00-05:00</updated>
+    <updated>2011-03-06T00:00:00+01:00</updated>
     <id>http://www.lvh.io/blog/2011/03/06/bridging-the-gap-between-launchpad-and-github</id>
     <content type="html"><![CDATA[Hey.<p /><br />Ever the diplomat, I&#39;ve been trying to figure out a way to use Launchpad yet keeping the people that dislike it happy.<p />It is based on two premises. If you disagree with them, you may as well stop reading now. (or, even better: tell me why)<br /> <ul><li>Launchpad&#39;s bug tracker is preferable, or at least equal, to Github Issues.</li><li>Launchpad&#39;s merge proposals are identical to Github Pull Request 2.0&#39;s, with the exception of bug tracker integration.</li> </ul>First of all, the project uses Launchpad as a bug tracker, and Launchpad merge proposals as the mandatory code review for getting code into trunk. Launchpad trunk is constantly mirrored into a Github repository.<p />  Launchpad users that want to develop the project pretend Github doesn&#39;t exist.<p />Github users that want to develop the project pretend Launchpad doesn&#39;t exist. They just fork the repository and make some changes, as they normally would. Once they want to get some code into trunk, they file a pull request, which is where the magic starts.<p /> A bot creates an alternative merge proposal equivalent to the pull request. There are two options for doing that:<br /><ul><li>Grabbing the pull request diff</li><li>Using bzr-git to import the branch into git</li></ul> (The latter is preferable because it preserves commit structure. The former is probably easier to implement and less hairy to implement/maintain due to impedance mismatches.)<p />Either way, a new branch is created with the same name as the Github branch. Ideally, the merge proposal is linked to the appropriate bug. That means the branch should contain information about the bug it relates to (possibly in the name, eg 54321-fixQuantumTransmogrifier), since, as far as I know, git has no equivalent to bzr commit&#39;s &#8211;fixes. The pull request gets a link to the merge proposal. All review-related work happens in Launchpad, not Github. Based on the second premise, this is acceptable.<p /> The obvious problem here is that Github users can&#39;t really monitor what&#39;s going on in terms of development in Launchpadland and vice-versa. A solution may be to push more branches, but I dislike doing that. Perhaps using their respective APIs, the data can be syndicated into a common source. Ideas welcome.<p /> cheers<div>lvh</div>
 ]]></content>
@@ -910,7 +1010,7 @@ The downside is that there are two things. One of them speaks REST, and the othe
   <entry>
     <title type="html"><![CDATA[A Compiled List of Launchpad's Perceived Flaws]]></title>
     <link href="http://www.lvh.io/blog/2011/03/06/a-compiled-list-of-launchpad-s-perceived-flaws/"/>
-    <updated>2011-03-06T00:00:00-05:00</updated>
+    <updated>2011-03-06T00:00:00+01:00</updated>
     <id>http://www.lvh.io/blog/2011/03/06/a-compiled-list-of-launchpad-s-perceived-flaws</id>
     <content type="html"><![CDATA[<p>(Note: just because I say &#8220;perceived&#8221; flaws doesn&#8217;t mean I don&#8217;t agree they are. It&#8217;s just a way to encourage feedback from people who disagree.)<p />I&#8217;ve compiled the responses I&#8217;ve received so far to <a href="http://b.lvh.cc/why-do-people-hate-launchpad-so-much" target="_blank">my previous article about Launchpad</a>. This is intended as constructive criticism and hopefully stuff that can be used to build a better Launchpad.<p /> I&#8217;d like to thank everyone who bothered to have a <a href="http://b.lvh.cc/religious-wars-considered-harmful-considered">sensible, adult discussion</a> about Launchpad with me. I very much appreciate your feedback, even the rants. The Launchpad people are also expressed interest in this previously unreceived feedback (which makes sense, I guess). There certainly were a lot of you! If it ends up making Launchpad a nicer place for everyone maybe it&#8217;s worth the time it took, though.<p /> The vast majority of complaints I&#8217;ve seen are about Launchpad&#8217;s interface.&nbsp; People perceive the Launchpad interface as hard to use and anything but obvious. They particularly feel there&#8217;s just too much noise, making useful features hard to find.<p /> I tried to distill stuff that smells like it&#8217;s easy to fix to me. It didn&#8217;t always work, of course. Some problems (primarily about Loggerhead) require non-trivial amounts of work.<p />Here are some concrete examples:</p>
 <ol>
@@ -937,7 +1037,7 @@ The downside is that there are two things. One of them speaks REST, and the othe
   <entry>
     <title type="html"><![CDATA[Why Do People Hate Launchpad So Much?]]></title>
     <link href="http://www.lvh.io/blog/2011/03/05/why-do-people-hate-launchpad-so-much-/"/>
-    <updated>2011-03-05T00:00:00-05:00</updated>
+    <updated>2011-03-05T00:00:00+01:00</updated>
     <id>http://www.lvh.io/blog/2011/03/05/why-do-people-hate-launchpad-so-much-</id>
     <content type="html"><![CDATA[Following a discussing on Convore recently, I noticed some people (names withheld to protect the guilty &#8211; I&#39;m sure they will speak up if they feel like it) strongly dislike Launchpad. Apparently they dislike it so much they would rather use a different project if they find something that uses it.<p /> I don&#39;t get it.<p />First off, lI&#39;m not trying to make this a git vs hg vs bzr vs whatever discussion, except perhaps to the extent that those tools shape their respective hosting system. Not that I think those discussions have to devolve into religious wars (<a href="http://b.lvh.cc/religious-wars-considered-harmful-considered">a subject on which I have blogged recently</a>), it&#39;s just that I&#39;d like to limit the scope so we end with a bunch of things that can actually be improved.<p /> My main problem with <a href="https://github.com/">the 500lb gorilla in the room</a> is its issue tracker. I know, it&#39;s a simple feature tacked on later, and all in all the ability to link to branches and revisions and to be able to close tickets from commit messages ain&#39;t so bad.<p /> One particular unfortunate choice is that they decided to make pull requests issue tracker artifacts. I&#39;m convinced it should be an attachment to one, instead. Pull requests are about merging code. There must be a reason to do that &#8211; that reason is a ticket. That means if you use pull requests as a mechanism for code review (which they seem to be marketed as), ergo having all code be added using them, all changes to trunk have at least two issue tracker artifacts: the ticket describing the change, and the pull request carrying the code that does it. I think that&#39;s a bit silly. Pull requests hence often become somewhat of a ticket in their own right, which works well for one-time contributions which are typically limited in scope, but it seems this results in an inconsistent workflow which is a bit more annoying for things that actually do require a ticket.<p /> Launchpad&#39;s issue tracker, on the other hand, is one I particularly like.<p />It&#39;s unique in the sense that it lets you track the state of bugs in different parts of downstream. Additionally, bugs aren&#39;t unique to a project &#8211; allowing people from different groups to collaborate on the same issue. It lets me assign bugs to a person: a feature I sorely miss in Github. The equivalent of Github Issue&#39;s voting feature is just a &quot;this affects me&quot; link: similar to Google Code&#39;s starring idea. The goal is always the same: measure the importance of a bug without getting the noise of a million &quot;me, too&quot; messages. (Github and Launchpad&#39;s way of doing it seems more effective, though.)<p /> Launchpad&#39;s alternative to pull requests, called merge proposals, are quite similar to Github&#39;s pull requests 2.0. The main difference is the bug tracker interaction: like I&#39;ve described above, they <i>attach</i> to issues, instead of being them themselves.<p /> A complain I often hear yet don&#39;t quite grok is the apparent difficulty of getting to code. Personally, I don&#39;t quite see the problem. The main branch (lp:projectname) and its contents are one click away from the front page. All of the branches of a project (from everyone! not just the project leads), are visible with a single click from the project front page, under the &quot;Code&quot; menu. I must admit I rarely use that web UI: instead, I just bzr co lp:projectname if I want to take a look.<p /> The contributor story is also fairly pleasant, in my opinion. I don&#39;t even need to fork anything (at least not explicitly): just get the branch, make some changes, push them to lp:~lvh/projectname/mybranch and done. That magic syntax isn&#39;t Launchpad-specific: that&#39;s called <a href="https://code.launchpad.net/bzr-bookmarks">a bookmark</a>, and you can just as well have your own if you don&#39;t use Launchpad.<p /> So what exactly is the problem? I&#39;m planning on moving a project from Fossil to something else at Pycon &#8211; but if everyone hates it so much, I&#39;m willing to reconsider. For example: I&#39;d use Github if I can find a useful issue tracker to go with it. I&#39;d use bitbucket if there&#39;s some reasonable way to have in-repo pull requests (like Github pull requests 2.0 or Launchpad merge proposals).
 ]]></content>
@@ -946,7 +1046,7 @@ The downside is that there are two things. One of them speaks REST, and the othe
   <entry>
     <title type="html"><![CDATA[Religious Wars Considered Harmful Considered Harmful]]></title>
     <link href="http://www.lvh.io/blog/2011/03/05/religious-wars-considered-harmful-considered-harmful/"/>
-    <updated>2011-03-05T00:00:00-05:00</updated>
+    <updated>2011-03-05T00:00:00+01:00</updated>
     <id>http://www.lvh.io/blog/2011/03/05/religious-wars-considered-harmful-considered-harmful</id>
     <content type="html"><![CDATA[Hey.<p /><br />Can we stop avoiding subjects because we&#39;ve elevated them to the state of personal opinion? Especially since &quot;personal opinion&quot; usually ends up meaning &quot;dogma&quot;, and is quite often used as an excuse to cover up ignorance.<p /> The usual suspects here are of course:<br /><ul><li>vim versus emacs versus whatever</li><li>git versus mercurial versus bazaar versus whatever</li><li>twisted versus gevent versus eventlet versus tornado versus whatever</li> <li>django versus pyramid versus web2py versus web.py versus cherrypy versus whatever<br /></li></ul>Here&#39;s why. Not every discussion about them has to devolve into a full-blown flame war. Yes, there are trolls. Yes, there are clueless fan-boys who&#39;ve drunk one glass too many of the delicious Kool-Aid. We have those pretty much everywhere else, too, though: and we just ignore them. But we&#39;re not trolls &#8211; we&#39;re reasonable adults with different favorite tools. Perhaps that&#39;s based on extensive experience. Perhaps it isn&#39;t. Perhaps it&#39;s based on stuff that&#39;s not even true anymore. Can&#39;t we talk about them as one reasonable adult to another? Preferably without resulting in name calling and blatant demagogy.<p /> Dismissing discussions a priori effectively means you&#39;ve decided, up front, that they&#39;re going to have a net negative outcome. At best, that&#39;s insulting to the people you&#39;d be discussing with. At worst, it&#39;s a monumental display of arrogance, since you&#39;ve just decided that there is nothing that can be learned from people who have done things differently.<p /> I&#39;m not talking about people who mindlessly promote their favorite version control system or editor or library, without having given the alternatives the light of day. They&#39;re annoying in their own right, but they&#39;re nothing compared to the people who then proceed to trash-talk the alternatives without having any real arguments. Like something someone smarter than myself said: <a href="https://twitter.com/#%21/jacobian/status/18369419788951552">&quot;if you promote your project by dissing the competition, I&#39;ll assume that your project sucks or you&#39;re a dick. Either way I won&#39;t use it.&quot;</a> &#8211; except it&#39;s not even their project.<p /> If you don&#39;t know what a mark ring or a kill ring is, any disparaging comment you make about Emacs is probably worth a troll stamp, sorry. If you haven&#39;t used anything but git, I&#39;m not particularly interested that you think everything that isn&#39;t git is dumb. If you didn&#39;t manage to get through the finger tutorial and you&#39;ve never used any of the alternatives either, I don&#39;t really care if you think Twisted is complicated. Quite frankly, you don&#39;t know what you&#39;re talking about. Your braindead statements don&#39;t contribute to anything but my blood pressure.<p /> I&#39;ve tried to have sensible discussions countless times, and when I succeeded, it ended up being perfectly civil <i>and</i> showing someone how maybe not everything the enemy is doing is so bad. Perhaps they have ideas worth stealing. Perhaps we can stop worrying about what separates us, silence the trolls like we do everywhere else, and focus on what we have in common.<p /> cheers<br />lvh
 ]]></content>
@@ -955,7 +1055,7 @@ The downside is that there are two things. One of them speaks REST, and the othe
   <entry>
     <title type="html"><![CDATA[Pycon US Talk]]></title>
     <link href="http://www.lvh.io/blog/2010/10/13/pycon-us-talk/"/>
-    <updated>2010-10-13T00:00:00-04:00</updated>
+    <updated>2010-10-13T00:00:00+02:00</updated>
     <id>http://www.lvh.io/blog/2010/10/13/pycon-us-talk</id>
     <content type="html"><![CDATA[Finances permitting, I will attend Pycon US 2011. I will also try to give a talk about most of the meat and potatoes on this blog.<p /><div>What do you think should be included? What do you think shouldn&#39;t be?</div>
 ]]></content>
@@ -964,7 +1064,7 @@ The downside is that there are two things. One of them speaks REST, and the othe
   <entry>
     <title type="html"><![CDATA[Cautious Deployment for Continuous Availability]]></title>
     <link href="http://www.lvh.io/blog/2010/10/04/cautious-deployment-for-continuous-availability/"/>
-    <updated>2010-10-04T00:00:00-04:00</updated>
+    <updated>2010-10-04T00:00:00+02:00</updated>
     <id>http://www.lvh.io/blog/2010/10/04/cautious-deployment-for-continuous-availability</id>
     <content type="html"><![CDATA[<div>In <a href="http://lvh.posterous.com/designing-a-continuous-deployment-system-caut">my last post</a>, I talked about cautious deployment as a technique for recovering from botched deployments. Cautious deployment&nbsp;also solves a second problem by helping you get continuous availability.</div>
 <p />
@@ -1000,15 +1100,6 @@ The downside is that there are two things. One of them speaks REST, and the othe
 <div>Bottom line? Statistics is hard, and it&#8217;s easy to get fooled into thinking you&#8217;ve got it right even when you&#8217;re miles off (I&#8217;ve been bitten by this myself, more than once). Once you&#8217;ve done that, set up a sandboxed miniature model for your entire (distributed) system, and check the assumptions from your statistics against it. After that, you&#8217;re only likely to miss scale issues.&nbsp;</div>
 <p />
 <div>Even when you take all of that into account, you will get things wrong. That was my original point about cautious deployment: as long as you have that and it works, you&#8217;re allowed to get it wrong once in a while. Fail gracefully. It&#8217;s not so scary to leap the chasm when there&#8217;s a net to catch you.</div>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Designing a Continuous Deployment System: Cautious Deployment]]></title>
-    <link href="http://www.lvh.io/blog/2010/10/01/designing-a-continuous-deployment-system-cautious-deployment/"/>
-    <updated>2010-10-01T00:00:00-04:00</updated>
-    <id>http://www.lvh.io/blog/2010/10/01/designing-a-continuous-deployment-system-cautious-deployment</id>
-    <content type="html"><![CDATA[This article will be about a deployment scheduling technique which I call operationally cautious deployment. (I didn&#39;t pick the name so the acronym would end up being OCD! Honest! I swear!).<p /><div>Note: This isn&#39;t <i>new</i>. I didn&#39;t invent it. The fact that a big number of people around the globe with similar problems have come up with this idea independently and that most of them are happy with the results speaks for itself: this is mostly just common sense thinking applied to fixing a real problem. It&#39;s one of those things that sound obvious when you have them explained to you, but you probably wouldn&#39;t come up with unless you spend quiet a bit of time pondering the problem.</div> <p /><div>So you have a wonderful continuous deployment system! Congratulations! You deploy a new version, monitor your cluster of hosts, and create wonderful graphs:</div><p /><div>[[posterous-content:NBFS9fiUjfTCi8Xr5KIW]]<br /> </div><p /><div>Except, of course, it&#39;s not that simple. Your test suite, no matter how much you&#39;ve honed and polished it, is imperfect. It will contain subtle assumptions that just aren&#39;t true in deployment. (When I say &quot;subtle assumptions&quot;, I mean the kind that you don&#39;t know are assumptions until everything blows up.). If you&#39;re going to be deploying software all the time, deploying something that has a fatal mistake in it is a matter of when, not if. So one day, the real graph is going to look something like this:</div> <p /><div>[[posterous-content:5k8ymL4PxLDrYfbFgL8h]]<br /></div><div>It would be much nicer if we could deploy more cautiously. Try it out, and only go through with the complete deployment. A sort of live test, deploying with a feedback loop. That might look a bit like this:</div> <p /><div>[[posterous-content:apvQ27GHbg2rEh2CWgEa]]</div><div>That deploys the new version to 2**N servers, with N starting at 0 and increasing until all servers use the target version. The number of servers deployed to is exponential, because that gives us the behavior we wanted: slow and cautious at first, and rapid as soon as we think it&#39;ll work.</div> <p /><div><div>Of course, that doesn&#39;t give you an example of a failure mode. Failures look a bit like this:</div><div>[[posterous-content:tibBqAUzF8OCiIOWmnDZ]]</div> </div><div>Just like in the previous picture, a roll-out of a new version starts. Except this time, the new version doesn&#39;t actually work. The system catches this, and reverts the hosts that have already converted.</div> <p /><div>Of course, the package is still broken! You didn&#39;t fix the problem yet, you just reduced its impact. Your dev room should still look roughly like an control room from a bad Cold War movie right after the other party&#39;s launched a bunch of nukes.</div> <p /><div>It&#39;s just another bug, albeit a particularly nasty show-stopping one. Like all bugs, they&#39;re not so much bugs in the software as they are bugs in the test suite that incorrectly specified the requirements for the software. This becomes painfully obvious here: there&#39;s something broken, but your test suite didn&#39;t catch it. Hopefully, it&#39;s something that&#39;s at all testable.</div> <p /><div>The difference between this state of panic and the original state of panic is that, ideally, your users never noticed there was a problem.</div><p /><div>There&#39;s one obvious problem with all of this. Being able to continue deployment on positive feedback and revert deployments on negative feedback relies on actually having feedback. Useful health metrics for a cluster are halfway between art and science, and are definitely outside of the scope of this article.</div> <p /><div>The next article will be about another benefit of cautious deployment: continuous <i>availability</i>. That one is probably going to be halfway between an article about continuous deployment and a rant about how people need to learn more statistics.</div>
 ]]></content>
   </entry>
   
