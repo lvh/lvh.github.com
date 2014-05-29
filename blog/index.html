@@ -6,7 +6,7 @@
 <head>
   <meta charset="utf-8">
   <title>lvh</title>
-  <meta name="author" content="Laurens Van Houtven">
+  <meta name="author" content="lvh">
 
   
   <meta name="description" content="Since the early hours of May 29th (CEST), the TrueCrypt website (https://www.truecrypt.org) has pointed to http://truecrypt.sourceforge.net/, with &hellip;">
@@ -122,13 +122,9 @@ MathJax.Hub.Config({
 
 <blockquote>
 <p>WARNING: Using TrueCrypt is not secure as it may contain unfixed security issues</p>
-</blockquote>
 
-<blockquote>
 <p>This page exists only to help migrate existing data encrypted by TrueCrypt.</p>
-</blockquote>
 
-<blockquote>
 <p>The development of TrueCrypt was ended in 5/2014 after Microsoft terminated support of Windows XP. Windows 8/7/Vista and later offer integrated support for encrypted disks and virtual disk images. Such integrated support is also available on other platforms (click here for more information). You should migrate any data encrypted by TrueCrypt to encrypted disks or virtual disk images supported on your platform.</p>
 </blockquote>
 
@@ -160,7 +156,7 @@ MathJax.Hub.Config({
 <p>Security isn’t about perfect versus imperfect or about better versus worse, it’s about <em>this</em> attack surface versus <em>that</em> attack surface.</p>
 </blockquote>
 
-<p>You can’t just add more encryption to something and expect to somehow get better security. You have to consider what it is buying you.</p>
+<p>You can’t just add more crypto junk to something and expect to somehow get better security. You have to consider what it is buying you, and what it’s costing you.</p>
 
 <p>Full-disk encryption buys you one simple thing: if someone steals your device while the encrypted volume is locked, they probably can’t read it.</p>
 
@@ -170,7 +166,7 @@ MathJax.Hub.Config({
 
 <p>If you’re encrypting files or blobs of data within other files, an authenticated encryption scheme like GPG is far more useful.</p>
 
-<p>Don’t get me wrong. Full-disk encryption is a good idea, and you should do it. I’m just saying that what it actually protects against is pretty limited.</p>
+<p>Don’t get me wrong. Full-disk encryption is a good idea, and you should do it. I’m just saying that what it actually protects against is pretty limited. If there’s files you want to keep secret, full-disk encryption is probably not enough.</p>
 
 <p>For more details, try Thomas &amp; Erin Ptacek’s <a href="http://sockpuppet.org/blog/2014/04/30/you-dont-want-xts/">blog post</a> on why XTS isn’t what you want. XTS is a way to build tweakable ciphers that can be used to create full-disk encryption; but the post applies to full-disk encryption generically as well.</p>
 
@@ -196,20 +192,30 @@ MathJax.Hub.Config({
 
 <p>It’s strange that they would point to alternatives like Bitlocker for Windows and even more dubious alternatives for other operating systems. The authors certainly knew that this would not be an acceptable alternative for the vast majority of their users.</p>
 
-<p>Additionally, the support window for XP ending isn’t a particularly convincing impetus for migrating away from TrueCrypt <em>right now</em>. This has lead some to believe that it’s an automated release. Worse, it could be a gagged response: a big and powerful three-letter agency might be twisting their arm and forcing them to fold, in return for something else (like, say, not being thrown in a Gitmo cell and forgotten about). Again: at this point that is pure speculation.</p>
+<p>Additionally, the support window for XP ending isn’t a particularly convincing impetus for migrating away from TrueCrypt <em>right now</em>. This has lead some to believe that it’s an automated release. Worse, it could be a gagged response: a big and powerful three-letter agency might be twisting their arm and forcing them to fold, in return for something else (like, say, not being thrown in a Gitmo cell and forgotten about). Again: pure speculation.</p>
 
 <p>Another option is that some of the developers just really, genuinely folded. They felt that for atechnical users, BitLocker was good enough, while the particularly discerning TrueCrypt user would be able to find some other alternative.</p>
 
-<p>Bottom line is that none of this really matters.</p>
+<p>Bottom line is that none of this really matters. What matters is what you should do next if you want to have full-disk encryption.</p>
 
 <h3 id="so_what_do_i_do_now">So what do I do now?</h3>
+
+<p>I think LUKS is probably the best system that we have right now, and one of the few that actually improves on TrueCrypt.</p>
 
 <p>If you’re on Linux, dm-crypt + cryptsetup + LUKS is probably what you want. If you’re on OS X, FileVault 2 is probably what you want. If you’re on Windows, your options are looking a bit thin right now:</p>
 
 <ul>
 <li>Keep using old versions of TrueCrypt.</li>
+
+<li>Give up and use BitLocker.</li>
+
+<li>Use a Linux virtual machine to use dm-crypt/LUKS, eventually migrating to native support.</li>
 </ul>
-<hr /></div>
+
+<p>Personally, I think the first option is the most reasonable right now, and then wait until someone actually writes the native LUKS support.</p>
+
+<p>Oh, and you should probably install GPG to encrypt some of those files stored on that encrypted volume.</p>
+</div>
   
   
 
@@ -1388,7 +1394,7 @@ The downside is that there are two things. One of them speaks REST, and the othe
     </div>
   </div>
   <!-- <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - Laurens Van Houtven -
+  Copyright &copy; 2014 - lvh -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
